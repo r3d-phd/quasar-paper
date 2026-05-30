@@ -1,0 +1,142 @@
+%% ============================================================
+%% §4 — Multi-Platform Validation Design
+%% RL Control Agent section
+%% Describes the three replication/extension experiments and
+%% the algorithms used
+%% ============================================================
+
+\section{Multi-Platform Validation Design}
+\label{sec:validation}\label{sec:control_agent}
+
+The central empirical claim of this paper is that SiliQun is
+\emph{neutral and fair} across silicon spin qubit technologies: the
+simulator does not artificially favour any one hardware platform, and any
+machine-learning algorithm that works on one profile can be applied to any
+other without modification.
+To test this claim rigorously, we adopt a \emph{replication-based
+validation} strategy: we select two independently published
+machine-learning experiments on silicon spin qubits, reproduce them
+verbatim on SiliQun using the matching hardware profile, and compare our
+results to the published values.
+We then extend the benchmark to GAA qubits, for which no prior
+machine-learning experiment exists, to demonstrate that SiliQun enables
+experiments that cannot yet be conducted on physical hardware.
+
+%% ----------------------------------------------------------
+\subsection{Replication 1: DQL and SARSA on SiMOS}
+\label{subsec:rep1_design}
+%% ----------------------------------------------------------
+
+Daraeizadeh~et~al.~\cite{Daraeizadeh2020} applied deep Q-learning (DQL)
+and SARSA to the problem of CZ gate synthesis in a two-qubit SiMOS quantum
+dot device.
+Their Hamiltonian is the exchange-coupled two-qubit ZZ model:
+\begin{equation}
+  H(t) = \frac{J(t)}{4} \sigma_z^{(1)} \otimes \sigma_z^{(2)}
+         + \frac{\varepsilon_0(t)}{2} \sigma_z^{(1)}
+         + \frac{\varepsilon_1(t)}{2} \sigma_z^{(2)},
+  \label{eq:zz_hamiltonian}
+\end{equation}
+where $J(t)$ is the exchange coupling and $\varepsilon_0(t)$,
+$\varepsilon_1(t)$ are the single-qubit detuning parameters, all
+controllable by the RL agent.
+The target gate is CZ, and the fidelity metric is the phase-invariant
+process fidelity:
+\begin{equation}
+  F = \frac{1}{d^2} \left| \mathrm{tr}(U_\text{target}^\dagger \,
+      U_\text{achieved}) \right|^2,
+  \label{eq:phase_fidelity}
+\end{equation}
+where $d = 4$ for a two-qubit system.
+The published result is $F > 0.999$ for both DQL and SARSA.
+
+We replicate this experiment on SiliQun's \texttt{simos\_nominal} profile
+with the following faithful reproduction of the original setup:
+a discrete action space of 27 parameter combinations
+($\varepsilon_0, \varepsilon_1, J \in \{-\Delta, 0, +\Delta\}$ with
+$\Delta = 0.1$), an episode length of 100 steps, an $\varepsilon$-greedy
+exploration schedule decaying from 1.0 to 0.01 over 5,000 episodes, a
+replay buffer of 10,000 transitions, and a target network updated every
+100 steps.
+The DQL agent uses a two-layer network with 16 hidden units per layer,
+consistent with the small network described in the original paper.
+Five independent seeds are run for each algorithm.
+
+%% ----------------------------------------------------------
+\subsection{Replication 2: DQN for Universal State Preparation on Donor
+  Qubits}
+\label{subsec:rep2_design}
+%% ----------------------------------------------------------
+
+He~et~al.~\cite{He2021} applied a deep Q-network (DQN) to the universal
+state preparation (USP) problem in a singlet-triplet ($S$-$T_0$) quantum
+dot device.
+The $S$-$T_0$ Hamiltonian is:
+\begin{equation}
+  H(t) = J(t) \sigma_z + h \sigma_x,
+  \label{eq:st0_hamiltonian}
+\end{equation}
+where $J(t)$ is the exchange coupling (controllable) and $h$ is the
+hyperfine gradient (fixed at $h = A_\text{hf}/2$).
+The task is to prepare an arbitrary target state $|\psi_\text{target}\rangle$
+on the Bloch sphere from the initial state $|0\rangle$, with fidelity
+$F = |\langle \psi_\text{target} | \psi \rangle|^2 \geq 0.99$.
+The published result is $F > 0.99$ for target states on the six cardinal
+axes of the Bloch sphere ($|0\rangle$, $|1\rangle$, $|\pm\rangle$,
+$|\pm i\rangle$).
+
+We replicate this experiment on SiliQun's \texttt{donor\_electron} profile,
+which implements the $S$-$T_0$ physics with the hyperfine coupling
+$A_\text{hf} = 117.5$\,MHz drawn from the M\k{a}dzik~et~al.\
+characterisation~\cite{Madzik2022}.
+The DQN agent uses a two-layer network with 32 hidden units, an episode
+length of 50 steps, an $\varepsilon$-greedy schedule decaying from 1.0 to
+0.01 over 2,000 episodes, and a replay buffer of 5,000 transitions.
+Evaluation is performed on the six cardinal Bloch sphere states following
+the He~et~al.\ protocol.
+Five independent seeds are run.
+
+%% ----------------------------------------------------------
+\subsection{Extension 3: DQN for Universal State Preparation on GAA Qubits}
+\label{subsec:ext3_design}
+%% ----------------------------------------------------------
+
+No prior machine-learning experiment has been reported for GAA silicon spin
+qubits.
+We apply the identical DQN USP protocol from Replication~2 to
+SiliQun's \texttt{gaa\_nominal} profile, changing only the hardware profile
+constructor argument.
+The GAA profile has a shorter coherence time ($T_2 = 0.1$\,ms versus
+$T_2 = 1$\,ms for donor) and stronger charge noise
+($\sigma_\varepsilon = 2.0$\,$\mu$eV versus $0.3$\,$\mu$eV), which we
+expect to reduce the achievable fidelity relative to the donor profile.
+The degree of this reduction is a direct empirical measure of the
+decoherence penalty associated with GAA's CMOS-compatible fabrication
+process.
+This extension constitutes the first machine-learning experiment on GAA
+silicon spin qubits reported in the literature.
+
+%% ----------------------------------------------------------
+\subsection{Algorithm Implementations}
+\label{subsec:algorithms}
+%% ----------------------------------------------------------
+
+All three experiments use standard, well-established RL algorithms
+without modification.
+The DQL and SARSA implementations follow the original
+Daraeizadeh~et~al.\ description: a two-layer fully connected network with
+ReLU activations, mean-squared error loss, and the Adam optimiser with
+learning rate $\alpha = 10^{-3}$.
+SARSA uses on-policy updates (the current policy's action is used for the
+TD target), while DQL uses off-policy updates (the greedy action is used
+for the TD target).
+The DQN implementation follows the He~et~al.\ description with the same
+network architecture, experience replay, and target network.
+
+All experiments are run on an NVIDIA RTX~2070 Max-Q GPU (8\,GB VRAM)
+using PyTorch~2.6.0 with CUDA~12.4.
+The analytical ZZ Hamiltonian exponential is computed in closed form to
+achieve the throughput required for 10,000-episode training runs.
+All code and hardware profile definitions are released in the
+\texttt{siliqun-provider} repository under the MIT licence.
+
