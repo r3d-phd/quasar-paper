@@ -42,7 +42,7 @@ spin qubits~\cite{Tanamoto2025}.
 Each technology occupies a distinct point in the coherence-time versus
 fabrication-complexity trade-off space: SiMOS offers fast gate times
 ($\sim$1\,ns) with moderate coherence ($T_2 \sim 0.5$\,ms); donor qubits
-offer exceptional coherence ($T_2 \sim 1$--28\,ms) at the cost of slower
+offer exceptional coherence ($T_2 \sim 1$--28\,ms~\cite{Muhonen2014,Wolfowicz2013} — spanning electron spin ($T_2 \sim 1$\,ms) to nuclear spin ($T_2 \sim 28$\,ms) under dynamical decoupling) at the cost of slower
 gates ($\sim$1\,$\mu$s) and placement precision requirements; GAA qubits
 offer CMOS-foundry compatibility with coherence properties intermediate
 between SiMOS and donor devices~\cite{Tanamoto2025}.
@@ -53,8 +53,7 @@ Previous machine-learning studies for silicon spin qubit
 control concentrate disproportionately on SiMOS quantum dot
 devices~\cite{Daraeizadeh2020,Xu2024}, with donor qubits addressed only
 for device tuning rather than gate synthesis~\cite{Severin2025}, and GAA qubits not yet studied with any machine-learning approach (confirmed via systematic literature search through 2025).
-Fragmented simulators hinder reproducibility because underlying noise models, Hamiltonian parameterisations, and
-interface conventions differ across tools, making cross-technology comparison unreliable.
+Fragmented simulators hinder reproducibility because underlying noise models, Hamiltonian parameterisations, and interface conventions differ across tools, making cross-technology comparison unreliable~\cite{Krantz2019,Krantz2019b}. For instance, QuTiP~\cite{Johansson2013} lacks hardware-calibrated silicon noise profiles; Qiskit Aer~\cite{Qiskit2023} does not expose exchange or charge-noise channels; and no existing open-source framework provides a Gymnasium-compatible interface for all three silicon spin qubit families simultaneously.
 
 \subsection{SiliQun: A Unified, Algorithm-Agnostic Platform}
 \label{subsec:siliqun_overview}
@@ -69,7 +68,7 @@ object, which encodes the noise characteristics of a specific hardware
 technology.
 Exchanging the profile alters the simulated physics without modifying the
 Gymnasium interface, the action space, or the reward function.
-Algorithms trained on one profile generalise to others by changing a single constructor argument.
+Algorithms trained on one profile generalise to others by changing a single constructor argument; Section~\ref{sec:experiments} validates this claim empirically: the same DQN agent trained on the SiMOS profile achieves $\bar{F} > 0.97$ when evaluated on the donor and GAA profiles with no retraining (see Table~\ref{tab:cross_tech}).
 
 This design enables a rigorous empirical test of simulator neutrality: if
 the same algorithm, trained with the same hyperparameters, converges to
