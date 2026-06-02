@@ -337,7 +337,15 @@ silicon spin qubits.
     $p_2$: two-qubit gate error probability.
     $\tau_1$, $\tau_2$: single- and two-qubit gate durations (ns).
     Sources: SiMOS~\cite{Xue2022,Noiri2022,Philips2022};
-    donor~\cite{Madzik2022,Morello2020}; GAA~\cite{Tanamoto2025}.}
+    donor~\cite{Madzik2022,Morello2020}; GAA~\cite{Tanamoto2025}.
+    \textit{Note:} These values represent the target calibration parameters
+    extracted from the cited experimental and simulation sources.
+    The validation experiments (\S\ref{sec:experiments}) use self-contained
+    inline Hamiltonians defined within each experiment script to faithfully
+    replicate the exact setups of the cited papers; the framework default
+    values in \texttt{siliqun.physics.noise.channels} are conservative
+    approximations used for exploratory runs and may differ from the
+    values shown here.}
   \label{tab:hardware_profiles}
   \begin{tabular}{lcccccccc}
     \hline
