@@ -272,6 +272,7 @@ current registry of eight technology presets, and
 from siliqun.plugins import make_env
 env = make_env("simos_nominal", target_state="bell")
 obs, info = env.reset()
+# Other supported target states: "ghz", "w", "cluster1d", "dicke_k3"
 \end{verbatim}
 
 Figure~\ref{fig:three_tier} provides a visual summary of the three-tier
@@ -537,9 +538,15 @@ representation.
 For W and cluster states, the required bond dimension grows as
 $O(\sqrt{n})$ and $O(n)$ respectively under short-time Lindblad
 evolution with noise rate $p \sim 10^{-3}$.
+For Dicke states $|D_n^k\rangle = \binom{n}{k}^{-1/2}\sum_{|x|=k}|x\rangle$
+(equal-weight superposition of all $n$-qubit basis states with exactly
+$k$ excitations), the entanglement entropy across the central bipartition
+scales as $O(\log n)$~\cite{Salberger2017}, so the required bond dimension
+grows sub-linearly: $\chi_{\mathrm{MPO}} = O(n^{1/2})$ suffices for
+fidelity $> 0.999$ at the noise rates considered here.
 In practice, $\chi_{\mathrm{MPO}} = 64$ provides fidelity $> 0.999$
-relative to the exact density matrix for all target states considered
-in this work at $n \leq 29$ qubits.
+relative to the exact density matrix for all four target state families
+(GHZ, W, Cluster-1D, Dicke-$k$) considered in this work at $n \leq 29$ qubits.
 
 The backend is implemented as the \texttt{MPSLindbladEngine} class
 in \texttt{siliqun\_provider/engines/mps\_engine.py}, inheriting from
