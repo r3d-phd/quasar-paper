@@ -32,9 +32,9 @@ and E3 applies the same DQN USP protocol to the \texttt{gaa\_nominal} profile ov
 \label{subsec:setup}
 %% ----------------------------------------------------------
 
-All experiments were conducted on the King Abdulaziz University Aziz HPC cluster, using NVIDIA A100 nodes (40\,GB HBM2 VRAM) with PyTorch~2.4.0 and CUDA~12.1.
+All experiments were conducted on the King Abdulaziz University Aziz HPC cluster, using NVIDIA A100 nodes (40\,GB HBM2 VRAM) with PyTorch~2.5.1 and CUDA~12.1.
 The SiliQun environment version used throughout is \texttt{siliqun-v5}
-(commit \texttt{48e9949}, tag \texttt{v5}, available at
+(commit \texttt{a69b59c}, available at
 \url{https://github.com/r3d-phd/siliqun}).
 All experiments used five independent seeds (0--4); results are reported as mean $\pm$ std.
 R1 ran for 10{,}000 episodes per seed; R2 and E3 ran for 5{,}000 episodes per seed.
@@ -342,24 +342,22 @@ The target gate is CNOT; the fidelity metric is the phase-invariant
 process fidelity (Eq.~\ref{eq:phase_fidelity}).
 
 \textbf{Results (partial).}
-Table~\ref{tab:r4_results} reports the per-seed results for the three seeds
-completed to date; seed 1453 is currently running on the Aziz A100 cluster
-(job~179442, submitted 2~June~2026, 720~h walltime) and will be incorporated
-in the final version.
-Seeds 24428 and 555 achieve best-case fidelities of
-$F_\text{best} = 0.8444$ and $F_\text{best} = 0.7853$ respectively.
-Seed 666, completed on the Aziz A100 cluster (job~179089), achieves
-$F_\text{best} = 0.8427$ over 20{,}000 episodes without converging above
-$F = 0.999$.
-The partial mean across the three completed seeds is
-$\bar{F}_\text{partial} = 0.8269 \pm 0.0248$.
+Table~\ref{tab:r4_results} reports the per-seed results for the two seeds
+completed on the local GPU (seeds 24428 and 555); seeds 666 and 1453 are
+currently running on the Aziz A100 cluster (job~179089, submitted 30~May~2026)
+and will be incorporated in the final version.
+Seeds 24428 and 555 achieve mean final fidelities of
+$\bar{F} = 0.8437$ and $\bar{F} = 0.7844$ respectively, with best-case
+fidelities of $F_\text{best} = 0.8444$ and $F_\text{best} = 0.7853$.
+The partial mean across the two completed seeds is
+$\bar{F}_\text{partial} = 0.8141 \pm 0.0297$.
 
 \begin{table}[ht]
 \centering
 \caption{Replication~4 results: TQC CNOT synthesis on SiliQun
   \texttt{gaas\_singlet\_triplet} profile.
-  Seeds 24428, 555, and 666 are complete;
-  seed 1453 is pending (Aziz A100, job~179442, 720~h walltime).
+  Seeds 24428 and 555 are complete (local GPU, RTX~2070);
+  seeds 666 and 1453 are pending (Aziz A100, job~179089).
   $\bar{F}_\text{final}$ = mean fidelity over 100 evaluation episodes
   at end of training; $F_\text{best}$ = best fidelity seen during training;
   $t$ = training time in minutes.}
@@ -371,12 +369,13 @@ $\bar{F}_\text{partial} = 0.8269 \pm 0.0248$.
 \midrule
 24428 & $0.8437$ & $0.8444$ & No & 427 & Complete \\
 555   & $0.7844$ & $0.7853$ & No & 566 & Complete \\
-666   & $0.8427$ & $0.8427$ & No & $\approx$480 & Complete \\
+666   & \textit{pend.} & \textit{pend.} & \textit{pend.}
+      & \textit{pend.} & Running \\
 1453  & \textit{pend.} & \textit{pend.} & \textit{pend.}
-      & \textit{pend.} & Running (job~179442) \\
+      & \textit{pend.} & Running \\
 \midrule
-\textbf{Mean (3 seeds)} & $\mathbf{0.8236 \pm 0.0248}$ & $0.8241$
-  & 0/3 & 491 & Partial \\
+\textbf{Mean (2 seeds)} & $\mathbf{0.8141 \pm 0.0297}$ & $0.8149$
+  & 0/2 & 497 & Partial \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -398,7 +397,7 @@ to $F > 0.75$ in the final 1{,}000 episodes, confirming that the GaAs
 noise landscape presents a similar exploration challenge regardless of
 the control abstraction.
 The full four-seed results will be incorporated in the final version
-of this paper upon completion of Aziz job~179442 (seed~1453).
+of this paper upon completion of Aziz job~179089.
 
 %% ----------------------------------------------------------
 \subsection{Extension 3: DQN for Universal State Preparation on GAA Qubits}

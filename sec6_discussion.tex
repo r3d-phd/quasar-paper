@@ -98,16 +98,14 @@ on a SiliQun instance to prepare local GHZ states of size $d$, and a
 network-level fusion agent that applies entanglement swapping to merge
 module-level GHZ states into a global GHZ state of size $2d$.
 
-Preliminary results from ANDROMEDA~v4.1, trained on the SiliQun
-\texttt{simos\_nominal} profile using a Soft Actor-Critic (SAC) agent,
-achieve module-level fidelity $F_\text{best} = 0.8536$ for GHZ-2 state
-preparation on an NVIDIA A100 GPU. The fusion protocol, which applies
-Bell-basis measurements and Pauli corrections to merge two GHZ-2 modules
-into a GHZ-4 state, achieves $\bar{F}_\text{fusion} = 0.311$ in the
-current reactive-coordination implementation. Ongoing training with a
-proactive-coordination protocol (ANDROMEDA~v4.2) is expected to improve
-fusion fidelity substantially; results are pending and will be reported
-in the companion ANDROMEDA paper.
+Preliminary results from ANDROMEDA~v4.6, trained on the SiliQun
+\texttt{simos\_nominal} profile using a Proximal Policy Optimisation (PPO)
+agent with curriculum-based progressive qubit scaling, achieve
+module-level fidelity $F_\text{best} = 0.8053$ for 3-qubit GHZ state
+preparation after 2\,000\,000 training steps on an NVIDIA A100 GPU,
+with 4-qubit training actively in progress at the time of writing.
+The hierarchical fusion protocol and full multi-qubit results will be
+reported in the companion ANDROMEDA paper~\cite{ANDROMEDA_P3}.
 
 The ANDROMEDA results demonstrate two important properties of SiliQun as
 a simulation substrate: first, that SiliQun's Gymnasium interface is
@@ -124,7 +122,7 @@ GHZ state preparation tasks required by quantum network applications.
 
 Five limitations of the current work motivate future research directions.
 
-SiliQun's modular design enables hierarchical composition at scale: the ANDROMEDA framework~\cite{ANDROMEDA_P3} demonstrates this by composing five trained RL agent modules trained on SiliQun into a 20-qubit hierarchical system, with full robustness results reported separately in that work.
+SiliQun's modular design enables hierarchical composition at scale: the ANDROMEDA framework~\cite{ANDROMEDA_P3} is actively extending this by composing trained RL agent modules on SiliQun toward a multi-qubit hierarchical system, with full results to be reported separately in that work.
 
 \textbf{Comparison with classical optimal control (highest priority).}
 The most important open comparison is between SiliQun-trained DRL agents

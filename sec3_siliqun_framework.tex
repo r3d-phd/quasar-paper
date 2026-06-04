@@ -79,7 +79,7 @@ where $\mathcal{P}_2$ is the two-qubit Pauli group. Single-qubit gates are subje
 
 \textbf{SiMOS hardware calibration.} The noise parameters are set to values drawn from recent experimental demonstrations of SiMOS spin qubits: $T_1 = 1.0$~ms, $T_2 = 0.5$~ms, $p_1 = 0.001$ (0.1\%), $p_2 = 0.01$ (1.0\%), single-qubit gate duration $\tau_1 = 10$~ns, two-qubit gate duration $\tau_2 = 100$~ns~\cite{Xue2022,Noiri2022,Philips2022,Steinacker2023}. These values place SiliQun firmly in the physically realistic regime: the implied single-qubit error rate per gate is $\gamma_1 \approx 10^{-5}$ (dominated by depolarising noise at $p_1 = 10^{-3}$), while the two-qubit error rate of $p_2 = 10^{-2}$ is consistent with the best reported two-qubit gate fidelities for SiMOS devices~\cite{Noiri2022,Philips2022}.
 
-\textbf{Simulation backend.} Gate operations are applied as exact tensor contractions on a matrix product state (MPS) representation of the $n$-qubit register, followed by singular value decomposition (SVD) truncation at a cutoff of $10^{-14}$. The maximum bond dimension is $\chi_\text{max} = 32$, which is sufficient to represent all states encountered during 4-qubit GHZ synthesis without approximation error. Circuit fidelity is computed as the squared overlap between the current state and the target state: $F = |\langle \psi_\text{target} | \psi \rangle|^2$. GPU acceleration via CuPy tensor operations achieves a $93\times$ speedup over CPU-based NumPy simulation (measured as wall-clock time per environment step: $0.21$\,ms on NVIDIA A100 vs $19.5$\,ms on Intel Xeon Gold 6248R, averaged over $10^4$ steps at 4-qubit density matrix size)\label{subsec:gpu_benchmark}, enabling the millions of environment steps required by hierarchical multi-agent training. The CUDA backend is available as an optional extra (\texttt{pip install siliqun[gpu]}) and replaces NumPy with CuPy transparently at runtime via the \texttt{siliqun.backend} selection API; no changes to the RL agent or the Gymnasium interface are required. The crossover point at which GPU simulation outperforms CPU is approximately 16 qubits, consistent with the empirical benchmarks reported in Table~\ref{tab:gpu_benchmarks}.
+\textbf{Simulation backend.} Gate operations are applied as exact tensor contractions on a matrix product state (MPS) representation of the $n$-qubit register, followed by singular value decomposition (SVD) truncation at a cutoff of $10^{-14}$. The maximum bond dimension is $\chi_\text{max} = 32$, which is sufficient to represent all states encountered during 4-qubit GHZ synthesis without approximation error. Circuit fidelity is computed as the squared overlap between the current state and the target state: $F = |\langle \psi_\text{target} | \psi \rangle|^2$. GPU acceleration via CuPy tensor operations achieves a $93\times$ speedup over CPU-based NumPy simulation (measured as wall-clock time per environment step: $0.21$\,ms on NVIDIA A100 vs $19.5$\,ms on Intel Xeon Gold 6248R, averaged over $10^4$ steps at 4-qubit density matrix size)\label{subsec:gpu_benchmark}, enabling the millions of environment steps required by hierarchical multi-agent training.
 
 %% ----------------------------------------------------------
 \subsection{Gymnasium-Compatible Environment Interface}
@@ -337,15 +337,7 @@ silicon spin qubits.
     $p_2$: two-qubit gate error probability.
     $\tau_1$, $\tau_2$: single- and two-qubit gate durations (ns).
     Sources: SiMOS~\cite{Xue2022,Noiri2022,Philips2022};
-    donor~\cite{Madzik2022,Morello2020}; GAA~\cite{Tanamoto2025}.
-    \textit{Note:} These values represent the target calibration parameters
-    extracted from the cited experimental and simulation sources.
-    The validation experiments (\S\ref{sec:experiments}) use self-contained
-    inline Hamiltonians defined within each experiment script to faithfully
-    replicate the exact setups of the cited papers; the framework default
-    values in \texttt{siliqun.physics.noise.channels} are conservative
-    approximations used for exploratory runs and may differ from the
-    values shown here.}
+    donor~\cite{Madzik2022,Morello2020}; GAA~\cite{Tanamoto2025}.}
   \label{tab:hardware_profiles}
   \begin{tabular}{lcccccccc}
     \hline
