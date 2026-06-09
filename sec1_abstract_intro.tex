@@ -22,8 +22,9 @@ Two independent replications confirm accuracy: DQL/SARSA on SiMOS
 achieves $F = 0.9997$ ($\Delta F < 0.03\%$ vs.~published target); DQN
 universal state preparation on the donor profile achieves
 $\bar{F} = 0.9748 \pm 0.0098$. We report, to our knowledge, the first
-machine-learning result on a GAA silicon spin qubit ($\bar{F} = 0.9877$).
+machine-learning result on a GAA silicon spin qubit ($\bar{F} = 0.9792 \pm 0.0089$, 5 seeds).
 Available as a pip-installable MIT-licensed package with a Qiskit-compatible interface, SiliQun enables reproducible cross-technology benchmarking on a unified simulation substrate.
+SiliQun is designed as a \emph{simulation and training framework}: the core contribution is the physics-grounded Lindblad engine and PGIRS methodology; the included DRL agents (SARSA, DQN, SAC) serve as both validation benchmarks and first-class framework components for quantum control research.
 \end{abstract}
 
 \section{Introduction}
@@ -38,14 +39,14 @@ standard CMOS fabrication, and a dense qubit topology.
 Three competing silicon spin qubit architectures dominate current research efforts: metal-oxide-semiconductor (SiMOS) quantum dots~\cite{Xue2022,
 Noiri2022,Philips2022}, phosphorus-donor (P:Si) electron and nuclear spin
 qubits~\cite{Madzik2022,Morello2020}, and gate-all-around (GAA) nanowire
-spin qubits~\cite{Tanamoto2025}.
+  spin qubits~\cite{Tanamoto2026}.
 Each technology occupies a distinct point in the coherence-time versus
 fabrication-complexity trade-off space: SiMOS offers fast gate times
 ($\sim$1\,ns) with moderate coherence ($T_2 \sim 0.5$\,ms); donor qubits
 offer exceptional coherence ($T_2 \sim 1$--28\,ms) at the cost of slower
 gates ($\sim$1\,$\mu$s) and placement precision requirements; GAA qubits
 offer CMOS-foundry compatibility with coherence properties intermediate
-between SiMOS and donor devices~\cite{Tanamoto2025}.
+between SiMOS and donor devices~\cite{Tanamoto2026}.
 
 Despite this technological diversity, machine-learning studies treat
 silicon spin qubits monolithically, overlooking the distinct noise regimes of each platform.
@@ -110,7 +111,7 @@ We contribute the following:
     \texttt{FirmwareProfile} presets for SiMOS quantum dots, donor
     electron qubits, donor nuclear spin qubits, and GAA nanowire qubits,
     with noise parameters drawn from peer-reviewed experimental
-    characterisations~\cite{Xue2022,Madzik2022,Tanamoto2025}.
+    characterisations~\cite{Xue2022,Madzik2022,Tanamoto2026}.
 
   \item \textbf{SiliQun physics engine:} A Lindblad density-matrix
     simulator validated against three analytical benchmarks (Rabi

@@ -231,7 +231,7 @@ SiliQun~v3 ships five Tier~2 technology modules:
     Morello~et~al.~\cite{Morello2020}.
   \item \texttt{siliqun.tech.gaa} — Gate-all-around silicon spin qubits
     (\texttt{gaa\_nominal}); parameters from Tanamoto and
-    Ono~\cite{Tanamoto2025}.
+    Ono~\cite{Tanamoto2026}.
   \item \texttt{siliqun.tech.sledge} — SLEDGE topology variant of SiMOS;
     a 2D grid connectivity profile for cross-topology benchmarking.
 \end{itemize}
@@ -324,7 +324,7 @@ The donor nuclear parameters reflect the exceptional coherence of
 phosphorus nuclear spin qubits, with $T_1 > 1$\,h and $T_2 \sim 1$\,s
 under dynamical decoupling~\cite{Morello2020}.
 The GAA parameters are derived from the Tanamoto and Ono TCAD
-simulation study~\cite{Tanamoto2025}, which, to our knowledge, offers
+simulation study~\cite{Tanamoto2026}, which, to our knowledge, offers
 the first comprehensive quantitative noise characterisation for GAA
 silicon spin qubits.
 
@@ -338,7 +338,7 @@ silicon spin qubits.
     $p_2$: two-qubit gate error probability.
     $\tau_1$, $\tau_2$: single- and two-qubit gate durations (ns).
     Sources: SiMOS~\cite{Xue2022,Noiri2022,Philips2022};
-    donor~\cite{Madzik2022,Morello2020}; GAA~\cite{Tanamoto2025}.}
+    donor~\cite{Madzik2022,Morello2020}; GAA~\cite{Tanamoto2026}.}
   \label{tab:hardware_profiles}
   \begin{tabular}{lcccccccc}
     \hline
@@ -426,7 +426,7 @@ consists of three files totalling 47 lines of platform-specific code:
 (i)~\texttt{gaa\_profile.py} (28~lines), the \texttt{GAAProfile}
 subclass of \texttt{TechnologyProfile} that implements the five ABC
 methods and populates the calibration record from the Tanamoto and Ono
-TCAD study~\cite{Tanamoto2025};
+TCAD study~\cite{Tanamoto2026};
 (ii)~\texttt{gaa\_calibration.json} (12~lines), the calibration data
 file with source DOIs for independent verification; and
 (iii)~\texttt{gaa\_benchmarks.py} (7~lines), the three validation
