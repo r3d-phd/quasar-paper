@@ -1,122 +1,135 @@
 %% ============================================================
-%% Paper: SiliQun — A Physics-Grounded Simulation Platform for
-%%        Silicon Spin Qubits: SiMOS, Donor, and GAA
+%% Paper: SiliQun — A Physics-Grounded Simulation Platform
+%%        for Silicon Spin Qubit Quantum Control
 %% Section 1: Abstract + Introduction
-%% Rewritten: replication-based validation narrative
-%%   QUASAR removed as primary evidence; donor + GAA added
 %% ============================================================
 
 \begin{abstract}
-Controlling silicon spin qubits with machine-learning agents requires
-physics-grounded simulation that faithfully reproduces device-specific
-decoherence. Existing frameworks use abstract depolarising noise or
-target a single platform, leaving a gap for cross-technology benchmarking.
-We present \textbf{SiliQun~v5}, an open-source Lindblad density-matrix
-platform with calibrated profiles for SiMOS quantum dots, phosphorus-donor
-electron and nuclear spin qubits, and gate-all-around (GAA) nanowire
-qubits. Each profile encodes $T_1$, $T_2$, charge noise, exchange noise,
-and hyperfine coupling from peer-reviewed experiments, exposed through a
-Gymnasium-compatible interface validated against Rabi, $T_1$-decay, and
-Bell-state benchmarks.
-Two independent replications confirm accuracy: DQL/SARSA on SiMOS
-achieves $F = 0.9997$ ($\Delta F < 0.03\%$ vs.~published target); DQN
-universal state preparation on the donor profile achieves
-$\bar{F} = 0.9748 \pm 0.0098$. We report, to our knowledge, the first
-machine-learning result on a GAA silicon spin qubit ($\bar{F} = 0.9877$).
-Available as a pip-installable MIT-licensed package with a Qiskit-compatible interface, SiliQun enables reproducible cross-technology benchmarking on a unified simulation substrate.
+We present \textbf{SiliQun}, an open-source, physics-grounded simulation platform
+for silicon metal-oxide-semiconductor (SiMOS) spin qubits.
+SiliQun provides a Lindblad density-matrix physics engine calibrated to the
+SiMOS parameter regime ($T_1 = 1$\,ms, $T_2 = 0.5$\,ms, two-qubit gate error
+$p_2 = 1\%$), wrapped in a native Gymnasium-compatible interface that exposes
+the simulator to any standard deep reinforcement learning (DRL) library without
+modification.
+Three analytical benchmarks---Rabi oscillations, $T_1$ amplitude decay, and Bell
+state fidelity versus coherence time---validate the physics engine against
+closed-form solutions at machine precision ($\max\,\delta \leq 2.78 \times
+10^{-16}$).
+To demonstrate that the platform supports non-trivial control tasks, we train
+a seven-module SAC-based DRL agent with Bayesian Reward Function Discovery (BRFD)
+and DEHB hyperparameter governance directly on SiliQun.
+The agent achieves gate fidelity $F = 0.9930$ on four-qubit GHZ synthesis under
+full SiMOS noise in 20\,000 training steps (194\,s wall-clock), crossing the
+fault-tolerance threshold of $F \geq 0.99$.
+A cross-algorithm benchmark of seven DRL families (T1--T7 taxonomy) yields
+fidelities spanning $0.612$ (DDPG) to $0.993$ (SAC-HMRL), demonstrating that
+the platform discriminates meaningfully between algorithm classes.
+Cross-backend validation via the QuantumExecutor interface confirms that
+circuits synthesised on SiliQun transfer to real hardware, achieving
+cross-entropy benchmarking (XEB) fidelity $\geq 0.954$ on IonQ Aria-1.
+SiliQun is released under the MIT licence and is pip-installable as a Qiskit
+\texttt{BackendV2}-compatible provider, enabling immediate integration with the
+broader Qiskit ecosystem.
 \end{abstract}
 
 \section{Introduction}
 \label{sec:introduction}
+%% ============================================================
 
-\subsection{The Need for a Multi-Technology Silicon Spin Qubit Simulator}
-\label{subsec:motivation}
+\subsection{The Simulation Gap in Silicon Spin Qubit Control}
+\label{subsec:simulation_gap}
 
-Silicon spin qubits have emerged as a leading candidate for scalable
-quantum computing, combining long coherence times, compatibility with
-standard CMOS fabrication, and a dense qubit topology.
-Three competing silicon spin qubit architectures dominate current research efforts: metal-oxide-semiconductor (SiMOS) quantum dots~\cite{Xue2022,
-Noiri2022,Philips2022}, phosphorus-donor (P:Si) electron and nuclear spin
-qubits~\cite{Madzik2022,Morello2020}, and gate-all-around (GAA) nanowire
-spin qubits~\cite{Tanamoto2025}.
-Each technology occupies a distinct point in the coherence-time versus
-fabrication-complexity trade-off space: SiMOS offers fast gate times
-($\sim$1\,ns) with moderate coherence ($T_2 \sim 0.5$\,ms); donor qubits
-offer exceptional coherence ($T_2 \sim 1$--28\,ms) at the cost of slower
-gates ($\sim$1\,$\mu$s) and placement precision requirements; GAA qubits
-offer CMOS-foundry compatibility with coherence properties intermediate
-between SiMOS and donor devices~\cite{Tanamoto2025}.
+Silicon metal-oxide-semiconductor (SiMOS) spin qubits have emerged as a leading
+candidate for scalable quantum computing, offering coherence times approaching
+$T_1 \sim 1$\,ms and $T_2 \sim 0.5$\,ms in recent demonstrations~\cite{Xue2022,
+Noiri2022,Philips2022,Steinacker2023}, compatibility with standard CMOS
+fabrication, and a nearest-neighbour qubit topology that maps naturally onto
+one-dimensional quantum circuit architectures.
+Yet the very precision that makes SiMOS qubits attractive also makes their
+control exceptionally sensitive to noise.
+Charge noise, hyperfine coupling fluctuations, and residual spin-orbit
+interaction degrade gate fidelity in ways that are difficult to anticipate from
+first principles alone~\cite{Veldhorst2015,Fogarty2018}.
 
-Despite this technological diversity, machine-learning studies treat
-silicon spin qubits monolithically, overlooking the distinct noise regimes of each platform.
-Previous machine-learning studies for silicon spin qubit
-control concentrate disproportionately on SiMOS quantum dot
-devices~\cite{Daraeizadeh2020,Xu2024}, with donor qubits addressed only
-for device tuning rather than gate synthesis~\cite{Severin2025}, and GAA qubits not yet studied with any machine-learning approach (confirmed via systematic literature search through 2025).
-Fragmented simulators hinder reproducibility because underlying noise models, Hamiltonian parameterisations, and
-interface conventions differ across tools, making cross-technology comparison unreliable.
+Developing noise-aware gate synthesis policies for SiMOS devices requires a
+simulation environment that is simultaneously physically accurate and compatible
+with standard machine learning toolchains.
+Existing frameworks satisfy one condition but not both: Lindblad solvers such as
+QuTiP~\cite{Lambert2024} provide accurate open-system dynamics but offer no
+reinforcement learning interface; RL environments for quantum circuit synthesis
+use abstract depolarising noise rather than first-principles device
+models~\cite{VanDerLinde2023,QiskitGym2024}.
+This gap between physical accuracy and algorithmic accessibility is the central
+problem that SiliQun addresses.
 
-\subsection{SiliQun: A Unified, Algorithm-Agnostic Platform}
-\label{subsec:siliqun_overview}
+\subsection{The Physics-Grounded RL Simulation Methodology}
+\label{subsec:pgirs}
 
-We present \textbf{SiliQun~v5}, a simulation platform that addresses this
-fragmentation by providing a single, unified Lindblad density-matrix engine
-with calibrated hardware profiles for all three silicon spin qubit
-technologies.
-The central design principle of SiliQun is \emph{hardware neutrality}: the
-physics engine is parameterised entirely by the \texttt{FirmwareProfile}
-object, which encodes the noise characteristics of a specific hardware
-technology.
-Exchanging the profile alters the simulated physics without modifying the
-Gymnasium interface, the action space, or the reward function.
-Algorithms trained on one profile generalise to others by changing a single constructor argument.
+We propose the \textbf{Physics-Grounded RL Simulation} (PGIRS) methodology as
+a principled approach to building simulation platforms that are both physically
+accurate and algorithmically accessible.
+PGIRS is organised around five design principles:
 
-This design enables a rigorous empirical test of simulator neutrality: if
-the same algorithm, trained with the same hyperparameters, converges to
-near-identical best-case fidelity on SiMOS, donor, and GAA profiles, then
-the simulator is not artificially favouring any one technology.
-Section~\ref{sec:experiments} reports exactly this test.
+\begin{itemize}
+  \item \textbf{Noise-First Design:} The noise model is the primary design
+    constraint. All simulator components are validated against the noise
+    environment before the RL interface is constructed.
+  \item \textbf{Gymnasium Compliance:} The simulator exposes a fully compliant
+    Gymnasium \texttt{Env} interface, ensuring compatibility with any standard
+    RL library without modification.
+  \item \textbf{Reward Engineering:} The reward function is treated as a
+    first-class design concern, with weights discovered automatically via
+    Bayesian optimisation rather than hand-tuned.
+  \item \textbf{Hierarchical Decomposition:} Complex multi-qubit objectives are
+    decomposed into sequences of sub-goals, each providing a dense intermediate
+    reward signal.
+  \item \textbf{Empirical Validation:} Every simulator component is validated
+    against analytical benchmarks, cross-algorithm comparisons, and real
+    hardware transfer experiments.
+\end{itemize}
+
+SiliQun is the reference implementation of PGIRS for the SiMOS device family.
 
 \subsection{Limitations of Existing Frameworks}
 \label{subsec:intro_limitations}
 
-No existing open-source framework satisfies the requirements for
-multi-technology silicon spin qubit simulation with a standard RL interface.
-QuTiP~\cite{Lambert2024} provides a comprehensive Lindblad solver but
-offers no Gymnasium interface and covers no silicon-specific hardware
-profiles.
+No existing open-source framework satisfies both conditions required for
+physics-grounded RL simulation of SiMOS devices: physical accuracy and
+a standard RL interface.
+QuTiP~\cite{Lambert2024} provides a comprehensive Lindblad solver but offers
+no Gymnasium interface and is not designed for RL training loops.
 Qiskit Pulse~\cite{Alexander2020} provides pulse-level control for IBM
-superconducting hardware but has no silicon spin qubit device model.
+superconducting hardware but has no SiMOS device model.
 C3~\cite{Wittler2021} supports closed-loop optimal control via GRAPE and
 CMA-ES but does not implement standard RL algorithms.
-TensorFlow Quantum~\cite{Broughton2020} supports hybrid quantum-classical
-ML via Cirq integration but targets gate-model circuits rather than
-device-level spin qubit physics.
-Gymnasium-compatible RL environments for quantum circuit synthesis
-(qgym~\cite{VanDerLinde2023}, Qiskit Gym~\cite{QiskitGym2024}) employ
-abstract depolarising noise rather than detailed Lindblad dynamics derived
-from device physics, making them unsuitable for technology-specific policy
-training on silicon spin qubits.
-Critically, none of these frameworks provides hardware profiles for donor
-or GAA qubits, making cross-technology comparison impossible.
+TensorFlow Quantum~\cite{Broughton2020} supports hybrid quantum-classical ML
+via Cirq integration but targets gate-model circuits rather than device-level
+spin qubit physics.
+Gymnasium-compatible RL environments for quantum circuit synthesis (qgym~\cite{
+VanDerLinde2023}, Qiskit Gym~\cite{QiskitGym2024}) use abstract depolarising
+noise rather than first-principles Lindblad dynamics, making them unsuitable
+for SiMOS-specific policy training.
+The Oxford DPhil work of Orbell~\cite{Orbell2024} addresses SiMOS device
+tuning and calibration via Bayesian optimisation and pulse-level optimal
+control, but operates at the device characterisation layer rather than the
+gate synthesis layer; it provides no open-source Gymnasium environment.
 
 \subsection{Contributions}
 \label{subsec:contributions}
 
-We contribute the following:
+This paper makes the following contributions:
 
 \begin{enumerate}
-  \item \textbf{Multi-technology hardware profiles:} Calibrated
-    \texttt{FirmwareProfile} presets for SiMOS quantum dots, donor
-    electron qubits, donor nuclear spin qubits, and GAA nanowire qubits,
-    with noise parameters drawn from peer-reviewed experimental
-    characterisations~\cite{Xue2022,Madzik2022,Tanamoto2025}.
+  \item \textbf{SiliQun physics engine:} A Lindblad density-matrix simulator
+    calibrated to the SiMOS parameter regime, validated against three
+    analytical benchmarks at machine precision, with a 93$\times$ GPU
+    speedup enabling practical RL training throughput.
 
-  \item \textbf{SiliQun physics engine:} A Lindblad density-matrix
-    simulator validated against three analytical benchmarks (Rabi
-    oscillations, $T_1$ amplitude decay, Bell state fidelity) at machine
-    precision ($\max\,\delta \leq 2.78 \times 10^{-16}$), with a
-    93$\times$ GPU speedup over CPU-only simulation (see Section~\ref{subsec:gpu_benchmark}), enabling practical RL training throughput.
+  \item \textbf{Gymnasium-compatible interface:} A fully compliant
+    \texttt{SiliQunEnv} environment with a discrete 11-token gate action
+    space, a 16-element density-matrix state representation, and a
+    four-component reward function whose weights are discovered by BRFD.
 
   \item \textbf{PGIRS methodology:} A five-phase engineering discipline
     (Noise-First Design, Gymnasium Compliance, Reward Engineering,
@@ -124,24 +137,26 @@ We contribute the following:
     design, implementation, and validation of physics-grounded RL
     simulation platforms.
 
-  \item \textbf{Replication of Daraeizadeh et al.\ 2020 (SiMOS):}
-    Faithful reproduction of the DQL and SARSA CZ gate-synthesis
-    experiment~\cite{Daraeizadeh2020} on SiliQun's SiMOS profile,
-    achieving $F = 0.9997$ versus the published $F > 0.999$ ($\Delta F <
-    0.03\%$), validating the SiMOS noise model against an independent
-    ground truth.
+  \item \textbf{DRL validation agent:} A seven-module SAC-based control
+    agent achieving $F = 0.9930$ on four-qubit GHZ synthesis under SiMOS
+    noise in 194\,s, demonstrating that SiliQun supports non-trivial
+    quantum control tasks at fault-tolerance threshold.
 
-  \item \textbf{Replication of He et al.\ 2021 (Donor):}
-    Faithful reproduction of the DQN universal state-preparation
-    experiment~\cite{He2021} on SiliQun's donor electron profile,
-    achieving best-case $F = 1.0000$ and mean cardinal-state fidelity
-    $\bar{F} = 0.9748 \pm 0.0098$, validating the donor physics model.
+  \item \textbf{Cross-algorithm benchmark:} A systematic evaluation of
+    seven DRL algorithm families (T1--T7 taxonomy) on the 4-qubit GHZ
+    synthesis task under SiMOS noise, providing the first comparative
+    benchmark of DRL algorithms on a physically calibrated SiMOS simulator.
 
-  \item \textbf{First ML investigation on GAA silicon spin qubits:}
-    Application of the DQN USP protocol to SiliQun's GAA profile,
-    achieving best-case $F = 0.9999$ and mean cardinal-state fidelity
-    $\bar{F} \approx 0.988$, establishing---to our knowledge---the first
-    machine-learning benchmark for GAA silicon spin qubits.
+  \item \textbf{Cross-backend validation:} A QuantumExecutor interface
+    that dispatches SiliQun-trained circuits to four backends (SiliQun,
+    Qiskit Aer, FakeSherbrooke, IonQ Aria-1), demonstrating
+    hardware-portable policy transfer with XEB fidelity $\geq 0.954$ on
+    real quantum hardware.
+
+  \item \textbf{GAA device generalisation:} Validation on a Gate-All-Around
+    (GAA) silicon device profile demonstrating that SiliQun's device-profile
+    abstraction transfers across silicon qubit architectures without retraining,
+    achieving $F = 0.994 \pm 0.012$ on 2-qubit Bell synthesis across five seeds.
 
   \item \textbf{Qiskit BackendV2 provider:} A pip-installable package
     (\texttt{siliqun-provider}) that registers SiliQun as a Qiskit
@@ -152,12 +167,12 @@ We contribute the following:
 \noindent
 The remainder of the paper is organised as follows.
 Section~\ref{sec:related_work} surveys related work across five categories.
-Section~\ref{sec:framework} presents the SiliQun framework, hardware
-profiles, and PGIRS methodology.
-Section~\ref{sec:validation} describes the three replication and extension
-experiments.
-Section~\ref{sec:experiments} reports experimental results and the
-cross-technology comparison.
-Section~\ref{sec:discussion} discusses implications, limitations, and
-directions for future work.
+Section~\ref{sec:framework} presents the SiliQun framework and PGIRS
+methodology.
+Section~\ref{sec:drl_agent} describes the SAC-based DRL control agent used
+for validation.
+Section~\ref{sec:experiments} reports experimental results including the
+cross-algorithm benchmark, cross-backend validation, and GAA generalisation.
+Section~\ref{sec:discussion} discusses implications, limitations, and future
+directions.
 Section~\ref{sec:conclusion} concludes.
