@@ -17,17 +17,17 @@ state fidelity versus coherence time---validate the physics engine against
 closed-form solutions at machine precision ($\max\,\delta \leq 2.78 \times
 10^{-16}$).
 To demonstrate that the platform supports non-trivial control tasks, we train
-a seven-module SAC-based DRL agent with Bayesian Reward Function Discovery (BRFD)
+a seven-module SAC-based DRL agent with automated reward engineering
 and DEHB hyperparameter governance directly on SiliQun.
 The agent achieves gate fidelity $F = 0.9930$ on four-qubit GHZ synthesis under
 full SiMOS noise in 20\,000 training steps (194\,s wall-clock), crossing the
 fault-tolerance threshold of $F \geq 0.99$.
 A cross-algorithm benchmark of seven DRL families (T1--T7 taxonomy) yields
-fidelities spanning $0.612$ (DDPG) to $0.993$ (SAC-HMRL), demonstrating that
+fidelities spanning $0.612$ (DDPG) to $0.993$ (SAC-based), demonstrating that
 the platform discriminates meaningfully between algorithm classes.
-Cross-backend validation via the QuantumExecutor interface confirms that
-circuits synthesised on SiliQun transfer to real hardware, achieving
-cross-entropy benchmarking (XEB) fidelity $\geq 0.954$ on IonQ Aria-1.
+Cross-backend validation confirms that circuits synthesised on SiliQun
+transfer to real hardware, achieving cross-entropy benchmarking (XEB)
+fidelity $\geq 0.954$ on IonQ Aria-1.
 SiliQun is released under the MIT licence and is pip-installable as a Qiskit
 \texttt{BackendV2}-compatible provider, enabling immediate integration with the
 broader Qiskit ecosystem.
@@ -64,7 +64,7 @@ This gap between physical accuracy and algorithmic accessibility is the central
 problem that SiliQun addresses.
 
 \subsection{The Physics-Grounded RL Simulation Methodology}
-\label{subsec:pgirs}
+\label{subsec:intro_pgirs}
 
 We propose the \textbf{Physics-Grounded RL Simulation} (PGIRS) methodology as
 a principled approach to building simulation platforms that are both physically
@@ -129,7 +129,7 @@ This paper makes the following contributions:
   \item \textbf{Gymnasium-compatible interface:} A fully compliant
     \texttt{SiliQunEnv} environment with a discrete 11-token gate action
     space, a 16-element density-matrix state representation, and a
-    four-component reward function whose weights are discovered by BRFD.
+    four-component reward function with automatically discovered weights.
 
   \item \textbf{PGIRS methodology:} A five-phase engineering discipline
     (Noise-First Design, Gymnasium Compliance, Reward Engineering,
@@ -147,8 +147,8 @@ This paper makes the following contributions:
     synthesis task under SiMOS noise, providing the first comparative
     benchmark of DRL algorithms on a physically calibrated SiMOS simulator.
 
-  \item \textbf{Cross-backend validation:} A QuantumExecutor interface
-    that dispatches SiliQun-trained circuits to four backends (SiliQun,
+  \item \textbf{Cross-backend validation:} A multi-backend dispatch
+    interface that transfers SiliQun-trained circuits to four backends (SiliQun,
     Qiskit Aer, FakeSherbrooke, IonQ Aria-1), demonstrating
     hardware-portable policy transfer with XEB fidelity $\geq 0.954$ on
     real quantum hardware.

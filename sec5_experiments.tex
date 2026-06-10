@@ -47,10 +47,9 @@ Total wall-clock time: R1 $\approx$~4\,h, R2 $\approx$~0.9\,h, E3 $\approx$~0.8\
 
 \textbf{Setup.} We replicate the Daraeizadeh~et~al.~\cite{Daraeizadeh2020}
 CZ gate-synthesis experiment on SiliQun's \texttt{simos\_nominal} profile
-as described in \S\ref{subsec:rep1_design}.
+as described in \S\ref{subsec:methods_rl}.
 The target gate is CZ; the fidelity metric is the phase-invariant process
-fidelity (Eq.~\ref{eq:phase_fidelity}).
-
+fidelity (Eq.~\ref{eq:reward}).
 \textbf{Results.} Table~\ref{tab:r1_results} reports the best-case and
 mean fidelities for DQL and SARSA across five independent seeds, placed
 side by side with the published values of Daraeizadeh~et~al.
@@ -154,7 +153,7 @@ algorithm-specific tuning required.
 
 \textbf{Setup.} We replicate the He~et~al.~\cite{He2021} DQN
 universal state-preparation experiment on SiliQun's
-\texttt{donor\_electron} profile as described in \S\ref{subsec:rep2_design}.
+\texttt{donor\_electron} profile as described in \S\ref{subsec:methods_rl}.
 The task is to prepare each of the six cardinal Bloch sphere states
 ($|0\rangle$, $|1\rangle$, $|+\rangle$, $|-\rangle$, $|+i\rangle$,
 $|-i\rangle$) from the initial state $|0\rangle$, with fidelity
@@ -339,9 +338,8 @@ The TQC agent uses a two-layer MLP ($512 \times 512$), 46 quantiles,
 5{,}000 episodes with evaluation every 500 episodes over 50 evaluation
 episodes.
 The target gate is CNOT; the fidelity metric is the phase-invariant
-process fidelity (Eq.~\ref{eq:phase_fidelity}).
-
-\textbf{Results (complete).}
+process fidelity (Eq.~\ref{eq:reward}).
+\textbf{Results (complete).})}
 Table~\ref{tab:r4_results} reports the per-seed results for all four seeds.
 Seeds 24428 and 555 were completed on the local GPU (RTX~2070);
 seeds 666 and 1453 were completed on the local GPU (RTX~2070, 5~June~2026,
@@ -371,6 +369,7 @@ profile.
   $^\dagger$Seed~1453 raw value clipped from $1.0009$ to $1.0000$
   (MPS trace numerical artefact; see text).}
 \label{tab:r4_results}
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{lccccc}
 \toprule
 \textbf{Seed} & $\bar{F}_\text{final}$ & $F_\text{best}$ & $F \geq 0.99$?
@@ -384,7 +383,8 @@ profile.
 \textbf{Mean (4 seeds)} & $\mathbf{0.9036 \pm 0.0914}$ & $0.9040$
   & 2/4 & 321 & Complete \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}
 \end{table}
 
 \textbf{Interpretation.}
@@ -405,7 +405,7 @@ $< 0.2\%$.
 The two low-fidelity seeds ($\bar{F} \approx 0.81$) indicate that
 robust convergence requires either multi-seed ensemble training or
 a warm-start from a high-fidelity seed checkpoint---a direction
-explored in the hierarchical curriculum design described in \S\ref{sec:validation}.
+explored in the hierarchical curriculum design described in \S\ref{subsec:validation}.
 The overall four-seed mean $\bar{F} = 0.9036 \pm 0.0914$ confirms
 that TQC is a competitive baseline for gate-level quantum control
 on silicon spin qubits.
@@ -416,7 +416,7 @@ on silicon spin qubits.
 %% ----------------------------------------------------------
 
 \textbf{Setup.} We apply the identical DQN USP protocol to SiliQun's
-\texttt{gaa\_nominal} profile as described in \S\ref{subsec:ext3_design}.
+\texttt{gaa\_nominal} profile as described in \S\ref{subsec:methods_rl}.
 No prior machine-learning result exists for GAA silicon spin qubits;
 this experiment establishes, to our knowledge, the first such benchmark; no physical validation on fabricated GAA devices has been performed, and the result should be interpreted as a simulation-level baseline.
 
@@ -501,6 +501,7 @@ artificial bias in the simulator.
   All mean values are reported over 5 independent seeds;
   95\% confidence intervals are computed as $\bar{F} \pm 1.96\,\sigma/\sqrt{5}$.}
 \label{tab:cross_tech}
+\resizebox{\textwidth}{!}{%
 \begin{tabular}{lccccccc}
 \toprule
 \textbf{Profile} & $T_2$ & $\tau_2$ & $\sigma_\varepsilon$
@@ -513,7 +514,7 @@ artificial bias in the simulator.
 \texttt{gaa\_nominal}    & 0.1\,ms & 50\,ns  & 2.0\,$\mu$eV
   & $0.99996$ & $0.8096 \pm 0.0586$ & $[0.7582,\,0.8610]$ & 3.3\% \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table*}
 
 The ordering of $\bar{F}_\text{cardinal}$ (SiMOS $>$ GAA $>$ donor) is
@@ -690,6 +691,40 @@ matching alone; a full parameter-sensitivity analysis across noise amplitudes
 and gate times is left for future work.
 
 %% ----------------------------------------------------------
+
+\begin{figure*}[h]
+\centering
+\includegraphics[width=0.95\textwidth]{figures/fig_noise_overhead.png}
+\caption{SiliQun noise model computational overhead.
+  \textbf{Left:} Throughput (K\,steps/s) for noiseless MPS (dashed blue) and
+  full SiMOS Lindblad noise (solid red) as a function of qubit count.
+  Both curves decrease with qubit count due to the growth of the Hilbert space
+  dimension; the shaded region represents the noise overhead.
+  \textbf{Right:} Noise overhead percentage per qubit count.
+  The overhead is approximately constant at $27.7\%$ (dashed line) for
+  $n \geq 4$, confirming that the Lindblad channel evaluation cost scales
+  proportionally with the unitary simulation cost.
+  The 4-qubit operating point used in all experiments is annotated.}
+\label{fig:noise_overhead}
+\end{figure*}
+
+
+\begin{figure*}[h]
+\centering
+\includegraphics[width=0.95\textwidth]{figures/fig_speed_scaling.png}
+\caption{Gate throughput comparison and SiliQun speedup factor.
+  \textbf{Left:} Throughput (K\,gates/s, log scale) for SiliQun MPS (blue),
+  Qiskit Aer statevector (orange), and QuTiP statevector (green) as a function
+  of qubit count.
+  SiliQun maintains near-constant throughput across all qubit counts due to
+  MPS compression; statevector simulators exhibit exponential degradation.
+  \textbf{Right:} SiliQun speedup factor relative to Qiskit Aer and QuTiP.
+  At 14 qubits, SiliQun is $29\times$ faster than Qiskit Aer and $41\times$
+  faster than QuTiP, confirming the scalability advantage of the MPS backend
+  for DRL training workloads.}
+\label{fig:speed_scaling}
+\end{figure*}
+
 \subsection{Extension 4: Multi-Target State Generalisation (GHZ, W, Cluster-1D, Dicke-$k_3$)}
 \label{subsec:e4_results}
 %% ----------------------------------------------------------
@@ -714,7 +749,9 @@ Dicke states are natively supported in SiliQun~v5 via the
 (\S\ref{subsec:mps_lindblad}).
 
 \textbf{Setup.}
-Each target state is trained independently using SAC with the four-component adaptive reward function (Eq.~\ref{eq:reward}) for $6 \times 10^5$ environment steps
+Each target state is trained independently using SAC with the
+four-component adaptive reward function (Eq.~\ref{eq:reward})
+for $6 \times 10^5$ environment steps
 across three independent seeds (42, 123, 777).
 The reward weight vector $\mathbf{w}$ is initialised uniformly and optimised
 via Bayesian search; no target-state-specific reward engineering is performed.
@@ -729,13 +766,14 @@ within 6 hours of submission, with W, Cluster-1D, and Dicke-$k_3$
 completing within 48 hours.
 This table will be updated with final values upon completion.
 
-\begin{table}[ht]
+\begin{table*}[ht]
 \centering
 \caption{Extension~4 results: SAC multi-target state generalisation on
   SiliQun \texttt{simos\_nominal} profile ($n=3$ qubits, 3 seeds each).
   Reward weights are optimised via Bayesian search; no target-specific tuning.
   Results marked \textit{in progress} will be updated upon completion.}
 \label{tab:e4_results}
+\resizebox{0.7\textwidth}{!}{%
 \begin{tabular}{lcccc}
 \toprule
 \textbf{Target State} & \textbf{Entanglement type}
@@ -746,9 +784,8 @@ W-3      & Genuine multipartite     & \textit{in progress} & --- & --- \\
 Cluster-1D & Graph state (1D chain) & \textit{in progress} & --- & --- \\
 Dicke-$k_3$ & Permutation-symmetric & \textit{in progress} & --- & --- \\
 \bottomrule
-\end{tabular}
-\end{table}
-
+\end{tabular}}
+\end{table*}
 \textbf{Significance.}
 Extension~4 establishes SiliQun as the first silicon spin qubit simulator
 to natively support all four major classes of multi-partite entangled

@@ -119,17 +119,17 @@ rotation $\text{CZ} = \text{diag}(1, 1, 1, -1)$ with gate time $\tau_2$.
 Under the Lindblad model with GAA parameters ($T_1 = 0.5$\,ms,
 $T_2 = 0.1$\,ms, $p_2 = 0.02$, $\tau_2 = 100$\,ns), the expected CZ gate
 fidelity is:
-\begin{equation}
-  F_\text{CZ} = \left(1 - p_2\right) \cdot
-    e^{-\tau_2/T_2} \cdot e^{-\tau_2/(2T_1)}
-  \approx 0.98 \cdot e^{-10^{-4}} \cdot e^{-10^{-4}}
+\begin{align}
+  F_\text{CZ} &= \left(1 - p_2\right) \cdot
+    e^{-\tau_2/T_2} \cdot e^{-\tau_2/(2T_1)} \nonumber \\
+  &\approx 0.98 \cdot e^{-10^{-4}} \cdot e^{-10^{-4}}
   \approx 0.9798,
   \label{eq:gaa_cz}
-\end{equation}
+\end{align}
 where the exponential factors account for dephasing and relaxation during
 the gate time. This estimate is consistent with the range of two-qubit gate
 fidelities reported for GAA-adjacent silicon spin qubit devices in the
-literature~\cite{Tanamoto2026}, and establishes that the GAA profile supports
+literature~\cite{Tanamoto2025}, and establishes that the GAA profile supports
 entangling operations at fidelities sufficient for near-term quantum
 algorithms ($F_\text{CZ} \approx 0.98$).
 

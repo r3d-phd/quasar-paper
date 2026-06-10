@@ -352,11 +352,11 @@ silicon spin qubit simulation. A \checkmark\ indicates the property is
 fully satisfied; a $\circ$ indicates partial satisfaction; an
 \texttimes\ indicates the property is absent.}
 \label{tab:rw_comparison}
-\small
+\resizebox{\textwidth}{!}{%
 \begin{tabular}{llllll}
 \toprule
 \textbf{Framework / Work} &
-  \textbf{Gym} &
+  \textbf{Gymnasium} &
   \textbf{Lindblad} &
   \textbf{HW params} &
   \textbf{Gate synth.} &
@@ -375,7 +375,8 @@ Nguyen \emph{et al.}~\cite{Nguyen2021}           & \texttimes & \texttimes & $\c
 \midrule
 \textbf{SiliQun (this work)}                     & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark \\
 \bottomrule
-\end{tabular}
+\end{tabular}%
+}%
 \end{table*}
 
 As evident from Table~\ref{tab:rw_comparison}, no existing framework

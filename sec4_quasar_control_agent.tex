@@ -56,81 +56,98 @@ plateaus, diversity collapse).
 Boundary modules execute at stage transitions, propagating configuration changes
 across the training population.
 
+Figure~\ref{fig:agent_modules} illustrates the seven-module architecture and
+the data flow between the component registry, the SiliQun Gymnasium interface,
+and the SAC core.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.92\columnwidth]{figures/fig3_quasar_modules_ai.png}
+\caption{Seven-module DRL control agent architecture. The component registry
+  mediates all interactions between the SAC core and the specialised modules.
+  Each module subscribes to lifecycle events (\texttt{step}, \texttt{episode},
+  \texttt{stage\_boundary}, \texttt{evaluation}) and writes exclusively to its
+  designated output channel, preventing inter-module interference.
+  The agent interacts with SiliQun exclusively through the standard Gymnasium
+  \texttt{step}/\texttt{reset} API.}
+\label{fig:agent_modules}
+\end{figure}
+
 %% ----------------------------------------------------------
 \subsection{Seven Specialised Modules}
 \label{subsec:agent_modules}
 %% ----------------------------------------------------------
 
-\textbf{BRFD --- Bayesian Reward-Function Discovery (Proactive).}
+\textbf{Adaptive Reward Discovery (Proactive).}
 The reward function in Eq.~(\ref{eq:reward}) contains four weights
 $(w_F, w_E, w_B, w_N)$ that govern the relative importance of fidelity gain,
 entanglement growth, bond-dimension penalty, and noise penalty.
 Rather than hand-tuning these weights --- a process that is both time-consuming
-and brittle across different target states --- BRFD maintains a Gaussian process
-surrogate over the four-dimensional weight space and uses Expected Improvement
-to propose new weight configurations every 5,000 training steps.
+and brittle across different target states --- this module maintains a Gaussian
+process surrogate over the four-dimensional weight space and uses Expected
+Improvement to propose new weight configurations every 5,000 training steps.
 This eliminates manual reward engineering as a design bottleneck and is the
 single most important contributor to the agent's convergence speed: the
 fixed-weight baseline achieved a best fidelity of $F = 0.8307$ at 300,000 steps,
-while the BRFD-enabled agent reached $F = 0.9930$ at 20,000 steps.
+while the adaptive-reward agent reached $F = 0.9930$ at 20,000 steps.
 
-\textbf{VAPOR-Lite --- Value-Aware Policy Optimisation with Replay (Proactive).}
-VAPOR-Lite augments the SAC value function with a replay-aware advantage
+\textbf{Replay-Aware Advantage Estimation (Proactive).}
+This module augments the SAC value function with a replay-aware advantage
 estimator that reduces variance in the policy gradient during the early
 expert-seeded phase.
 When the replay buffer contains a high proportion of expert rollouts (as it does
 at initialisation), standard SAC advantage estimates are biased toward the expert
 distribution.
-VAPOR-Lite corrects for this bias by reweighting the advantage estimates
+The module corrects for this bias by reweighting the advantage estimates
 according to the current policy's deviation from the expert distribution,
 providing more accurate gradient signals during the critical first 10,000
 training steps.
 
-\textbf{SWDFT --- Spectral Convergence Monitoring (Proactive).}
-SWDFT monitors the spectral signature of the fidelity time series using a
+\textbf{Spectral Convergence Monitor (Proactive).}
+This module monitors the spectral signature of the fidelity time series using a
 sliding discrete Fourier transform.
 When the power spectrum of the fidelity signal concentrates at low frequencies
---- indicating that the agent is oscillating rather than converging --- SWDFT
+--- indicating that the agent is oscillating rather than converging --- the module
 doubles the evaluation patience (from 8 to 16 episodes) and the convergence
 window size (from 20 to 40 evaluations).
 This adaptive patience prevents premature termination of training runs that are
 still making slow but genuine progress, and prevents the agent from declaring
 convergence on a local maximum.
 
-\textbf{ERL --- Evolutionary Replay Library (Reactive).}
-ERL maintains a population of diverse policy snapshots drawn from different
-points in the training history.
+\textbf{Evolutionary Replay Library (Reactive).}
+This module maintains a population of diverse policy snapshots drawn from
+different points in the training history.
 When the agent's policy diversity drops below a threshold (measured by the mean
-pairwise KL divergence between policy distributions), ERL injects a randomly
-selected historical snapshot into the replay buffer with elevated priority.
+pairwise KL divergence between policy distributions), the module injects a
+randomly selected historical snapshot into the replay buffer with elevated
+priority.
 At the 4-qubit stage, the distillation threshold is lowered from 0.50 to 0.35
 to allow more aggressive diversity injection, which proved necessary to escape
 the local maximum at $F \approx 0.85$ encountered by the fixed-weight baseline.
 
-\textbf{PBT --- Population-Based Training (Boundary).}
-PBT executes at stage boundaries in the curriculum.
+\textbf{Population-Based Hyperparameter Adaptation (Boundary).}
+This module executes at stage boundaries in the curriculum.
 It maintains a population of $K = 4$ parallel training runs with different
 hyperparameter configurations, evaluates each run's fitness (mean evaluation
 fidelity over the last 10 episodes), retains the elite configuration (highest
 fitness), and propagates its hyperparameters to all other trainers.
 This ensures that the best-performing hyperparameter configuration discovered
-during early training is carried forward to later, harder stages, rather than
-being lost to random hyperparameter drift.
+during early training is carried forward to later, harder stages.
 
-\textbf{DynBA --- Dynamic Bond-Dimension Adaptation (Proactive).}
-DynBA monitors the entanglement saturation of the MPS representation by tracking
-the distribution of Schmidt coefficients across all bipartitions of the 4-qubit
-register.
+\textbf{Dynamic Bond-Dimension Adaptation (Proactive).}
+This module monitors the entanglement saturation of the MPS representation by
+tracking the distribution of Schmidt coefficients across all bipartitions of the
+4-qubit register.
 When the fraction of Schmidt coefficients below the saturation threshold
 $\theta_\text{sat} = 0.34$ exceeds a patience of 1 consecutive evaluation,
-DynBA reduces the maximum bond dimension $\chi_\text{max}$ by one step (with a
-cooldown of 5,000 steps between reductions).
+the module reduces the maximum bond dimension $\chi_\text{max}$ by one step
+(with a cooldown of 5,000 steps between reductions).
 This maintains a compact MPS representation throughout training, reducing
 simulation cost and preventing the bond dimension from growing unnecessarily in
 response to transient entanglement fluctuations.
 
-\textbf{HMRL --- Hierarchical Modular RL (Proactive).}
-HMRL decomposes the global fidelity objective
+\textbf{Hierarchical Sub-Goal Decomposition (Proactive).}
+This module decomposes the global fidelity objective
 $F_\text{global} = |\langle \text{GHZ}(4) | \psi \rangle|^2$
 into a sequence of sub-goals, each corresponding to a partial entanglement step
 in the GHZ circuit:
@@ -150,19 +167,20 @@ their roles.
 is active: Proactive = every training step; Reactive = event-triggered;
 Boundary = stage transitions only.}
 \label{tab:agent_components}
-\begin{tabular}{llp{6cm}}
+\resizebox{\columnwidth}{!}{%
+\begin{tabular}{lcp{6.5cm}}
 \toprule
 \textbf{Module} & \textbf{Mode} & \textbf{Role} \\
 \midrule
-BRFD       & Proactive  & Bayesian reward-function discovery via GP surrogate + Expected Improvement \\
-VAPOR-Lite & Proactive  & Replay-aware advantage estimation for expert-seeded phases \\
-SWDFT      & Proactive  & Spectral convergence monitoring with adaptive patience \\
-ERL        & Reactive   & Evolutionary replay library for diversity injection \\
-PBT        & Boundary   & Population-based training at stage transitions \\
-DynBA      & Proactive  & Dynamic bond-dimension adaptation via entanglement saturation monitoring \\
-HMRL       & Proactive  & Hierarchical sub-goal decomposition of the global fidelity objective \\
+Adaptive Reward Discovery    & Proactive  & GP surrogate over reward-weight space; Expected Improvement proposals every 5,000 steps \\
+Replay-Aware Advantage Est.  & Proactive  & Reweights advantage estimates to correct expert-distribution bias in early training \\
+Spectral Convergence Monitor & Proactive  & Sliding DFT detects oscillation; doubles evaluation patience adaptively \\
+Evolutionary Replay Library  & Reactive   & Injects historical policy snapshots to restore diversity at collapse events \\
+Population-Based Adaptation  & Boundary   & Propagates elite hyperparameter configuration at stage transitions \\
+Dynamic Bond-Dim.\ Adaptation & Proactive  & Reduces $\chi_\text{max}$ when Schmidt coefficients saturate; maintains compact MPS \\
+Hierarchical Sub-Goal Decomp. & Proactive  & Decomposes global fidelity into dense intermediate sub-goal rewards \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table}
 
 %% ----------------------------------------------------------
@@ -187,12 +205,13 @@ that is already well-adapted to the SiMOS noise landscape before the first
 gradient update on the 4-qubit task.
 The key hyperparameters governed by DEHB include the SAC learning rates
 $(\alpha_\pi, \alpha_Q)$, the entropy temperature lower bound $\alpha_\text{min}$,
-the replay buffer sampling ratio, and the BRFD proposal frequency.
+the replay buffer sampling ratio, and the adaptive reward discovery proposal
+frequency.
 
-\textbf{Online adaptation via PBT.}
-During training, PBT continuously adapts the hyperparameter configuration in
-response to the evolving training dynamics.
-At each stage boundary, PBT evaluates the fitness of all $K = 4$ parallel
+\textbf{Online adaptation.}
+During training, the Population-Based Adaptation module continuously adapts the
+hyperparameter configuration in response to the evolving training dynamics.
+At each stage boundary, it evaluates the fitness of all $K = 4$ parallel
 trainers, copies the elite configuration to all non-elite trainers, and applies
 small perturbations (multiplicative noise in $[0.8, 1.2]$) to maintain diversity.
 This online adaptation is particularly important at the 4-qubit stage, where the
@@ -228,20 +247,22 @@ model.
 \caption{Fidelity progression for the DRL control agent (seed 42, A100 GPU).
 The fault-tolerance threshold $F \geq 0.99$ is crossed at step 20,000.}
 \label{tab:agent_convergence}
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{rrrrl}
 \toprule
 \textbf{Step} & $\boldsymbol{F_\text{eval}}$ & \textbf{Best} $\boldsymbol{F}$ & \textbf{Elapsed} & \textbf{Event} \\
 \midrule
-0       & ---    & ---    & 0 s    & Expert injection (500 rollouts, $F=1.0000$) \\
-10,000  & 0.9631 & 0.9631 & 97 s   & First evaluation; checkpoint saved \\
-\textbf{20,000} & \textbf{0.9930} & \textbf{0.9930} & \textbf{194 s} & \textbf{Target reached ($F \geq 0.99$)} \\
+0       & ---    & ---    & 0\,s    & Expert injection (500 rollouts, $F=1.0000$) \\
+10,000  & 0.9631 & 0.9631 & 97\,s   & First evaluation; checkpoint saved \\
+\textbf{20,000} & \textbf{0.9930} & \textbf{0.9930} & \textbf{194\,s} & \textbf{Target reached ($F \geq 0.99$)} \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table}
 
 \textbf{Comparison with fixed-weight baseline.}
 Table~\ref{tab:agent_baseline} compares the full seven-module agent against the
-fixed-weight baseline (fixed reward weights, no BRFD) across four random seeds.
+fixed-weight baseline (fixed reward weights, no adaptive reward discovery) across
+four random seeds.
 The fixed-weight baseline fails to reach $F = 0.99$ at any seed, achieving a
 best fidelity of $F = 0.8307$ at seed 789 after 300,000 training steps and
 approximately 3 hours of wall-clock time.
@@ -255,31 +276,34 @@ time --- and continues to $F = 0.9930$, an absolute improvement of $+0.1623$
 \caption{Full agent vs.\ fixed-weight baseline at 4 qubits. The full agent is
 the only configuration to cross the fault-tolerance threshold $F \geq 0.99$.}
 \label{tab:agent_baseline}
+\resizebox{\columnwidth}{!}{%
 \begin{tabular}{llrrrl}
 \toprule
 \textbf{System} & \textbf{Seed} & $\boldsymbol{F_\text{best}}$ & \textbf{Steps} & \textbf{Wall-clock} & \textbf{Threshold?} \\
 \midrule
-Fixed-weight baseline & 42  & 0.7325 & 300,000 & $\sim$3 h & No \\
-Fixed-weight baseline & 789 & 0.8307 & 300,000 & $\sim$3 h & No \\
-Fixed-weight baseline & 123 & 0.7136 & 300,000 & $\sim$3 h & No \\
-Fixed-weight baseline & 456 & 0.7894 & 300,000 & $\sim$3 h & No \\
-\textbf{Full agent (7 modules)} & \textbf{42} & \textbf{0.9930} & \textbf{20,000} & \textbf{194 s} & \textbf{Yes} \\
+Fixed-weight baseline & 42  & 0.7325 & 300,000 & $\sim$3\,h & No \\
+Fixed-weight baseline & 789 & 0.8307 & 300,000 & $\sim$3\,h & No \\
+Fixed-weight baseline & 123 & 0.7136 & 300,000 & $\sim$3\,h & No \\
+Fixed-weight baseline & 456 & 0.7894 & 300,000 & $\sim$3\,h & No \\
+\textbf{Full agent (7 modules)} & \textbf{42} & \textbf{0.9930} & \textbf{20,000} & \textbf{194\,s} & \textbf{Yes} \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{table}
 
 \textbf{Component contribution.}
 All seven modules were active during the breakthrough run.
-The dominant contributors were BRFD (autonomous reward discovery eliminated the
-fixed-coefficient bottleneck), expert warm-start (accurate Q-value initialisation
-from step 0), and HMRL (dense sub-goal decomposition of the sparse fidelity
-objective).
-SWDFT prevented premature convergence at $F \approx 0.96$ by extending
-evaluation patience.
-ERL unblocked diversity injection at the 4-qubit stage.
-PBT propagated the elite configuration at the stage boundary.
-DynBA maintained compact MPS bond dimensions ($[2,2,2]$ throughout training),
-reducing per-step simulation cost.
+The dominant contributors were the adaptive reward discovery module (eliminated
+the fixed-coefficient bottleneck), expert warm-start (accurate Q-value
+initialisation from step 0), and hierarchical sub-goal decomposition (dense
+intermediate rewards for the sparse fidelity objective).
+The spectral convergence monitor prevented premature termination at
+$F \approx 0.96$ by extending evaluation patience.
+The evolutionary replay library unblocked diversity injection at the 4-qubit
+stage.
+Population-based adaptation propagated the elite configuration at the stage
+boundary.
+Dynamic bond-dimension adaptation maintained compact MPS bond dimensions
+($[2,2,2]$ throughout training), reducing per-step simulation cost.
 
 \textbf{Significance as SiliQun validation.}
 The DRL agent's result serves as the primary empirical validation of SiliQun
@@ -314,11 +338,4 @@ A simulation platform that was either too easy (noiseless) or too hard
 %%   pages     = {2147--2153},
 %%   year      = {2021},
 %%   doi       = {10.24963/ijcai.2021/296}
-%% }
-%%
-%% @misc{AzizHPC,
-%%   author       = {{High Performance Computing Center, King Abdulaziz University}},
-%%   title        = {Aziz Supercomputer},
-%%   howpublished = {\url{https://hpcc-kau.com}},
-%%   year         = {2024}
 %% }

@@ -90,7 +90,7 @@ SiliQun exposes the Lindblad physics engine through a standard Gymnasium \texttt
 
 \textbf{MDP formulation.} Quantum circuit synthesis is cast as a Markov Decision Process $\mathcal{M} = (\mathcal{S}, \mathcal{A}, \mathcal{T}, \mathcal{R}, \gamma)$. At each discrete time step $t$, the agent observes a state $s_t \in \mathcal{S}$, selects a gate action $a_t \in \mathcal{A}$, and receives a scalar reward $r_t$. The episode terminates after a fixed horizon of $T = 100$ steps or earlier upon reaching the target fidelity $F_\text{target} = 0.99$.
 
-\textbf{State space.} The observation $s_t \in \mathbb{R}^{16}$ is a flattened real-valued vector comprising the 16 diagonal elements of the four-qubit density matrix — that is, the computational-basis state probabilities $\{|\langle i|\psi\rangle|^2\}_{i=0}^{15}$ extracted from the MPS representation. This encoding captures the population distribution across all basis states and is sufficient for the synthesis task, as confirmed by the F = 0.9930 result achieved by the RL agent described in \S\ref{sec:control_agent}. Off-diagonal coherence terms are omitted; a full density-matrix encoding requiring 255 independent real parameters is available as a configuration option for future work.
+\textbf{State space.} The observation $s_t \in \mathbb{R}^{16}$ is a flattened real-valued vector comprising the 16 diagonal elements of the four-qubit density matrix — that is, the computational-basis state probabilities $\{|\langle i|\psi\rangle|^2\}_{i=0}^{15}$ extracted from the MPS representation. This encoding captures the population distribution across all basis states and is sufficient for the synthesis task, as confirmed by the F = 0.9930 result achieved by the RL agent described in \S\ref{sec:drl_agent}. Off-diagonal coherence terms are omitted; a full density-matrix encoding requiring 255 independent real parameters is available as a configuration option for future work.
 
 \textbf{Action space.} The discrete action space $\mathcal{A}$ contains $|\mathcal{A}| = 11$ gate tokens drawn from the native SiMOS gate set: single-qubit rotations ($R_X(\pi/2)$, $R_X(\pi)$, $R_Y(\pi/2)$, $R_Y(\pi)$, $R_Z(\pi/2)$, $R_Z(\pi)$), two-qubit entangling gates (CNOT, CZ) applied to each of the three adjacent qubit pairs in the linear topology, and the identity (no-op). Each token specifies both the gate type and the target qubit(s); continuous rotation angles are discretised into the fixed vocabulary above, consistent with the native gate set of SiMOS exchange-coupled quantum dots~\cite{Veldhorst2015}.
 
@@ -270,10 +270,10 @@ fully configured environment in a single call:
 
 \begin{verbatim}
 from siliqun.plugins import make_env
-env = make_env("simos_nominal", target_state="bell")
+env = make_env("simos_nominal",
+               target_state="bell")
 obs, info = env.reset()
-# Supported states: "ghz", "w",
-#   "cluster_linear", "dicke_k3"
+# States: ghz, w, cluster_linear, dicke_k3
 \end{verbatim}
 
 Figure~\ref{fig:three_tier} provides a visual summary of the three-tier
@@ -486,6 +486,7 @@ and the RL agent are platform-agnostic and require no modification.
     and ships separately. Superconducting and trapped-ion columns are
     projections based on noise model complexity.}
   \label{tab:plugin_cost}
+  \resizebox{\textwidth}{!}{%
   \begin{tabular}{lcccc}
     \hline
     \textbf{Component} & \textbf{GAA} & \textbf{Supercond.} & \textbf{Trapped-ion} & \textbf{Notes} \\
@@ -496,7 +497,7 @@ and the RL agent are platform-agnostic and require no modification.
     \textbf{Total (LOC)}    & \textbf{47} & \textbf{42--57}    & \textbf{47--62} & --- \\
     Validation pass rate    & 3/3         & ---                & ---          & Must pass before registration \\
     \hline
-  \end{tabular}
+  \end{tabular}}
 \end{table*}
 
 The plugin interface thus transforms SiliQun from a silicon-specific
@@ -550,9 +551,8 @@ In practice, $\chi_{\mathrm{MPO}} = 64$ provides fidelity $> 0.999$
 relative to the exact density matrix for all four target state families
 (GHZ, W, Cluster-1D, Dicke-$k$) considered in this work at $n \leq 29$ qubits.
 
-The backend is implemented as the \texttt{MPSLindbladEngine} class
-in \texttt{siliqun\_provider/engines/mps\_engine.py}, inheriting from
-the \texttt{SimulatorCore} abstract base class.
+The backend is implemented as the \texttt{MPSLindbladEngine} class,
+inheriting from the \texttt{SimulatorCore} abstract base class.
 Dispatch is automatic: for $n \leq 8$ qubits the original
 \texttt{DensityMatrixEngine} is used (exact, no approximation);
 for $n > 8$ the \texttt{MPSLindbladEngine} is activated with bond
@@ -568,6 +568,7 @@ hardware-realistic noise validation at 19--100 qubits on a single NVIDIA A100 GP
     The MPO backend removes the 16-qubit ceiling and enables simulation
     of a 19-qubit distributed topology on a single A100 GPU.}
   \label{tab:mpo_scaling}
+  \resizebox{\columnwidth}{!}{%
   \begin{tabular}{lrrl}
     \hline
     $n$ & DM Memory & MPO Memory & Reduction \\ \hline
@@ -575,8 +576,22 @@ hardware-realistic noise validation at 19--100 qubits on a single NVIDIA A100 GP
     19 (distributed topology) & 4.4\,TB & 5.0\,MB & $883{,}000\times$ \\
     24 (extended topology) & 4.5\,PB & 6.3\,MB & $715\mathrm{M}\times$ \\
     29 (surface code $d{=}5$) & 4.6\,EB & 7.6\,MB & $>10^{12}\times$ \\ \hline
-  \end{tabular}
+  \end{tabular}}
 \end{table}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\columnwidth]{figures/fig_bond_dim.png}
+\caption{Throughput versus maximum bond dimension $\chi_\text{max}$ for an
+  8-qubit register under SiMOS Lindblad noise.
+  The noiseless MPS throughput (dashed blue) decreases by only 11\% as
+  $\chi_\text{max}$ increases from 2 to 128, confirming sub-quadratic scaling.
+  Under full SiMOS noise (solid red), throughput decreases by 29\% relative to
+  the noiseless baseline at $\chi_\text{max} = 32$ (the value used in all
+  experiments), consistent with the mean noise overhead of 27.7\%.
+  The vertical dotted line marks the experimental value $\chi_\text{max} = 32$.}
+\label{fig:bond_dim}
+\end{figure}
 
 Cross-validation experiments confirm that the \texttt{MPSLindbladEngine}
 reproduces exact density matrix results for $n \leq 8$ qubits with
