@@ -130,8 +130,41 @@ The Physics-Grounded Iterative RL Stack (PGIRS) is a five-phase engineering disc
 
 \textbf{Phase 5 — Empirical Validation.} The trained agent is evaluated against a held-out test set of target states, with results reported as mean fidelity $\pm$ standard deviation across multiple independent seeds. Cross-backend validation using Qiskit Aer statevector and IonQ Aria-1 via FakeSherbrooke confirms that policies trained on SiliQun transfer to alternative simulation backends with fidelity degradation below the measurement noise floor.
 
-The PGIRS methodology is the key differentiator between SiliQun and prior frameworks. QuTiP~\cite{Lambert2024} provides Phase 1 (noise model) but not Phases 2–5. Qiskit Pulse~\cite{Alexander2020} provides Phase 2 (interface) but not Phase 1 (SiMOS calibration). No prior framework provides all five phases in an integrated, open-source package.
+The PGIRS methodology is the key differentiator between SiliQun and prior frameworks. QuTiP~\cite{Lambert2024} provides Phase 1 (noise model) but not Phases 2--5. Qiskit Pulse~\cite{Alexander2020} provides Phase 2 (interface) but not Phase 1 (SiMOS calibration). No prior framework provides all five phases in an integrated, open-source package.
 
+Algorithm~\ref{alg:pgirs} formalises the PGIRS procedure as an executable workflow.
+
+\begin{algorithm}[t]
+\caption{Physics-Grounded Iterative RL Stack (PGIRS)}
+\label{alg:pgirs}
+\begin{algorithmic}[1]
+\Require Target hardware profile $\mathcal{H}$ (T$_1$, T$_2$, $J$, $\Omega$),
+         target state set $\mathcal{T}$, RL algorithm $\mathcal{A}$,
+         Bayesian optimiser $\mathcal{B}$
+\Ensure Trained policy $\pi^*$ with mean fidelity $\bar{F} \geq F_{\text{thresh}}$
+\State \textbf{Phase 1 — Noise-First Design:}
+\State \quad Calibrate Lindblad operators $\{L_k\}$ from $\mathcal{H}$ (Eq.~\ref{eq:lindblad})
+\State \quad Validate against Rabi, T$_1$ decay, and Bell benchmarks
+\State \quad \textbf{Assert} max deviation $< \epsilon_{\text{tol}}$; abort if validation fails
+\State \textbf{Phase 2 — Interface Abstraction:}
+\State \quad Wrap physics engine in Gymnasium \texttt{Env} with \texttt{step}/\texttt{reset} API
+\State \quad Enforce data/control plane separation (no direct state access)
+\State \textbf{Phase 3 — Reward Engineering:}
+\State \quad Initialise reward weights $\mathbf{w} = (w_F, w_S, w_T, w_E)$
+\State \quad $\mathbf{w}^* \leftarrow \mathcal{B}(\mathbf{w},\, \text{val\_fidelity}(\pi_{\mathbf{w}}))$ \Comment{Bayesian search}
+\State \textbf{Phase 4 — Hierarchical Decomposition:}
+\State \quad \textbf{if} $|\mathcal{T}|$ requires $> n_{\text{max}}$ qubits \textbf{then}
+\State \quad \quad Decompose $\mathcal{T}$ into sub-problems $\{\mathcal{T}_i\}$ of $\leq n_{\text{max}}$ qubits
+\State \quad \quad Train independent agents $\{\pi_i\}$ on $\{\mathcal{T}_i\}$
+\State \quad \quad Compose $\pi^* \leftarrow \text{Fuse}(\{\pi_i\})$ via entanglement swapping
+\State \quad \textbf{else} Train $\pi^* \leftarrow \mathcal{A}(\text{Env}(\mathcal{H}, \mathbf{w}^*), \mathcal{T})$
+\State \textbf{Phase 5 — Empirical Validation:}
+\State \quad Evaluate $\bar{F} \leftarrow \frac{1}{|\mathcal{T}_{\text{test}}|} \sum_{\tau \in \mathcal{T}_{\text{test}}} F(\pi^*, \tau)$ over $N_{\text{seeds}}$ seeds
+\State \quad Validate cross-backend: run $\pi^*$ on Qiskit Aer statevector
+\State \quad \textbf{if} $\bar{F} < F_{\text{thresh}}$ \textbf{then} return to Phase 3 with updated $\mathcal{B}$
+\State \Return $\pi^*$, $\bar{F}$, per-seed fidelity distribution
+\end{algorithmic}
+\end{algorithm}
 
 \begin{figure*}[ht]
   \centering
