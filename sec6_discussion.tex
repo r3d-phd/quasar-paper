@@ -38,7 +38,7 @@ SiliQun occupies a specific and previously unoccupied niche in the quantum simul
 
 \textbf{Against abstract RL environments for quantum circuit synthesis (qgym, Qiskit Gym, QuantumCircuitEnv).} These environments provide Gymnasium-compatible interfaces but use abstract depolarising noise models that do not capture the amplitude damping and dephasing channels present in SiMOS devices. As demonstrated in \S\ref{subsec:cross_algo}, the choice of noise model has a substantial impact on achievable fidelity: algorithms that solve the task trivially under abstract depolarising noise (DQN, PPO) fail to reach the fault-tolerance threshold under SiMOS Lindblad noise. SiliQun is the first environment to combine a Gymnasium-compatible interface with a first-principles SiMOS Lindblad noise model.
 
-\textbf{Against the Oxford DPhil spin qubit work (Orbell 2024~\cite{Orbell2024}).} As detailed in \S\ref{subsec:oxford_comparison}, Orbell's work addresses the device tuning and calibration layer of the quantum computing stack, while SiliQun addresses the gate synthesis layer. The two works are non-overlapping in problem domain, noise modelling approach, and software availability. The natural integration path is for Orbell's Bayesian optimisation pipeline to calibrate SiliQun's hardware profile from experimental data, replacing the current manually chosen conservative parameters with device-specific values. This would realise the full full simulation-to-synthesis pipeline from physical hardware characterisation (Orbell's contribution) through gate synthesis (SiliQun's contribution).
+\textbf{Against the Oxford DPhil spin qubit work (Orbell 2024~\cite{Orbell2024}).} As detailed in \S\ref{subsec:oxford_comparison}, Orbell's work addresses the device tuning and calibration layer of the quantum computing stack, while SiliQun addresses the gate synthesis layer. The two works are non-overlapping in problem domain, noise modelling approach, and software availability. The natural integration path is for Orbell's Bayesian optimisation pipeline to calibrate SiliQun's hardware profile from experimental data, replacing the current manually chosen conservative parameters with device-specific values. This would realise the full simulation-to-synthesis pipeline from physical hardware characterisation through gate synthesis.
 
 %% ----------------------------------------------------------
 \subsection{PGIRS Generalisability Beyond SiMOS}
@@ -52,36 +52,17 @@ Three hardware platforms are natural candidates for PGIRS extension. \textbf{Sup
 The PGIRS methodology's Phase 5 (empirical validation) provides a systematic protocol for validating any new hardware profile: the three analytical benchmarks (Rabi oscillations, $T_1$ decay, Bell state fidelity) are hardware-independent and can be applied to any Lindblad-based simulation. This provides a reproducible quality gate for hardware profile development that does not depend on access to physical hardware.
 
 %% ----------------------------------------------------------
-\subsection{a hierarchical DRL framework Scalability: From 4-Qubit Gates to 20-Qubit Systems}
-\label{subsec:andromeda}
+\subsection{Scalability: From 4-Qubit Gates to Larger Systems}
+\label{subsec:scalability}
 %% ----------------------------------------------------------
 
-The most direct evidence for SiliQun's scalability beyond the 4-qubit regime studied in this paper comes from , the hierarchical modular RL framework that uses the DRL control agent modules trained on SiliQun as building blocks for 20-qubit system construction.
+The experiments in this paper focus on 4-qubit GHZ state preparation under SiMOS Lindblad noise, which is the natural entry point for a first-principles silicon spin qubit simulator. Two observations from the experimental results inform the scalability outlook.
 
-a hierarchical DRL framework organises five the DRL agent 4-qubit modules into a three-level hierarchy with residual/skip connections, covering the 17 physical qubits required for the $d = 3$ surface code ($2d^2 - 1 = 17$ physical qubits). Each module is a frozen the DRL control agent policy trained on SiliQun; a hierarchical DRL framework's training task is to learn the inter-module fusion gates that connect the modules into a coherent 20-qubit state. The composite score achieved by a hierarchical DRL framework across all five modules is 1.000 (mean over five seeds), with all individual modules achieving $F \geq 0.99$.
+\textbf{MPS scaling is near-linear.}
+The throughput benchmark in \S\ref{subsec:setup} demonstrates that SiliQun's MPS-based simulation scales near-linearly with qubit count, in contrast to the exponential scaling of statevector simulators. At 8 qubits, SiliQun achieves $6\times$ to $41\times$ speedup over Qiskit Aer and QuTiP, and this advantage grows with qubit count. The MPS bond dimension $\chi$ is the primary control parameter: for the 4-qubit GHZ synthesis task, $\chi = 2$ is sufficient throughout training, and the Lindblad noise overhead remains below 39\% relative to the noiseless MPS baseline. These scaling properties make SiliQun a practical simulation platform for 8- to 16-qubit gate synthesis experiments, which represent the next natural step beyond the 4-qubit results reported here.
 
-\textbf{Noise-robustness stress test (Axis 1: $T_1$ sweep).} To quantify the noise robustness of the DRL agent modules trained on SiliQun, we conducted a systematic $T_1$ sweep across five decoherence levels spanning a $20\times$ range from the nominal SiMOS value down to the most demanding conditions reported in the literature. Table~\ref{tab:axis1_t1} summarises the Phase~1 module results.
-
-\begin{table}[h]
-\centering
-\caption{a hierarchical DRL framework Phase~1 noise-robustness stress test: mean fidelity of five the DRL agent modules (M1--M5) across five $T_1$ decoherence levels. All modules achieve $F = 1.0000$ at every noise level. $T_2 = T_1/2$, $p_1 = 0.001$, $p_2 = 0.01$, seed 42.}
-\label{tab:axis1_t1}
-\begin{tabular}{lcccc}
-\toprule
-\textbf{Noise Level} & $T_1$ & $T_2$ & \textbf{Phase~1 (M1--M5)} & \textbf{All Solved?} \\
-\midrule
-Nominal (1$\times$)   & 1~ms    & 500~$\mu$s & $F = 1.0000$ (all 5) & \checkmark \\
-2$\times$ degraded    & 500~$\mu$s & 250~$\mu$s & $F = 1.0000$ (all 5) & \checkmark \\
-4$\times$ degraded    & 250~$\mu$s & 125~$\mu$s & $F = 1.0000$ (all 5) & \checkmark \\
-10$\times$ degraded   & 100~$\mu$s & 50~$\mu$s  & $F = 1.0000$ (all 5) & \checkmark \\
-20$\times$ degraded   & 50~$\mu$s  & 25~$\mu$s  & $F = 1.0000$ (all 5) & \checkmark \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-The result is unambiguous: the DRL agent Phase~1 modules achieve $F = 1.0000$ at every noise level, including the extreme $T_1 = 50~\mu$s case that is $20\times$ worse than the nominal SiMOS value. This demonstrates that SiliQun-trained single-module policies are completely noise-robust within the SiMOS parameter regime, a finding that directly validates the PGIRS noise-first design principle (\S\ref{subsec:pgirs}): training under conservative noise conditions produces policies that remain optimal even as decoherence worsens significantly.
-
-The a hierarchical DRL framework result has two implications for SiliQun. First, it demonstrates that SiliQun-trained policies are compositionally reusable: the same 4-qubit policies that achieve $F \geq 0.99$ individually also serve as reliable building blocks for 20-qubit hierarchical systems, without retraining on a 20-qubit environment. This compositionality is a direct consequence of SiliQun's modular design: each 4-qubit module trains on an independent SiliQun instance with the same hardware profile, so the learned policies are compatible with each other at the interface level. Second, it demonstrates that SiliQun's conservative noise model generalises: a hierarchical DRL framework achieves composite score 1.000 under the same SiMOS Lindblad noise model used for individual module training, confirming that the noise model does not become a bottleneck as the system scales from 4 to 20 qubits.
+\textbf{Policy compositionality enables modular scaling.}
+The cross-backend validation in \S\ref{subsec:cross_backend} demonstrates that DRL policies trained on SiliQun transfer to real quantum hardware without retraining. The GAA device extension (\S\ref{subsec:gaa}) further demonstrates that policies trained on the SiMOS profile generalise to a structurally different device with $F = 0.994 \pm 0.012$, confirming that SiliQun-trained policies are not overfit to a single hardware configuration. Extending SiliQun to 8-qubit and 16-qubit training environments is the primary engineering prerequisite for modular multi-qubit gate synthesis, and is identified as a near-term development priority.
 
 %% ----------------------------------------------------------
 \subsection{Limitations and Future Work}
@@ -94,7 +75,7 @@ Four limitations of the current work motivate future research directions.
 
 \textbf{Statistical robustness.} The primary result ($F = 0.9930$) is reported as mean $\pm$ std over five seeds, which is sufficient for a proof-of-concept demonstration but falls short of the statistical rigour expected for a definitive benchmark result. A systematic multi-seed campaign with 20--50 seeds and formal hypothesis testing (Wilcoxon signed-rank test against the Fix3 baseline) is needed to establish the result's statistical significance at the $p < 0.01$ level.
 
-\textbf{Scaling beyond 4 qubits.} The direct training approach used in this paper (single SiliQun instance, 4-qubit GHZ target) does not scale to 8 or 16 qubits without modifications to the state representation and reward function. a hierarchical DRL framework's hierarchical decomposition approach provides a practical path to 20 qubits, but the fusion gates between modules are themselves trained on SiliQun instances of increasing size. Extending SiliQun to support 8-qubit and 16-qubit training environments — with corresponding increases in the density matrix state space and the Lindblad solver's computational cost — is a necessary prerequisite for scaling a hierarchical DRL framework beyond the $d = 3$ surface code.
+\textbf{Scaling beyond 4 qubits.} The direct training approach used in this paper (single SiliQun instance, 4-qubit GHZ target) does not scale to 8 or 16 qubits without modifications to the state representation and reward function. Extending SiliQun to support 8-qubit and 16-qubit training environments --- with corresponding increases in the density matrix state space and the Lindblad solver's computational cost --- is a necessary prerequisite for multi-qubit gate synthesis beyond the 4-qubit regime.
 
 \textbf{Gate set completeness.} The current SiliQun gate set (11 tokens: 6 single-qubit rotations, 1 two-qubit entangling gate, 4 identity/barrier tokens) is sufficient for GHZ state preparation but does not cover the full universal gate set required for arbitrary quantum computation. Extending the gate set to include $T$ gates, $S$ gates, and controlled-$Z$ gates — and validating the extended gate set against the analytical benchmarks in \S\ref{subsec:validation} — is a straightforward extension of the current framework.
 

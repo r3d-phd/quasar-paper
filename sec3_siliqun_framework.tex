@@ -21,6 +21,13 @@ This section describes the framework in four layers: the PGIRS design principles
 %% ----------------------------------------------------------
 \subsection{PGIRS Architecture and Design Principles}
 \label{subsec:sdqf_arch}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.92\linewidth]{figures/fig_architecture}
+  \caption{SiliQun system architecture. The PGIRS data plane consists of three layers: (i) the Lindblad physics engine, which models amplitude damping ($T_1$), dephasing ($T_2$), and depolarising noise calibrated to SiMOS device parameters; (ii) the tensor-network MPS/MPO simulator, which provides efficient state representation and fidelity computation; and (iii) the Gymnasium-compatible environment interface, which exposes a discrete gate-level action space to any standard DRL library. The DRL control agent (\S\ref{sec:drl_agent}) interacts with SiliQun exclusively through the Gymnasium API.}
+  \label{fig:architecture}
+\end{figure}
 %% ----------------------------------------------------------
 
 The PGIRS methodology draws its organising principle from software-defined networking~\cite{McKeown2008}: just as SDN separates routing logic from packet forwarding, PGIRS separates policy synthesis from physics simulation. We formalise the SiliQun simulation system as a tuple $\mathcal{S} = (\mathcal{A}, \mathcal{E}, \mathcal{I}, \mathcal{P})$ where:
@@ -85,6 +92,13 @@ where $\mathcal{P}_2$ is the two-qubit Pauli group. Single-qubit gates are subje
 %% ----------------------------------------------------------
 \subsection{Gymnasium-Compatible Environment Interface}
 \label{subsec:gymnasium}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.90\linewidth]{figures/fig_device_profiles}
+  \caption{Noise parameter comparison across the four SiliQun device profiles: SiMOS (silicon metal-oxide-semiconductor quantum dot, the primary target), GAA (gate-all-around nanowire), NV (nitrogen-vacancy centre in diamond), and Ideal (noiseless reference). Each profile specifies $T_1$, $T_2$, single-qubit gate error $p_1$, and two-qubit gate error $p_2$. SiMOS parameters are calibrated to Yang~\emph{et al.}~\cite{Yang2020} and Nickl~\emph{et al.}~\cite{Nickl2025}.}
+  \label{fig:device_profiles}
+\end{figure}
 %% ----------------------------------------------------------
 
 SiliQun exposes the Lindblad physics engine through a standard Gymnasium \texttt{Env} interface~\cite{Towers2023}, making it directly compatible with any RL library that follows the Gymnasium API — including Stable-Baselines3~\cite{Raffin2021}, RLlib~\cite{Liang2018}, and CleanRL~\cite{Huang2022}. The environment is registered as \texttt{SiliQunEnv-v1} and can be instantiated with a single line: \texttt{env = gymnasium.make("SiliQunEnv-v1", device\_profile=simos\_v5)}.
@@ -128,6 +142,13 @@ The PGIRS methodology is the key differentiator between SiliQun and prior framew
 %% ----------------------------------------------------------
 \subsection{Analytical Validation}
 \label{subsec:validation}
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.90\linewidth]{figures/fig_env_throughput}
+  \caption{Gymnasium environment throughput (steps per second) for SiliQun, Qiskit Aer, and QuTiP across qubit counts 2--8. SiliQun achieves $6\times$--$41\times$ higher throughput than Qiskit Aer and QuTiP at 4 qubits, enabling practical DRL training without GPU acceleration. All measurements on a single CPU core.}
+  \label{fig:env_throughput}
+\end{figure}
 %% ----------------------------------------------------------
 
 Before any RL agent is trained on SiliQun, the Lindblad physics engine is validated against three closed-form analytical benchmarks. These benchmarks test the correctness of the noise model implementation independently of the RL training loop.
@@ -139,6 +160,13 @@ Before any RL agent is trained on SiliQun, the Lindblad physics engine is valida
 \textbf{Benchmark 3 — Bell state fidelity versus coherence time.} A two-qubit Bell state $|\Phi^+\rangle = (|00\rangle + |11\rangle)/\sqrt{2}$ is prepared and held for a variable time $t$ under the combined T$_1$, T$_2$, and depolarising noise model. The expected fidelity decay is derived analytically from the Lindblad equation. SiliQun reproduces the analytical curve with a maximum absolute deviation of $0.0024$ across the range $t \in [0, 5T_2]$, confirming that the three noise channels interact correctly and that the combined noise model is physically consistent.
 
 These three benchmarks together provide high confidence that the SiliQun physics engine correctly implements the Lindblad master equation for SiMOS qubits. The benchmarks are included in the SiliQun test suite and are run automatically on every commit to the public repository.
+
+\begin{figure}[t]
+  \centering
+  \includegraphics[width=0.90\linewidth]{figures/fig_gate_accuracy}
+  \caption{Analytical validation results for the SiliQun Lindblad physics engine. \textbf{(a)} Rabi oscillations: simulated $|1\rangle$ population vs.~rotation angle $\theta$ (blue) overlaid on the analytical $\sin^2(\theta/2)$ curve (red dashed). Maximum deviation: $0.00$ (machine precision). \textbf{(b)} $T_1$ amplitude decay: simulated population vs.~time (blue) vs.~$e^{-t/T_1}$ (red dashed). Maximum deviation: $2.78 \times 10^{-16}$. \textbf{(c)} Bell state fidelity vs.~coherence time under combined SiMOS noise. Maximum deviation from analytical curve: $0.0024$ over $t \in [0, 5T_2]$.}
+  \label{fig:gate_accuracy}
+\end{figure}
 
 %% ----------------------------------------------------------
 %% Bibliography entries for this section (to be merged into main .bib)
