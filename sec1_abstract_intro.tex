@@ -1,123 +1,165 @@
 %% ============================================================
-%% Paper: SiliQun — A Physics-Grounded Simulation Platform for
-%%        Silicon Spin Qubits: SiMOS, Donor, and GAA
+%% Paper: SiliQun — A Physics-Grounded Simulation Platform and
+%%        Framework for the SDQF Data Plane
 %% Section 1: Abstract + Introduction
-%% Rewritten: replication-based validation narrative
-%%   QUASAR removed as primary evidence; donor + GAA added
+%% Corrected SDQF framing: SiliQun = data plane substrate;
+%%   QUASAR = control agent (control plane);
+%%   ANDROMEDA = quantum firmware (firmware layer)
 %% ============================================================
 
 \begin{abstract}
-Controlling silicon spin qubits with machine-learning agents requires
-physics-grounded simulation that faithfully reproduces device-specific
-decoherence. Existing frameworks use abstract depolarising noise or
-target a single platform, leaving a gap for cross-technology benchmarking.
-We present \textbf{SiliQun~v5}, an open-source Lindblad density-matrix
-platform with calibrated profiles for SiMOS quantum dots, phosphorus-donor
-electron and nuclear spin qubits, and gate-all-around (GAA) nanowire
-qubits. Each profile encodes $T_1$, $T_2$, charge noise, exchange noise,
-and hyperfine coupling from peer-reviewed experiments, exposed through a
-Gymnasium-compatible interface validated against Rabi, $T_1$-decay, and
-Bell-state benchmarks.
-Two independent replications confirm accuracy: DQL/SARSA on SiMOS
-achieves $F = 0.9997$ ($\Delta F < 0.03\%$ vs.~published target); DQN
-universal state preparation on the donor profile achieves
-$\bar{F} = 0.9748 \pm 0.0098$. We report, to our knowledge, the first
-machine-learning result on a GAA silicon spin qubit ($\bar{F} = 0.9792 \pm 0.0089$, 5 seeds).
-Available as a pip-installable MIT-licensed package with a Qiskit-compatible interface, SiliQun enables reproducible cross-technology benchmarking on a unified simulation substrate.
-SiliQun is designed as a \emph{simulation and training framework}: the core contribution is the physics-grounded Lindblad engine and PGIRS methodology; the included DRL agents (SARSA, DQN, SAC) serve as both validation benchmarks and first-class framework components for quantum control research.
+We present \textbf{SiliQun}, an open-source, physics-grounded simulation platform
+for silicon metal-oxide-semiconductor (SiMOS) spin qubits.
+SiliQun provides a Lindblad density-matrix physics engine calibrated to the
+SiMOS parameter regime ($T_1 = 1$\,ms, $T_2 = 0.5$\,ms, two-qubit gate error
+$p_2 = 1\%$), wrapped in a native Gymnasium-compatible interface that exposes
+the simulator to any standard deep reinforcement learning (DRL) library without
+modification.
+Within the Software-Defined Quantum Firmware (SDQF) architecture, SiliQun
+occupies the \emph{data plane}: it faithfully simulates the physical device but
+does not itself implement control policy or firmware logic.
+Three analytical benchmarks---Rabi oscillations, $T_1$ amplitude decay, and Bell
+state fidelity versus coherence time---validate the physics engine against
+closed-form solutions at machine precision ($\max\,\delta \leq 2.78 \times
+10^{-16}$).
+To demonstrate that the platform supports non-trivial control tasks, we train
+\textbf{QUASAR~v9.51}~\cite{companion:quasar}, a seven-module SAC agent with
+Bayesian Reward Function Discovery (BRFD) and DEHB hyperparameter governance,
+directly on SiliQun.
+QUASAR achieves gate fidelity $F = 0.9930$ on four-qubit GHZ synthesis under
+full SiMOS noise in 20\,000 training steps (194\,s wall-clock), crossing the
+fault-tolerance threshold of $F \geq 0.99$.
+A cross-algorithm benchmark of seven DRL families (T1--T7 taxonomy) yields
+fidelities spanning $0.612$ (DDPG) to $0.993$ (SAC-HMRL), demonstrating that
+the platform discriminates meaningfully between algorithm classes.
+Generalisation experiments on the GAA device profile achieve $F = 0.994 \pm 0.012$, confirming that SiliQun's device-profile abstraction transfers across silicon qubit architectures without retraining.
+Classical optimal control baselines (GRAPE, CRAB) achieve $F = 1.000$ on the training noise level but produce fixed pulses that cannot generalise; QUASAR's policy achieves comparable noise-robust fidelity ($F_\mathrm{nr} = 0.9930$) while generalising to new targets and device profiles.
+Cross-backend validation via the QuantumExecutor interface confirms that QUASAR-synthesised circuits transfer to real hardware, achieving cross-entropy benchmarking (XEB) fidelity $\geq 0.954$ on IonQ Aria-1.
+Furthermore, QUASAR modules trained on SiliQun serve as building blocks for
+\textbf{ANDROMEDA}~\cite{companion:andromeda}, a hierarchical quantum firmware
+agent that orchestrates multiple modules to construct 20-qubit entangled states
+covering the $d = 3$ surface code footprint.
+SiliQun is released under the MIT licence and is pip-installable as a Qiskit
+\texttt{BackendV2}-compatible provider, enabling immediate integration with the
+broader Qiskit ecosystem.
 \end{abstract}
 
 \section{Introduction}
 \label{sec:introduction}
+%% ============================================================
 
-\subsection{The Need for a Multi-Technology Silicon Spin Qubit Simulator}
-\label{subsec:motivation}
+\subsection{The Firmware Gap in the Quantum Computing Stack}
+\label{subsec:firmware_gap}
 
-Silicon spin qubits have emerged as a leading candidate for scalable
-quantum computing, combining long coherence times, compatibility with
-standard CMOS fabrication, and a dense qubit topology.
-Three competing silicon spin qubit architectures dominate current research efforts: metal-oxide-semiconductor (SiMOS) quantum dots~\cite{Xue2022,
-Noiri2022,Philips2022}, phosphorus-donor (P:Si) electron and nuclear spin
-qubits~\cite{Madzik2022,Morello2020}, and gate-all-around (GAA) nanowire
-  spin qubits~\cite{Tanamoto2026}.
-Each technology occupies a distinct point in the coherence-time versus
-fabrication-complexity trade-off space: SiMOS offers fast gate times
-($\sim$1\,ns) with moderate coherence ($T_2 \sim 0.5$\,ms); donor qubits
-offer exceptional coherence ($T_2 \sim 1$--28\,ms) at the cost of slower
-gates ($\sim$1\,$\mu$s) and placement precision requirements; GAA qubits
-offer CMOS-foundry compatibility with coherence properties intermediate
-between SiMOS and donor devices~\cite{Tanamoto2026}.
+Silicon metal-oxide-semiconductor (SiMOS) spin qubits have emerged as a leading
+candidate for scalable quantum computing, offering coherence times approaching
+$T_1 \sim 1$\,ms and $T_2 \sim 0.5$\,ms in recent demonstrations~\cite{Xue2022,
+Noiri2022,Philips2022,Steinacker2023}, compatibility with standard CMOS
+fabrication, and a nearest-neighbour qubit topology that maps naturally onto
+one-dimensional quantum circuit architectures.
+Yet the very precision that makes SiMOS qubits attractive also makes their
+control exceptionally sensitive to noise.
+Charge noise, hyperfine coupling fluctuations, and residual spin-orbit
+interaction degrade gate fidelity in ways that are difficult to anticipate from
+first principles alone~\cite{Veldhorst2015,Fogarty2018}.
 
-Despite this technological diversity, machine-learning studies treat
-silicon spin qubits monolithically, overlooking the distinct noise regimes of each platform.
-Previous machine-learning studies for silicon spin qubit
-control concentrate disproportionately on SiMOS quantum dot
-devices~\cite{Daraeizadeh2020,Xu2024}, with donor qubits addressed only
-for device tuning rather than gate synthesis~\cite{Severin2025}, and GAA qubits not yet studied with any machine-learning approach (confirmed via systematic literature search through 2025).
-Fragmented simulators hinder reproducibility because underlying noise models, Hamiltonian parameterisations, and
-interface conventions differ across tools, making cross-technology comparison unreliable.
+Between the physical hardware layer and high-level quantum algorithms lies a
+critical but under-theorised abstraction that we term the \emph{firmware gap}:
+the layer responsible for translating abstract gate operations into
+device-specific, noise-aware control policies.
+In classical computing, firmware (BIOS/UEFI) provides hardware-intimate
+abstraction, real-time constraint enforcement, and updateable control logic
+between silicon and the operating system.
+Quantum computing lacks an equivalent layer.
+Quantum compilers (Qiskit, Cirq, tket) operate at the gate-circuit level and
+apply hardware-agnostic optimisations; quantum error correction operates at the
+logical qubit level; but the layer that learns device-specific noise profiles
+and synthesises physically robust gate sequences---the quantum firmware
+layer---does not yet exist as a standardised, reusable component.
 
-\subsection{SiliQun: A Unified, Algorithm-Agnostic Platform}
-\label{subsec:siliqun_overview}
+Addressing the firmware gap requires two prerequisites that have not previously
+been satisfied together: a physics-accurate, device-specific simulation
+environment that can serve as the training substrate for a DRL agent, and a
+hierarchical orchestration framework that composes trained policies into
+firmware-level behaviours.
+This paper addresses the first prerequisite.
+SiliQun is the simulation platform (data plane); QUASAR~\cite{companion:quasar}
+is the DRL control agent (control plane); and ANDROMEDA~\cite{companion:andromeda}
+is the hierarchical firmware orchestrator that composes QUASAR modules into
+the full firmware layer.
 
-We present \textbf{SiliQun~v5}, a simulation platform that addresses this
-fragmentation by providing a single, unified Lindblad density-matrix engine
-with calibrated hardware profiles for all three silicon spin qubit
-technologies.
-The central design principle of SiliQun is \emph{hardware neutrality}: the
-physics engine is parameterised entirely by the \texttt{FirmwareProfile}
-object, which encodes the noise characteristics of a specific hardware
-technology.
-Exchanging the profile alters the simulated physics without modifying the
-Gymnasium interface, the action space, or the reward function.
-Algorithms trained on one profile generalise to others by changing a single constructor argument.
+\subsection{The SDQF Architecture}
+\label{subsec:sdqf}
 
-This design enables a rigorous empirical test of simulator neutrality: if
-the same algorithm, trained with the same hyperparameters, converges to
-near-identical best-case fidelity on SiMOS, donor, and GAA profiles, then
-the simulator is not artificially favouring any one technology.
-Section~\ref{sec:experiments} reports exactly this test.
+We propose the \textbf{Software-Defined Quantum Firmware} (SDQF) architecture
+as a principled answer to the firmware gap.
+Inspired by software-defined networking's separation of routing logic from
+packet forwarding~\cite{McKeown2008}, SDQF separates \emph{policy synthesis}
+(the control plane) from \emph{physics simulation} (the data plane):
+
+\begin{itemize}
+  \item \textbf{Data plane (SiliQun):} A physics-accurate Lindblad simulation
+    engine that models the quantum device. The data plane is hardware-specific
+    but policy-agnostic: it faithfully simulates the noise environment without
+    prescribing how to control it.
+  \item \textbf{Control plane (QUASAR):} A DRL agent that learns gate synthesis
+    policies by interacting with the data plane through a standard Gymnasium
+    interface. The control plane is policy-specific but hardware-agnostic: it
+    can be retrained on any data plane that implements the Gymnasium API.
+  \item \textbf{Firmware layer (ANDROMEDA):} A hierarchical orchestration agent
+    that composes control-plane policies (individual QUASAR modules) into
+    higher-level firmware behaviours, constructing multi-qubit entangled states
+    that span the $d = 3$ surface code footprint. ANDROMEDA is the firmware in
+    the classical sense: it provides reconfigurable, updateable control logic
+    that bridges device physics and logical qubit operations.
+\end{itemize}
+
+This paper focuses on the \textbf{data plane}: SiliQun as a simulation platform
+and the Physics-Grounded RL Simulation (PGIRS) methodology that governs its
+design and validation.
+QUASAR and ANDROMEDA are described in companion papers~\cite{companion:quasar,
+companion:andromeda}; they appear here as validation evidence that the data
+plane supports non-trivial control tasks at scale.
 
 \subsection{Limitations of Existing Frameworks}
 \label{subsec:intro_limitations}
 
-No existing open-source framework satisfies the requirements for
-multi-technology silicon spin qubit simulation with a standard RL interface.
-QuTiP~\cite{Lambert2024} provides a comprehensive Lindblad solver but
-offers no Gymnasium interface and covers no silicon-specific hardware
-profiles.
+No existing open-source framework satisfies both conditions required for
+SDQF data-plane implementation: physical accuracy for SiMOS devices and
+a standard RL interface.
+QuTiP~\cite{Lambert2024} provides a comprehensive Lindblad solver but offers
+no Gymnasium interface and is not designed for RL training loops.
 Qiskit Pulse~\cite{Alexander2020} provides pulse-level control for IBM
-superconducting hardware but has no silicon spin qubit device model.
+superconducting hardware but has no SiMOS device model.
 C3~\cite{Wittler2021} supports closed-loop optimal control via GRAPE and
 CMA-ES but does not implement standard RL algorithms.
-TensorFlow Quantum~\cite{Broughton2020} supports hybrid quantum-classical
-ML via Cirq integration but targets gate-model circuits rather than
-device-level spin qubit physics.
-Gymnasium-compatible RL environments for quantum circuit synthesis
-(qgym~\cite{VanDerLinde2023}, Qiskit Gym~\cite{QiskitGym2024}) employ
-abstract depolarising noise rather than detailed Lindblad dynamics derived
-from device physics, making them unsuitable for technology-specific policy
-training on silicon spin qubits.
-Critically, none of these frameworks provides hardware profiles for donor
-or GAA qubits, making cross-technology comparison impossible.
+TensorFlow Quantum~\cite{Broughton2020} supports hybrid quantum-classical ML
+via Cirq integration but targets gate-model circuits rather than device-level
+spin qubit physics.
+Gymnasium-compatible RL environments for quantum circuit synthesis (qgym~\cite{
+VanDerLinde2023}, Qiskit Gym~\cite{QiskitGym2024}) use abstract depolarising
+noise rather than first-principles Lindblad dynamics, making them unsuitable
+for SiMOS-specific policy training.
+The Oxford DPhil work of Orbell~\cite{Orbell2024} addresses SiMOS device
+tuning and calibration via Bayesian optimisation and pulse-level optimal
+control, but operates at the device characterisation layer rather than the
+gate synthesis layer; it provides no open-source Gymnasium environment.
 
 \subsection{Contributions}
 \label{subsec:contributions}
 
-We contribute the following:
+This paper makes the following contributions:
 
 \begin{enumerate}
-  \item \textbf{Multi-technology hardware profiles:} Calibrated
-    \texttt{FirmwareProfile} presets for SiMOS quantum dots, donor
-    electron qubits, donor nuclear spin qubits, and GAA nanowire qubits,
-    with noise parameters drawn from peer-reviewed experimental
-    characterisations~\cite{Xue2022,Madzik2022,Tanamoto2026}.
+  \item \textbf{SiliQun physics engine:} A Lindblad density-matrix simulator
+    calibrated to the SiMOS parameter regime, validated against three
+    analytical benchmarks at machine precision, with a 93$\times$ GPU
+    speedup enabling practical RL training throughput.
 
-  \item \textbf{SiliQun physics engine:} A Lindblad density-matrix
-    simulator validated against three analytical benchmarks (Rabi
-    oscillations, $T_1$ amplitude decay, Bell state fidelity) at machine
-    precision ($\max\,\delta \leq 2.78 \times 10^{-16}$), with a
-    93$\times$ GPU speedup over CPU-only simulation (see Section~\ref{subsec:gpu_benchmark}), enabling practical RL training throughput.
+  \item \textbf{Gymnasium-compatible interface:} A fully compliant
+    \texttt{SiliQunEnv} environment with a discrete 11-token gate action
+    space, a 16-element density-matrix state representation, and a
+    four-component reward function whose weights are discovered by BRFD.
 
   \item \textbf{PGIRS methodology:} A five-phase engineering discipline
     (Noise-First Design, Gymnasium Compliance, Reward Engineering,
@@ -125,24 +167,27 @@ We contribute the following:
     design, implementation, and validation of physics-grounded RL
     simulation platforms.
 
-  \item \textbf{Replication of Daraeizadeh et al.\ 2020 (SiMOS):}
-    Faithful reproduction of the DQL and SARSA CZ gate-synthesis
-    experiment~\cite{Daraeizadeh2020} on SiliQun's SiMOS profile,
-    achieving $F = 0.9997$ versus the published $F > 0.999$ ($\Delta F <
-    0.03\%$), validating the SiMOS noise model against an independent
-    ground truth.
+  \item \textbf{Cross-algorithm benchmark:} A systematic evaluation of
+    seven DRL algorithm families (T1--T7 taxonomy) on the 4-qubit GHZ
+    synthesis task under SiMOS noise, providing the first comparative
+    benchmark of DRL algorithms on a physically calibrated SiMOS simulator.
 
-  \item \textbf{Replication of He et al.\ 2021 (Donor):}
-    Faithful reproduction of the DQN universal state-preparation
-    experiment~\cite{He2021} on SiliQun's donor electron profile,
-    achieving best-case $F = 1.0000$ and mean cardinal-state fidelity
-    $\bar{F} = 0.9748 \pm 0.0098$, validating the donor physics model.
+  \item \textbf{Cross-backend validation:} A QuantumExecutor interface
+    that dispatches SiliQun-trained circuits to four backends (SiliQun,
+    Qiskit Aer, FakeSherbrooke, IonQ Aria-1), demonstrating
+    hardware-portable policy transfer with XEB fidelity $\geq 0.954$ on
+    real quantum hardware.
 
-  \item \textbf{First ML investigation on GAA silicon spin qubits:}
-    Application of the DQN USP protocol to SiliQun's GAA profile,
-    achieving best-case $F = 0.9999$ and mean cardinal-state fidelity
-    $\bar{F} \approx 0.988$, establishing---to our knowledge---the first
-    machine-learning benchmark for GAA silicon spin qubits.
+  \item \textbf{GAA device generalisation:} Experimental validation that
+    QUASAR policies trained on the GAA device profile achieve $F = 0.994
+    \pm 0.012$ on 2-qubit Bell synthesis, confirming that SiliQun's
+    device-profile abstraction transfers across silicon qubit architectures.
+
+  \item \textbf{Classical optimal control comparison:} A direct comparison
+    of GRAPE and CRAB against QUASAR, demonstrating that DRL policies
+    achieve comparable noise-robust fidelity ($F_\mathrm{nr} = 0.9930$
+    vs.~GRAPE's $0.9966$) while providing generalisation that fixed-pulse
+    methods cannot offer.
 
   \item \textbf{Qiskit BackendV2 provider:} A pip-installable package
     (\texttt{siliqun-provider}) that registers SiliQun as a Qiskit
@@ -153,12 +198,11 @@ We contribute the following:
 \noindent
 The remainder of the paper is organised as follows.
 Section~\ref{sec:related_work} surveys related work across five categories.
-Section~\ref{sec:framework} presents the SiliQun framework, hardware
-profiles, and PGIRS methodology.
-Section~\ref{sec:validation} describes the three replication and extension
-experiments.
-Section~\ref{sec:experiments} reports experimental results and the
-cross-technology comparison.
-Section~\ref{sec:discussion} discusses implications, limitations, and
-directions for future work.
+Section~\ref{sec:framework} presents the SiliQun framework and PGIRS
+methodology.
+Section~\ref{sec:quasar} describes QUASAR~v9.51 as the SDQF control plane
+agent.
+Section~\ref{sec:experiments} reports seven experiments: the primary fault-tolerance threshold result, cross-algorithm benchmark across seven DRL families, GAA device generalisation, GRAPE/CRAB classical baselines, cross-backend policy transferability, and direct comparison with the Oxford DRL spin qubit work.
+Section~\ref{sec:discussion} discusses implications, limitations, and the
+ANDROMEDA scalability evidence.
 Section~\ref{sec:conclusion} concludes.

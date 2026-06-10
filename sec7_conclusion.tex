@@ -9,65 +9,15 @@
 \section{Conclusion}
 \label{sec:conclusion}
 
-We have presented SiliQun~v5, an open-source, physics-grounded simulation
-platform that unifies three distinct silicon spin qubit hardware technologies
---- SiMOS quantum dots, phosphorus-donor electron and nuclear spin qubits,
-and gate-all-around (GAA) nanowire spin qubits --- within a single
-Gymnasium-compatible Lindblad density-matrix engine.
-SiliQun's design is governed by the Physics-Grounded Iterative RL Stack
-(PGIRS) methodology, a five-phase engineering discipline that enforces
-noise-first design, interface abstraction, reward engineering, hierarchical
-decomposition, and empirical validation at each layer of the simulation stack.
-The platform is validated through four independent replications spanning
-three hardware technologies and three reinforcement learning algorithms,
-making it the most comprehensively validated open-source silicon spin qubit
-simulator to date.
+We have presented SiliQun, an open-source, physics-grounded simulation platform purpose-built for silicon metal-oxide-semiconductor (SiMOS) spin qubit gate synthesis.
+SiliQun occupies the \emph{data plane} of the Software-Defined Quantum Firmware (SDQF) architecture: it provides the physics simulation substrate — a Lindblad density-matrix engine calibrated to SiMOS hardware parameters — on which DRL agents train, but does not itself constitute firmware.
+The firmware is ANDROMEDA~\cite{ANDROMEDA_P3}, a hierarchical orchestrator that composes frozen QUASAR~\cite{QUASAR_P2} control-plane modules into multi-qubit, device-spanning gate sequences.
+SiliQun's design is governed by the Physics-Grounded Iterative RL Stack (PGIRS) methodology, a five-phase engineering discipline that enforces noise-first design, interface abstraction, reward engineering, hierarchical decomposition, and empirical validation at each layer of the simulation stack.
 
-The scientific case for SiliQun rests on four results reported in this
-paper. First, SiliQun's Lindblad physics engine passes three analytical
-validation benchmarks at machine precision: Rabi oscillations, $T_1$
-amplitude decay (max deviation $2.78 \times 10^{-16}$, float64 epsilon),
-and Bell state fidelity. Second, cross-technology consistency is established
-through two independent replications: the DQL/SARSA CZ gate-synthesis
-experiment of Daraeizadeh~et~al.~\cite{Daraeizadeh2020} is reproduced on
-the SiMOS profile at $\Delta F < 0.06\%$, and the DQN universal
-state-preparation experiment of He~et~al.~\cite{He2021} is reproduced on
-the donor electron profile at $\bar{F} = 0.9748 \pm 0.0098$. Third, the
-same DQN protocol applied to the GAA profile achieves $\bar{F} = 0.9877$
-(seeds~0--1) --- to the best of our knowledge, the first machine-learning
-benchmark for GAA silicon spin qubits in the literature. Fourth, direct
-CNOT synthesis on the GaAs singlet-triplet qubit profile using a
-pulse-level Truncated Quantile Critics (TQC) agent achieves
-$\bar{F} = 0.8437$ (seed~24428) and $\bar{F} = 0.7844$ (seed~555),
-demonstrating that SiliQun's Gymnasium interface generalises to
-non-silicon spin qubit platforms with no modification to the physics engine.
+The scientific case for SiliQun rests on six results reported in this paper. First, SiliQun's Lindblad physics engine passes three analytical validation benchmarks at machine precision: Rabi oscillations (max deviation 0.00), $T_1$ amplitude decay (max deviation $2.78 \times 10^{-16}$, float64 epsilon), and Bell state fidelity versus coherence time (max deviation 0.0024 over $t \in [0, 5T_2]$). Second, QUASAR v9.51~\cite{QUASAR_P2} trained on SiliQun achieves $F = 0.9930$ on 4-qubit GHZ synthesis under SiMOS Lindblad noise in 194 seconds on a single A100 GPU --- the first reported result to cross the fault-tolerance threshold $F \geq 0.99$ at four qubits under a first-principles silicon spin qubit noise model. Third, a cross-algorithm benchmark of seven DRL families reveals a fidelity range of $F = 0.612$--$0.993$ under SiMOS noise, confirming that SiliQun is a discriminating testbed that exposes genuine algorithmic differences invisible under abstract depolarising models. Fourth, QUASAR generalises to the GAA device profile without retraining, achieving $F = 0.994 \pm 0.012$ on 2-qubit Bell synthesis across five seeds, confirming that SiliQun's device-profile abstraction transfers across silicon qubit architectures. Fifth, classical optimal control baselines (GRAPE: $F = 1.000$, 53.8~s; CRAB: $F = 1.000$, 15.9~s) achieve higher peak fidelity than QUASAR on the training noise level but produce fixed pulses that cannot generalise, while QUASAR produces a reusable policy with comparable noise-robust fidelity ($F_\mathrm{nr} = 0.9930$ vs.~GRAPE's $0.9966$). Sixth, QUASAR-synthesised circuits achieve $\mathcal{F}_\mathrm{XEB} \geq 0.954$ on IonQ Aria-1 trapped-ion hardware, confirming that policies trained on SiliQun transfer to real quantum devices without retraining.
 
-Beyond the immediate results, SiliQun's most significant contribution is
-architectural. By providing a single, hardware-neutral simulation substrate
-that exposes all three silicon spin qubit technologies through an identical
-Gymnasium interface, SiliQun enables cross-technology comparison and
-transfer-learning studies that were previously impossible due to the
-fragmentation of existing simulation tools. The PGIRS methodology codifies
-the engineering decisions required to extend SiliQun to new hardware
-platforms, including superconducting transmon, trapped-ion, and neutral atom
-qubits, without modifying the Lindblad solver or the Gymnasium interface.
+Beyond the immediate results, SiliQun's most significant contribution is architectural. By separating the physics simulation layer (SiliQun, data plane) from the DRL control agent (QUASAR~\cite{QUASAR_P2}, control plane) and the hierarchical firmware orchestrator (ANDROMEDA~\cite{ANDROMEDA_P3}, firmware layer), the SDQF architecture enables each layer to be developed, validated, and replaced independently. ANDROMEDA's achievement of composite score 1.000 across five QUASAR modules covering the $d = 3$ surface code demonstrates that this separation is not merely conceptual: SiliQun-trained policies compose hierarchically into 20-qubit systems without retraining, and SiliQun's conservative noise model generalises from 4 to 20 qubits without becoming a bottleneck.
 
-The three highest-priority directions for future work are: (1) a direct
-comparison with classical optimal control methods (GRAPE~\cite{Khaneja2005},
-CRAB~\cite{Caneva2011}) on the SiMOS and donor profiles, to establish
-when and why DRL provides a practical advantage; (2) validation of
-SiliQun's hardware profiles against physical SiMOS and donor devices through
-standard randomised benchmarking circuits, to close the simulation-to-hardware
-gap that currently limits the deployment of SiliQun-trained policies on
-real quantum processors; and (3) integration with ANDROMEDA, a hierarchical
-multi-agent entanglement distribution framework that uses SiliQun as its
-gate-level simulation substrate to train module-level GHZ state preparation
-agents and fusion-gate agents for scalable quantum network applications.
-ANDROMEDA's results, currently under preparation, will demonstrate whether
-SiliQun-trained policies transfer to the multi-qubit, multi-module setting
-that characterises practical quantum repeater networks.
+The primary open challenge is closing the simulation-to-hardware gap for SiMOS devices specifically. The cross-backend validation reported here uses IonQ Aria-1 as a proxy for real hardware; validating SiliQun against a physical SiMOS device through standard randomised benchmarking circuits would establish the simulator's fidelity to the target hardware at the level required for ANDROMEDA's firmware layer to operate on real QPUs. We identify this as the highest-priority direction for future work, alongside extending the PGIRS methodology to superconducting transmon and neutral atom hardware platforms.
 
-SiliQun is released under the MIT licence at
-\url{https://github.com/r3d-phd/siliqun}. All experiments reported in
-this paper are fully reproducible using the provided scripts and the Aziz
-HPC job files archived in the same repository.
+SiliQun is released under the MIT licence at \url{https://github.com/r3d-phd/siliqun}. All experiments reported in this paper are fully reproducible using the provided scripts and the Aziz HPC job files archived in the same repository.
