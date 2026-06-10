@@ -101,7 +101,7 @@ SiliQun exposes the Lindblad physics engine through a standard Gymnasium \texttt
   \label{eq:reward}
 \end{equation}
 
-where $\Delta F_t$ is the change in circuit fidelity, $\Delta H_t$ is the change in entanglement entropy (encouraging entanglement growth toward the GHZ target), $\Delta \chi_t$ is the change in MPS bond dimension (penalising unnecessary complexity), and $\varepsilon_t$ is the current depolarising noise rate. The weight vector $\mathbf{w} = (w_F, w_E, w_B, w_N)$ is not hand-tuned; it is discovered autonomously by the BRFD module of the RL agent described in \S\ref{sec:control_agent}. This design choice reflects the PGIRS principle of reward engineering as a first-class concern: the reward function is part of the framework, not an afterthought.
+where $\Delta F_t$ is the change in circuit fidelity, $\Delta H_t$ is the change in entanglement entropy (encouraging entanglement growth toward the GHZ target), $\Delta \chi_t$ is the change in MPS bond dimension (penalising unnecessary complexity), and $\varepsilon_t$ is the current depolarising noise rate. The weight vector $\mathbf{w} = (w_F, w_E, w_B, w_N)$ is not hand-tuned; it is treated as a set of tunable hyperparameters optimised via Bayesian search during the PGIRS Phase~3 calibration step (\S\ref{subsec:pgirs}). This design choice reflects the PGIRS principle of reward engineering as a first-class concern: the reward function is part of the framework, not an afterthought.
 
 \textbf{Episode termination and success criterion.} An episode is considered successful if the evaluation fidelity $F_\text{eval} \geq 0.99$ at any point during the episode. This threshold corresponds to the surface-code fault-tolerance threshold: a per-module physical error rate below 1\% is the necessary condition for fault-tolerant logical qubit construction under the surface code~\cite{Fowler2012,Dennis2002}.
 
@@ -122,13 +122,13 @@ The Physics-Grounded Iterative RL Stack (PGIRS) is a five-phase engineering disc
 
 \textbf{Phase 1 — Noise-First Design.} Before any RL agent is instantiated, the noise model must be calibrated to the target hardware. This means identifying the relevant decoherence channels (T$_1$, T$_2$, depolarising, charge noise), setting their parameters from experimental data, and validating the noise model against analytical benchmarks (see \S\ref{subsec:validation}). Skipping this phase — by using an abstract depolarising model or a noiseless simulator — produces agents that achieve high simulated fidelity but fail on real hardware, as demonstrated by the transferability gap in the cross-technology comparison in Table~\ref{tab:cross_tech}.
 
-\textbf{Phase 2 — Interface Abstraction.} The physics engine is wrapped in a Gymnasium-compatible interface that decouples the simulation backend from the RL agent. This abstraction enforces a strict separation between the physics simulation and the control policy: the agent interacts only through the standardised \texttt{step}/\texttt{reset} API and has no direct access to the internal state of the Lindblad solver. This abstraction enables backend substitution (e.g., replacing the MPS simulator with a tensor network simulator or a real hardware backend via QuantumExecutor~\cite{QuantumExecutor2025}) without modifying the agent.
+\textbf{Phase 2 — Interface Abstraction.} The physics engine is wrapped in a Gymnasium-compatible interface that decouples the simulation backend from the RL agent. This abstraction enforces a strict separation between the physics simulation and the control policy: the agent interacts only through the standardised \texttt{step}/\texttt{reset} API and has no direct access to the internal state of the Lindblad solver. This abstraction enables backend substitution (e.g., replacing the MPS simulator with a tensor network simulator or a real hardware backend via a compatible Qiskit or PennyLane interface) without modifying the agent.
 
-\textbf{Phase 3 — Reward Engineering.} The reward function is designed to provide dense, informative feedback that guides the agent toward the target fidelity. The four-component reward in Eq.~(\ref{eq:reward}) is the result of this phase. Critically, the reward weights are not fixed; they are treated as hyperparameters to be discovered by Bayesian optimisation (BRFD), making the reward function adaptive to the evolving difficulty of the synthesis task.
+\textbf{Phase 3 — Reward Engineering.} The reward function is designed to provide dense, informative feedback that guides the agent toward the target fidelity. The four-component reward in Eq.~(\ref{eq:reward}) is the result of this phase. Critically, the reward weights are not fixed; they are treated as hyperparameters optimised via Bayesian search, making the reward function adaptive to the evolving difficulty of the synthesis task.
 
 \textbf{Phase 4 — Hierarchical Decomposition.} For multi-qubit systems beyond the tractable horizon of flat RL agents, the synthesis problem is decomposed into a hierarchy of sub-problems. Each sub-problem is solved independently, and the solutions are composed through a principled fusion mechanism. This phase enables the decomposition of large-scale synthesis tasks (e.g., 20-qubit surface code preparation) into tractable 4-qubit sub-problems solved by independent agents, with solutions composed through entanglement swapping fusion.
 
-\textbf{Phase 5 — Empirical Validation.} The trained agent is evaluated against a held-out test set of target states, with results reported as mean fidelity $\pm$ standard deviation across multiple independent seeds. Cross-backend validation using QuantumExecutor~\cite{QuantumExecutor2025} confirms that policies trained on SiliQun transfer to alternative simulation backends (IonQ Aria-1 via FakeSherbrooke, Qiskit Aer statevector) with fidelity degradation below the measurement noise floor.
+\textbf{Phase 5 — Empirical Validation.} The trained agent is evaluated against a held-out test set of target states, with results reported as mean fidelity $\pm$ standard deviation across multiple independent seeds. Cross-backend validation using Qiskit Aer statevector and IonQ Aria-1 via FakeSherbrooke confirms that policies trained on SiliQun transfer to alternative simulation backends with fidelity degradation below the measurement noise floor.
 
 The PGIRS methodology is the key differentiator between SiliQun and prior frameworks. QuTiP~\cite{Lambert2024} provides Phase 1 (noise model) but not Phases 2–5. Qiskit Pulse~\cite{Alexander2020} provides Phase 2 (interface) but not Phase 1 (SiMOS calibration). No prior framework provides all five phases in an integrated, open-source package.
 
@@ -136,7 +136,7 @@ The PGIRS methodology is the key differentiator between SiliQun and prior framew
 \begin{figure*}[ht]
   \centering
   \includegraphics[width=\textwidth]{figures/fig2_pgirs_ai.png}
-  \caption{The Physics-Grounded Iterative Reward Stack (PGIRS) five-phase methodology. Phase~1 validates the noise model against analytical benchmarks before any agent is instantiated; Phase~2 wraps the engine in a Gymnasium interface enforcing strict data/control plane separation; Phase~3 discovers reward weights autonomously via BRFD; Phase~4 decomposes the synthesis objective into sub-goals via HMRL; Phase~5 validates the trained policy on held-out targets and across backends via QuantumExecutor. Skipping any phase risks the common failure mode of agents that achieve high simulated fidelity but fail on real hardware.}
+  \caption{The Physics-Grounded Iterative Reward Stack (PGIRS) five-phase methodology. Phase~1 validates the noise model against analytical benchmarks before any agent is instantiated; Phase~2 wraps the engine in a Gymnasium interface enforcing strict data/control plane separation; Phase~3 optimises reward weights via Bayesian hyperparameter search; Phase~4 decomposes the synthesis objective into sub-goals via hierarchical curriculum learning; Phase~5 validates the trained policy on held-out targets and across alternative simulation backends (Qiskit Aer statevector, FakeSherbrooke). Skipping any phase risks the common failure mode of agents that achieve high simulated fidelity but fail on real hardware.}
   \label{fig:pgirs}
 \end{figure*}
 
@@ -266,13 +266,14 @@ or Qiskit as dependencies.
 The \texttt{SiliQunEnvFactory.available\_presets()} method returns the
 current registry of eight technology presets, and
 \texttt{make\_env(preset, target\_state)} constructs a
-\texttt{QuasarEnvAdapter} in a single call:
+fully configured environment in a single call:
 
 \begin{verbatim}
 from siliqun.plugins import make_env
 env = make_env("simos_nominal", target_state="bell")
 obs, info = env.reset()
-# Other supported target states: "ghz", "w", "cluster1d", "dicke_k3"
+# Supported states: "ghz", "w",
+#   "cluster_linear", "dicke_k3"
 \end{verbatim}
 
 Figure~\ref{fig:three_tier} provides a visual summary of the three-tier
@@ -340,6 +341,7 @@ silicon spin qubits.
     Sources: SiMOS~\cite{Xue2022,Noiri2022,Philips2022};
     donor~\cite{Madzik2022,Morello2020}; GAA~\cite{Tanamoto2025}.}
   \label{tab:hardware_profiles}
+  \resizebox{\textwidth}{!}{%
   \begin{tabular}{lcccccccc}
     \hline
     \textbf{Profile} & $T_1$ & $T_2$ & $\sigma_\varepsilon$ (\textmu eV)
@@ -351,7 +353,7 @@ silicon spin qubits.
     \texttt{donor\_nuclear}  & 1\,h     & 1.0\,s   & 0.1 & 0.05 & 117.5 & 500 & 2000 & 0.001 \\
     \texttt{gaa\_nominal}    & 0.5\,ms  & 0.1\,ms  & 2.0 & 1.0  & ---   & 5   & 50   & 0.015 \\
     \hline
-  \end{tabular}
+  \end{tabular}}
 \end{table*}
 
 The three active profiles used in the validation experiments
@@ -513,7 +515,7 @@ the Lindblad master equation (Eq.~\ref{eq:lindblad}).
 This representation scales as $O(4^n)$ in memory, imposing a hard
 ceiling of $n \leq 16$ qubits on a single compute node: at $n = 16$
 the density matrix occupies $\approx 68.7$\,GB, and at $n = 19$
-(the ANDROMEDA v3 topology) it would require $4.4$\,TB.
+(a 19-qubit distributed topology) it would require $4.4$\,TB.
 This ceiling is not a fundamental physical constraint but an artefact
 of the simulation representation, and it can be removed by replacing
 the full density matrix with a Matrix Product Operator (MPO).
@@ -557,22 +559,21 @@ for $n > 8$ the \texttt{MPSLindbladEngine} is activated with bond
 dimension managed by the \texttt{DBAScheduler}, which applies the
 DynBA entanglement-saturation heuristic to the MPO bond dimension.
 This removes the hard-coded 16-qubit ceiling and enables
-hardware-realistic noise validation of ANDROMEDA at 19--100 qubits
-on a single NVIDIA A100 GPU.
+hardware-realistic noise validation at 19--100 qubits on a single NVIDIA A100 GPU.
 
 \begin{table}[ht]
   \centering
   \caption{Memory comparison between the full density matrix (DM) and
     MPO backends at $\chi_{\mathrm{MPO}} = 64$.
     The MPO backend removes the 16-qubit ceiling and enables simulation
-    of the full ANDROMEDA v3 topology (19 qubits) on a single A100 GPU.}
+    of a 19-qubit distributed topology on a single A100 GPU.}
   \label{tab:mpo_scaling}
   \begin{tabular}{lrrl}
     \hline
     $n$ & DM Memory & MPO Memory & Reduction \\ \hline
     16 (old limit) & 68.7\,GB & 4.2\,MB & $16{,}384\times$ \\
-    19 (ANDROMEDA v3) & 4.4\,TB & 5.0\,MB & $883{,}000\times$ \\
-    24 (ANDROMEDA v4) & 4.5\,PB & 6.3\,MB & $715\mathrm{M}\times$ \\
+    19 (distributed topology) & 4.4\,TB & 5.0\,MB & $883{,}000\times$ \\
+    24 (extended topology) & 4.5\,PB & 6.3\,MB & $715\mathrm{M}\times$ \\
     29 (surface code $d{=}5$) & 4.6\,EB & 7.6\,MB & $>10^{12}\times$ \\ \hline
   \end{tabular}
 \end{table}

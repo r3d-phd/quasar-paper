@@ -245,9 +245,9 @@ interface design) rather than quantitative.}
   Not addressed; the thesis does not synthesise gate sequences for entangled state preparation &
   Core contribution: synthesis of GHZ, W, and cluster states under SiMOS noise \\
 \addlinespace
-\textbf{SDQF architecture} &
-  Not addressed; no firmware-layer abstraction between physics and algorithm &
-  Core contribution: SiliQun as the SDQF data-plane simulator; DRL agent as control plane; ANDROMEDA as firmware layer \\
+\textbf{Open-source release} &
+  Not released as a reusable framework; research code specific to the thesis experiments &
+  MIT-licensed open-source package with Gymnasium interface, reproducible scripts, and Aziz HPC job files \\
 \addlinespace
 \textbf{Validation methodology} &
   Experimental validation on real GaAs/Si devices; no sim-to-real transferability metric &
@@ -323,13 +323,13 @@ At the far end of the quantum computing stack, \textbf{Zen \emph{et al.}}
 (PRL 2025~\cite{Zen2025}) demonstrated RL for the discovery of
 fault-tolerant logical qubit encoding protocols, achieving results on
 distance-3 surface codes and other stabiliser codes. This work is
-scientifically significant and directly relevant to the ANDROMEDA
-hierarchical RL pipeline described in the companion paper~\cite{ANDROMEDA_P3},
-which uses SiliQun as its simulation backend. However, Zen \emph{et al.}
+scientifically significant and directly relevant to future hierarchical RL
+research that builds on SiliQun as a physics-grounded simulation substrate.
+However, Zen \emph{et al.}
 employ an abstract noise model (depolarising channels with uniform error
 rate) rather than a hardware-specific Lindblad model, and their
 environments are not publicly released as Gymnasium-compatible frameworks.
-SiliQun is therefore positioned as the physics simulation layer that could
+SiliQun is therefore positioned as the physics simulation layer that can
 ground future fault-tolerant RL research in realistic hardware noise,
 extending the abstract results of Zen \emph{et al.}\ to the SiMOS platform.
 

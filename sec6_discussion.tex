@@ -69,7 +69,7 @@ SiliQun occupies a specific and previously unoccupied niche in the quantum simul
 
 \textbf{Against abstract RL environments for quantum circuit synthesis (qgym, Qiskit Gym, QuantumCircuitEnv).} These environments provide Gymnasium-compatible interfaces but use abstract depolarising noise models that do not capture the amplitude damping and dephasing channels present in silicon spin qubit devices. The replication experiments in \S\ref{sec:experiments} demonstrate that the choice of hardware profile has a substantial impact on achievable fidelity: the same DQN algorithm achieves $\bar{F}_\text{cardinal} = 0.9748$ on the donor profile and $\bar{F}_\text{cardinal} = 0.9877$ on the GAA profile under their respective Lindblad noise models. Abstract depolarising noise models cannot capture this hardware-specific variation. SiliQun is the first environment to combine a Gymnasium-compatible interface with first-principles Lindblad noise models for three distinct silicon spin qubit technologies.
 
-\textbf{Against the Oxford DPhil spin qubit work (Orbell 2024~\cite{Orbell2024}).} Orbell's work addresses the device tuning and calibration layer of the quantum computing stack, while SiliQun addresses the gate synthesis layer. The two works are non-overlapping in problem domain, noise modelling approach, and software availability. The natural integration path is for Orbell's Bayesian optimisation pipeline to calibrate SiliQun's hardware profile from experimental data, replacing the current manually chosen conservative parameters with device-specific values. This would realise the full SDQF stack from physical hardware characterisation (Orbell's contribution) through gate synthesis (SiliQun's contribution) to hierarchical logical qubit construction (ANDROMEDA's contribution~\cite{ANDROMEDA_P3}).
+\textbf{Against the Oxford DPhil spin qubit work (Orbell 2024~\cite{Orbell2024}).} Orbell's work addresses the device tuning and calibration layer of the quantum computing stack, while SiliQun addresses the gate synthesis layer. The two works are non-overlapping in problem domain, noise modelling approach, and software availability. The natural integration path is for Orbell's Bayesian optimisation pipeline to calibrate SiliQun's hardware profile from experimental data, replacing the current manually chosen conservative parameters with device-specific values. This would close the simulation-to-hardware gap that currently limits the deployment of SiliQun-trained policies on real quantum processors.
 
 %% ----------------------------------------------------------
 \subsection{PGIRS Generalisability Beyond SiMOS}
@@ -84,8 +84,7 @@ The PGIRS methodology's Phase 5 (empirical validation) provides a systematic pro
 
 %% ----------------------------------------------------------
 \subsection{SiliQun as a Simulation Substrate for Downstream Frameworks}
-\label{subsec:andromeda_scalability}
-%% ----------------------------------------------------------
+\label{subsec:downstream_substrate}
 
 SiliQun is a standalone simulation platform: its contribution is the
 physics-grounded environment, the PGIRS hardware profile methodology, and
@@ -93,20 +92,23 @@ the cross-technology benchmarking results reported in this paper. It does
 not depend on any external framework to be complete or useful.
 
 The platform's Gymnasium-compatible interface makes it immediately adoptable
-as a simulation substrate by any RL-based quantum control framework. As one
-example of this downstream utility, the ANDROMEDA framework~\cite{ANDROMEDA_P3}
---- a hierarchical multi-agent system for entanglement distribution in quantum
-networks --- uses SiliQun as its module-level simulation environment.
-ANDROMEDA's module-level agent trains directly on SiliQun's
-\texttt{simos\_nominal} profile to prepare local GHZ states, and its
-network-level fusion agent applies entanglement swapping to compose
-module-level states into larger multi-qubit GHZ states.
-This adoption validates two properties of SiliQun: first, that its
-Gymnasium interface is compatible with multi-agent training frameworks
-requiring parallel environment instances; and second, that the hardware
-profiles calibrated for two-qubit gate synthesis generalise to the
-multi-qubit state preparation tasks required by quantum network applications.
-The ANDROMEDA results are reported separately in that work~\cite{ANDROMEDA_P3}.
+as a simulation substrate by any RL-based quantum control framework. The
+standard \texttt{step}/\texttt{reset} API, combined with the hardware-profile
+abstraction, means that any algorithm compatible with Stable-Baselines3 or
+a custom PyTorch training loop can be applied to SiliQun without modification.
+This composability is the key property that enables SiliQun to serve as a
+building block in larger quantum control systems: a hierarchical RL framework
+that decomposes multi-qubit entanglement preparation into module-level
+sub-problems can use SiliQun as the module-level environment, training
+independent agents on individual hardware profiles and composing their
+policies through entanglement swapping or fusion operations.
+
+The MPS-Lindblad backend (\S\ref{subsec:mps_lindblad}) further extends
+this composability to systems beyond the 16-qubit density-matrix ceiling,
+enabling simulation of distributed quantum network topologies at 19--29
+qubits on a single GPU. This makes SiliQun suitable not only for
+gate-level synthesis experiments but also for multi-module entanglement
+distribution research where hardware-realistic noise is essential.
 
 %% ----------------------------------------------------------
 %% ----------------------------------------------------------
@@ -116,7 +118,7 @@ The ANDROMEDA results are reported separately in that work~\cite{ANDROMEDA_P3}.
 
 Five limitations of the current work motivate future research directions.
 
-SiliQun's modular design enables hierarchical composition at scale: the ANDROMEDA framework~\cite{ANDROMEDA_P3} is actively extending this by composing trained RL agent modules on SiliQun toward a multi-qubit hierarchical system, with full results to be reported separately in that work.
+SiliQun's modular design enables hierarchical composition at scale: the Gymnasium-compatible interface and hardware-profile abstraction allow trained module-level agents to be composed into larger multi-qubit systems through entanglement swapping or fusion operations, a direction that remains an active area of future work.
 
 \textbf{Comparison with classical optimal control (highest priority).}
 The most important open comparison is between SiliQun-trained DRL agents

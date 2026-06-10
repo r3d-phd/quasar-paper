@@ -405,7 +405,7 @@ $< 0.2\%$.
 The two low-fidelity seeds ($\bar{F} \approx 0.81$) indicate that
 robust convergence requires either multi-seed ensemble training or
 a warm-start from a high-fidelity seed checkpoint---a direction
-explored in the QUASAR curriculum framework (Section~\ref{sec:control_agent}).
+explored in the hierarchical curriculum design described in \S\ref{sec:validation}.
 The overall four-seed mean $\bar{F} = 0.9036 \pm 0.0914$ confirms
 that TQC is a competitive baseline for gate-level quantum control
 on silicon spin qubits.
@@ -714,11 +714,10 @@ Dicke states are natively supported in SiliQun~v5 via the
 (\S\ref{subsec:mps_lindblad}).
 
 \textbf{Setup.}
-Each target state is trained independently using SAC with the BRFD reward
-module (\S\ref{sec:control_agent}) for $6 \times 10^5$ environment steps
+Each target state is trained independently using SAC with the four-component adaptive reward function (Eq.~\ref{eq:reward}) for $6 \times 10^5$ environment steps
 across three independent seeds (42, 123, 777).
-The BRFD weight vector $\mathbf{w}$ is initialised uniformly and adapted
-online; no target-state-specific reward engineering is performed.
+The reward weight vector $\mathbf{w}$ is initialised uniformly and optimised
+via Bayesian search; no target-state-specific reward engineering is performed.
 Results are reported as mean fidelity $\pm$ standard deviation across
 the three seeds at the end of training.
 
@@ -734,7 +733,7 @@ This table will be updated with final values upon completion.
 \centering
 \caption{Extension~4 results: SAC multi-target state generalisation on
   SiliQun \texttt{simos\_nominal} profile ($n=3$ qubits, 3 seeds each).
-  BRFD reward weights are adapted online; no target-specific tuning.
+  Reward weights are optimised via Bayesian search; no target-specific tuning.
   Results marked \textit{in progress} will be updated upon completion.}
 \label{tab:e4_results}
 \begin{tabular}{lcccc}

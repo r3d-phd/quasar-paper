@@ -1,6 +1,6 @@
 % ============================================================
-% PAPER 6 — SiliQun Framework (SDQF/PGIRS)
-% Section 4: Methods
+% PAPER 6 — SiliQun Framework (TQE)
+% Section 3: Methods
 % Author: Raad Mohammed Alshehri | KAU FCIT
 % ============================================================
 
@@ -18,34 +18,11 @@ validation protocol, reinforcement learning setup, and evaluation metrics.
 \label{subsec:methods_lindblad}
 %% ----------------------------------------------------------
 
-The SiliQun physics engine solves the Lindblad master equation
-\begin{equation}
-  \frac{d\rho}{dt} = -\frac{i}{\hbar}[H, \rho]
-    + \sum_k \left( L_k \rho L_k^\dagger
-      - \tfrac{1}{2}\{L_k^\dagger L_k, \rho\} \right),
-  \label{eq:lindblad_methods}
-\end{equation}
-where $\rho$ is the $n$-qubit density matrix, $H$ is the system Hamiltonian,
-and $\{L_k\}$ are the Lindblad jump operators encoding the device noise
-channels. For each hardware profile, three noise channels are implemented:
-
-\begin{enumerate}
-  \item \textbf{Amplitude damping} ($T_1$ relaxation): $L_1 = \sqrt{\gamma_1}\,\sigma^-$,
-    where $\gamma_1 = 1/T_1$ and $\sigma^- = |0\rangle\langle 1|$.
-  \item \textbf{Phase dephasing} ($T_2$ dephasing): $L_2 = \sqrt{\gamma_\phi/2}\,\sigma^z$,
-    where $\gamma_\phi = 1/T_2 - 1/(2T_1)$ and $\sigma^z$ is the Pauli-$Z$ operator.
-  \item \textbf{Depolarising noise}: $L_{3,4,5} = \sqrt{p_\text{gate}/4}\,\{\sigma^x, \sigma^y, \sigma^z\}$,
-    applied after each gate operation with error probability $p_\text{gate}$.
-\end{enumerate}
-
-The Lindblad equation is integrated using a fourth-order Runge--Kutta scheme
-with adaptive step size, with a maximum step of $\Delta t = 1$\,ns.
-Gate operations are applied as instantaneous unitary rotations followed by
-a decoherence step of duration equal to the gate time ($\tau_1$ for
-single-qubit gates, $\tau_2$ for two-qubit gates).
-All density matrix operations are implemented as NumPy tensor contractions
-on the full $2^n \times 2^n$ density matrix; GPU acceleration via CuPy is
-used for $n \geq 3$.
+The SiliQun physics engine solves the Lindblad master equation defined in
+Eq.~(\ref{eq:lindblad}) (\S\ref{subsec:lindblad}). The three noise
+channels (amplitude damping, phase dephasing, and depolarising noise), the
+Runge--Kutta integration scheme, and the GPU acceleration strategy are
+described in full detail in that section and are not repeated here.
 
 %% ----------------------------------------------------------
 \subsection{Hardware Profile Calibration}
