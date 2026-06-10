@@ -1,7 +1,7 @@
 %% ============================================================
 %% §5 — Experiments
 %% Merged P1+P6 Journal Paper: SiliQun — A Physics-Grounded
-%% Simulation Platform and Framework for the SDQF Data Plane
+%% Simulation Platform and Framework for the PGIRS Data Plane
 %%
 %% Veritas-verified 2026-05-26. Two corrections applied:
 %%   (1) SiMOS parameter attribution clarified (not directly "from" cited papers)
@@ -18,7 +18,7 @@
 \section{Experiments}
 \label{sec:experiments}
 
-We present seven experiments that collectively validate SiliQun as a simulation platform. The first two (\S\ref{subsec:setup}--\S\ref{subsec:primary}) establish the primary scientific result: QUASAR v9.51~\cite{QUASAR_P2} trained on SiliQun achieves $F = 0.9930$ on the 4-qubit GHZ synthesis task under realistic SiMOS Lindblad noise, crossing the fault-tolerance threshold $F \geq 0.99$ in 194 seconds. The third (\S\ref{subsec:cross_algo}) benchmarks seven representative DRL algorithm families drawn from the seven-category taxonomy of DRL for quantum control~\cite{Alshehri2026survey}, demonstrating that SiliQun is compatible with the full Stable-Baselines3 algorithm suite and that algorithm choice has a substantial impact on achievable fidelity under SiMOS noise. The fourth (\S\ref{subsec:gaa}) evaluates generalisation to the GAA device profile. The fifth (\S\ref{subsec:grape_crab}) benchmarks classical optimal control baselines (GRAPE, CRAB) against QUASAR. The sixth (\S\ref{subsec:cross_backend}) validates policy transferability to real quantum hardware. The seventh (\S\ref{subsec:oxford_comparison}) situates SiliQun within the landscape of ML-based quantum device simulators, with a direct comparison to the Oxford DPhil spin qubit work of Orbell~\cite{Orbell2024}.
+We present seven experiments that collectively validate SiliQun as a simulation platform. The first two (\S\ref{subsec:setup}--\S\ref{subsec:primary}) establish the primary scientific result: the DRL agent (\S\ref{sec:drl_agent}) trained on SiliQun achieves $F = 0.9930$ on the 4-qubit GHZ synthesis task under realistic SiMOS Lindblad noise, crossing the fault-tolerance threshold $F \geq 0.99$ in 194 seconds. The third (\S\ref{subsec:cross_algo}) benchmarks seven representative DRL algorithm families drawn from the seven-category taxonomy of DRL for quantum control~\cite{Alshehri2026survey}, demonstrating that SiliQun is compatible with the full Stable-Baselines3 algorithm suite and that algorithm choice has a substantial impact on achievable fidelity under SiMOS noise. The fourth (\S\ref{subsec:gaa}) evaluates generalisation to the GAA device profile. The fifth (\S\ref{subsec:grape_crab}) benchmarks classical optimal control baselines (GRAPE, CRAB) against the DRL agent. The sixth (\S\ref{subsec:cross_backend}) validates policy transferability to real quantum hardware. The seventh (\S\ref{subsec:oxford_comparison}) situates SiliQun within the landscape of ML-based quantum device simulators, with a direct comparison to the Oxford DPhil spin qubit work of Orbell~\cite{Orbell2024}.
 
 %% ----------------------------------------------------------
 \subsection{Experimental Setup}
@@ -47,20 +47,6 @@ Hardware               & NVIDIA A100 (40~GB) / H100 (80~GB), Aziz HPC \\
 \end{tabular}
 \end{table}
 
-\begin{figure}[t]
-  \centering
-  \includegraphics[width=0.95\linewidth]{fig_speed_scaling}
-  \caption{\textbf{SiliQun simulation throughput scaling.} Environment steps per second as a function of qubit count, measured on a single CPU core (Intel Xeon E5-2695 v2 @ 2.40~GHz). SiliQun's MPS representation maintains near-constant throughput of approximately 91K steps/s across 2--16 qubits, while the theoretical statevector baseline degrades exponentially. Bond dimension annotations ($\chi$) indicate the maximum bond dimension required at each qubit count for the GHZ target state.}
-  \label{fig:speed_scaling}
-\end{figure}
-
-\begin{figure}[t]
-  \centering
-  \includegraphics[width=0.95\linewidth]{fig_comparison}
-  \caption{\textbf{SiliQun throughput comparison against Qiskit Aer and QuTiP.} \textit{Left:} Gate throughput (log scale) as a function of qubit count for SiliQun (MPS), Qiskit Aer (statevector), and QuTiP (density matrix). \textit{Right:} SiliQun speedup factor relative to each baseline, showing $6\times$ at 2 qubits growing to $29\times$ (vs.~Qiskit Aer) and $41\times$ (vs.~QuTiP) at 14 qubits. All measurements on a single CPU core.}
-  \label{fig:comparison}
-\end{figure}
-
 \noindent\textbf{Note on SiMOS parameter values.} The noise parameters $T_1 = 1$~ms, $T_2 = 0.5$~ms, $p_1 = 0.001$, $p_2 = 0.01$ represent a conservative lower bound within the parameter regime of SiMOS spin qubit devices as characterised across multiple experimental works~\cite{Xue2022,Noiri2022,Philips2022,Steinacker2023}. Individual devices in those works report a range of values; our chosen parameters correspond to the more demanding end of the reported range, consistent with the PGIRS noise-first design principle (\S\ref{subsec:pgirs}): agents trained under pessimistic noise conditions generalise more robustly to hardware that is somewhat less noisy than the training environment.
 
 %% ----------------------------------------------------------
@@ -68,13 +54,13 @@ Hardware               & NVIDIA A100 (40~GB) / H100 (80~GB), Aziz HPC \\
 \label{subsec:primary}
 %% ----------------------------------------------------------
 
-The primary experiment trains QUASAR v9.51 (\S\ref{sec:quasar}) on SiliQun with the 4-qubit GHZ target state $|\text{GHZ}(4)\rangle = \frac{1}{\sqrt{2}}(|0000\rangle + |1111\rangle)$. The training objective is to find a gate sequence of at most 100 steps achieving fidelity $F \geq 0.99$ under the full SiMOS Lindblad noise model.
+The primary experiment trains the DRL agent (\S\ref{sec:quasar}) on SiliQun with the 4-qubit GHZ target state $|\text{GHZ}(4)\rangle = \frac{1}{\sqrt{2}}(|0000\rangle + |1111\rangle)$. The training objective is to find a gate sequence of at most 100 steps achieving fidelity $F \geq 0.99$ under the full SiMOS Lindblad noise model.
 
-\textbf{Convergence.} QUASAR v9.51 crosses the fault-tolerance threshold at training step 20,000, achieving $F_\text{eval} = 0.9930$ in a total wall-clock time of 194 seconds on a single A100 GPU (Table~\ref{tab:quasar_convergence}). This is the first reported result to cross $F = 0.99$ at four qubits under a first-principles SiMOS Lindblad noise model.
+\textbf{Convergence.} the DRL agent crosses the fault-tolerance threshold at training step 20,000, achieving $F_\text{eval} = 0.9930$ in a total wall-clock time of 194 seconds on a single A100 GPU (Table~\ref{tab:quasar_convergence}). This is the first reported result to cross $F = 0.99$ at four qubits under a first-principles SiMOS Lindblad noise model.
 
 \begin{table}[h]
 \centering
-\caption{QUASAR v9.51 convergence on SiliQun v6 (4-qubit GHZ, SiMOS noise). Mean $\pm$ std over 5 seeds.}
+\caption{the DRL agent convergence on SiliQun v6 (4-qubit GHZ, SiMOS noise). Mean $\pm$ std over 5 seeds.}
 \label{tab:quasar_convergence}
 \begin{tabular}{lrrl}
 \toprule
@@ -89,23 +75,9 @@ Fix3 baseline (best)       & 300,000 & $0.831 \pm 0.018$ & 2,910~s \\
 \end{tabular}
 \end{table}
 
-\textbf{Comparison with baseline.} The Fix3 baseline (QUASAR v7 with fixed reward weights) achieves a best fidelity of $F = 0.8307$ after 300,000 training steps. QUASAR v9.51 surpasses this at step 20,000 — a $15\times$ reduction in training steps and a $55\times$ reduction in wall-clock time — and continues to $F = 0.9930$, an absolute improvement of $+0.1623$ (+19.5\%). The dominant contributors are BRFD autonomous reward discovery, expert warm-start, and HMRL sub-goal decomposition.
+\textbf{Comparison with baseline.} The Fix3 baseline (the DRL agent v7 with fixed reward weights) achieves a best fidelity of $F = 0.8307$ after 300,000 training steps. the DRL agent surpasses this at step 20,000 — a $15\times$ reduction in training steps and a $55\times$ reduction in wall-clock time — and continues to $F = 0.9930$, an absolute improvement of $+0.1623$ (+19.5\%). The dominant contributors are BRFD autonomous reward discovery, expert warm-start, and HMRL sub-goal decomposition.
 
-\begin{figure}[h]
-  \centering
-  \includegraphics[width=0.95\linewidth]{fig_noise_overhead}
-  \caption{\textbf{Noise model computational overhead.} Throughput (steps/s) for noiseless MPS simulation versus full SiMOS Lindblad noise model as a function of qubit count. The noise overhead ranges from 20--39\% (mean 32\%), dominated by Kraus operator application for the amplitude damping and dephasing channels. At 4 qubits, the noisy environment achieves $\sim$65K steps/s, sufficient for QUASAR v9.51 to complete 300K training steps in under 50 minutes on a single CPU core.}
-  \label{fig:noise_overhead}
-\end{figure}
-
-\begin{figure}[h]
-  \centering
-  \includegraphics[width=0.95\linewidth]{fig_bond_dim}
-  \caption{\textbf{Throughput vs.~bond dimension at 8 qubits.} Simulation throughput as a function of the maximum bond dimension $\chi_\text{max}$, for an 8-qubit register under the SiMOS noise model. Throughput remains nearly constant from $\chi = 2$ to $\chi = 64$, confirming MPS efficiency across the full range of entanglement levels encountered during GHZ synthesis. The vertical dashed line indicates $\chi_\text{max} = 32$ used in all experiments.}
-  \label{fig:bond_dim}
-\end{figure}
-
-\textbf{Interpretation as SiliQun validation.} The divergence between Fix3 and QUASAR v9.51 validates SiliQun on two dimensions simultaneously. First, the physics engine is accurate enough to expose the genuine difficulty of the synthesis task: if the noise model were too weak, Fix3 would have succeeded. Second, the Gymnasium interface is well-formed enough that standard RL algorithms can be applied without modification: QUASAR v9.51 uses the standard SB3 SAC implementation with no environment-specific modifications beyond the reward function.
+\textbf{Interpretation as SiliQun validation.} The divergence between Fix3 and the DRL agent validates SiliQun on two dimensions simultaneously. First, the physics engine is accurate enough to expose the genuine difficulty of the synthesis task: if the noise model were too weak, Fix3 would have succeeded. Second, the Gymnasium interface is well-formed enough that standard RL algorithms can be applied without modification: the DRL agent uses the standard SB3 SAC implementation with no environment-specific modifications beyond the reward function.
 
 %% ----------------------------------------------------------
 \subsection{Cross-Algorithm Benchmark: Seven DRL Families}
@@ -130,7 +102,7 @@ T3 & SAC         & SAC (SB3)           & Fösel et al.~\cite{Fosel2021}         
 T3 & TD3         & TD3 (SB3)           & Fujimoto et al.~\cite{Fujimoto2018}     & 0.879 & --- \\
 T4 & DDPG        & DDPG (SB3)          & Niu et al.~\cite{Niu2018}               & 0.612 & --- \\
 T6 & SAC+BRFD    & SAC + BRFD          & This work                               & 0.981 & 412,000 \\
-T7 & SAC-HMRL    & SAC + BRFD + HMRL   & This work (QUASAR v9.51)                & \textbf{0.993} & \textbf{20,000} \\
+T7 & SAC-HMRL    & SAC + BRFD + HMRL   & This work (the DRL agent)                & \textbf{0.993} & \textbf{20,000} \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -142,11 +114,11 @@ Four findings emerge. \textbf{First, hierarchy is decisive at 4 qubits under SiM
 \label{subsec:gaa}
 %% ----------------------------------------------------------
 
-A key design requirement for SiliQun is that its physics engine should generalise beyond the primary SiMOS device profile to other silicon qubit architectures. We evaluate this by training QUASAR v9.51 on the GAA (Gate-All-Around) device profile, which models a nanowire-based silicon qubit with stronger confinement and correspondingly different noise parameters: $T_1 = 2$~ms, $T_2 = 1.2$~ms, $p_1 = 0.0005$, $p_2 = 0.005$. The target task is 2-qubit Bell state synthesis ($F \geq 0.99$), chosen to match the 2-qubit gate fidelity regime of current GAA experimental demonstrations.
+A key design requirement for SiliQun is that its physics engine should generalise beyond the primary SiMOS device profile to other silicon qubit architectures. We evaluate this by training the DRL agent on the GAA (Gate-All-Around) device profile, which models a nanowire-based silicon qubit with stronger confinement and correspondingly different noise parameters: $T_1 = 2$~ms, $T_2 = 1.2$~ms, $p_1 = 0.0005$, $p_2 = 0.005$. The target task is 2-qubit Bell state synthesis ($F \geq 0.99$), chosen to match the 2-qubit gate fidelity regime of current GAA experimental demonstrations.
 
 \begin{table}[h]
 \centering
-\caption{QUASAR v9.51 on SiliQun GAA device profile (2-qubit Bell synthesis). Results over 5 seeds (0--4). Mean $\pm$ std computed over converged seeds; seed 4 converged during training (best $F = 1.000$) but final evaluation fidelity was $0.9705$ due to policy oscillation.}
+\caption{the DRL agent on SiliQun GAA device profile (2-qubit Bell synthesis). Results over 5 seeds (0--4). Mean $\pm$ std computed over converged seeds; seed 4 converged during training (best $F = 1.000$) but final evaluation fidelity was $0.9705$ due to policy oscillation.}
 \label{tab:gaa_extension}
 \begin{tabular}{lrrrr}
 \toprule
@@ -163,18 +135,18 @@ A key design requirement for SiliQun is that its physics engine should generalis
 \end{tabular}
 \end{table}
 
-Four observations follow. \textbf{First, QUASAR generalises to GAA without retraining}: the same agent architecture, trained from scratch on the GAA profile, converges to $F \geq 0.99$ in all 5 seeds, confirming that SiliQun's device-profile abstraction is sufficient to expose the relevant physics differences between SiMOS and GAA. \textbf{Second, convergence is faster under GAA}: the solve step of 4,407 is $4.5\times$ faster than the 20,000-step SiMOS result, consistent with the lower noise level ($p_1 = 0.0005$ vs.~$0.001$) reducing the difficulty of the synthesis task. \textbf{Third, policy stability varies}: seed 4 achieves best $F = 1.000$ during training but oscillates to $F = 0.9705$ at final evaluation, indicating that the HMRL sub-goal reward shaping can occasionally produce unstable final policies under very low noise — a direction for future work. \textbf{Fourth, the mean final fidelity of $0.994 \pm 0.012$ is consistent with the SiMOS result ($0.993 \pm 0.004$)}, confirming that SiliQun's PGIRS methodology transfers across device profiles.
+Four observations follow. \textbf{First, the DRL agent generalises to GAA without retraining}: the same agent architecture, trained from scratch on the GAA profile, converges to $F \geq 0.99$ in all 5 seeds, confirming that SiliQun's device-profile abstraction is sufficient to expose the relevant physics differences between SiMOS and GAA. \textbf{Second, convergence is faster under GAA}: the solve step of 4,407 is $4.5\times$ faster than the 20,000-step SiMOS result, consistent with the lower noise level ($p_1 = 0.0005$ vs.~$0.001$) reducing the difficulty of the synthesis task. \textbf{Third, policy stability varies}: seed 4 achieves best $F = 1.000$ during training but oscillates to $F = 0.9705$ at final evaluation, indicating that the HMRL sub-goal reward shaping can occasionally produce unstable final policies under very low noise — a direction for future work. \textbf{Fourth, the mean final fidelity of $0.994 \pm 0.012$ is consistent with the SiMOS result ($0.993 \pm 0.004$)}, confirming that SiliQun's PGIRS methodology transfers across device profiles.
 
 %% ----------------------------------------------------------
 \subsection{Classical Optimal Control Baselines: GRAPE and CRAB}
 \label{subsec:grape_crab}
 %% ----------------------------------------------------------
 
-To situate QUASAR's DRL approach within the broader landscape of quantum optimal control, we benchmark two classical optimal control methods — GRAPE~\cite{Khaneja2005} and CRAB~\cite{Caneva2011} — on the same 4-qubit GHZ synthesis task under SiMOS Lindblad noise. Both methods are implemented via QuTiP's \texttt{pulseoptim} module~\cite{Lambert2024} with default convergence tolerances.
+To situate the DRL approach within the broader landscape of quantum optimal control, we benchmark two classical optimal control methods — GRAPE~\cite{Khaneja2005} and CRAB~\cite{Caneva2011} — on the same 4-qubit GHZ synthesis task under SiMOS Lindblad noise. Both methods are implemented via QuTiP's \texttt{pulseoptim} module~\cite{Lambert2024} with default convergence tolerances.
 
 \begin{table}[h]
 \centering
-\caption{Comparison of classical optimal control (GRAPE, CRAB) and DRL (QUASAR v9.51) on 4-qubit GHZ synthesis under SiMOS Lindblad noise. Noise-robust fidelity $F_\mathrm{nr}$ is evaluated under $1.5\times$ the training noise level. Wall-clock on A100 GPU.}
+\caption{Comparison of classical optimal control (GRAPE, CRAB) and DRL (the DRL agent) on 4-qubit GHZ synthesis under SiMOS Lindblad noise. Noise-robust fidelity $F_\mathrm{nr}$ is evaluated under $1.5\times$ the training noise level. Wall-clock on A100 GPU.}
 \label{tab:grape_crab}
 \begin{tabular}{lrrrrl}
 \toprule
@@ -183,21 +155,21 @@ To situate QUASAR's DRL approach within the broader landscape of quantum optimal
 GRAPE~\cite{Khaneja2005}    & 1.000 & 0.9966 & 31  & 53.8~s  & No (fixed pulse) \\
 CRAB~\cite{Caneva2011}      & 1.000 & 0.9929 & 38  & 15.9~s  & No (fixed pulse) \\
 SAC (plain)                  & 0.500 & 0.500  & --- & 4,701~s & Yes (policy) \\
-QUASAR v9.51 (this work)     & \textbf{0.993} & \textbf{0.9930} & --- & \textbf{194~s} & \textbf{Yes (policy)} \\
+The DRL agent (this work)     & \textbf{0.993} & \textbf{0.9930} & --- & \textbf{194~s} & \textbf{Yes (policy)} \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Three findings emerge. \textbf{First, GRAPE and CRAB achieve $F = 1.000$} on the training noise level, outperforming QUASAR's $F = 0.993$. This is expected: classical optimal control methods are designed to find the globally optimal pulse for a fixed, known noise model, and they succeed when the noise model is exactly the one used during optimisation. \textbf{Second, noise robustness is comparable}: GRAPE achieves $F_\mathrm{nr} = 0.9966$ and CRAB achieves $F_\mathrm{nr} = 0.9929$ under $1.5\times$ noise, while QUASAR achieves $F_\mathrm{nr} = 0.9930$ — within 0.004 of GRAPE. \textbf{Third, the critical distinction is generalisability}: GRAPE and CRAB produce fixed pulse sequences that must be re-optimised for each new target state, device profile, or noise level. QUASAR produces a policy — a function from state to action — that generalises to new initial conditions, partial circuit completions, and device profiles without retraining. This distinction is the primary motivation for the DRL approach: in a real quantum device, the noise model is not fixed and the target state changes with each algorithm, making the policy's generalisability more valuable than the fixed-pulse method's marginal fidelity advantage.
+Three findings emerge. \textbf{First, GRAPE and CRAB achieve $F = 1.000$} on the training noise level, outperforming the DRL agent's $F = 0.993$. This is expected: classical optimal control methods are designed to find the globally optimal pulse for a fixed, known noise model, and they succeed when the noise model is exactly the one used during optimisation. \textbf{Second, noise robustness is comparable}: GRAPE achieves $F_\mathrm{nr} = 0.9966$ and CRAB achieves $F_\mathrm{nr} = 0.9929$ under $1.5\times$ noise, while the DRL agent achieves $F_\mathrm{nr} = 0.9930$ — within 0.004 of GRAPE. \textbf{Third, the critical distinction is generalisability}: GRAPE and CRAB produce fixed pulse sequences that must be re-optimised for each new target state, device profile, or noise level. the DRL agent produces a policy — a function from state to action — that generalises to new initial conditions, partial circuit completions, and device profiles without retraining. This distinction is the primary motivation for the DRL approach: in a real quantum device, the noise model is not fixed and the target state changes with each algorithm, making the policy's generalisability more valuable than the fixed-pulse method's marginal fidelity advantage.
 
 %% ----------------------------------------------------------
 \subsection{Cross-Backend Policy Transferability Validation}
 \label{subsec:cross_backend}
 %% ----------------------------------------------------------
 
-A physics-grounded simulation environment is only scientifically credible if the policies it produces transfer to real quantum hardware. We evaluate policy transferability by executing QUASAR-synthesised circuits on three backends via the QuantumExecutor~\cite{bisicchia2025quantumexecutor} orchestration layer.
+A physics-grounded simulation environment is only scientifically credible if the policies it produces transfer to real quantum hardware. We evaluate policy transferability by executing DRL-synthesised circuits on three backends via the QuantumExecutor~\cite{bisicchia2025quantumexecutor} orchestration layer.
 
-Three circuits synthesised by QUASAR v9.52b are used as transferability probes: a 4-qubit GHZ state, a 4-qubit W state, and a 4-qubit linear cluster state. Each circuit is the highest-fidelity solution across five independent seeds. Circuits are exported to OpenQASM 2.0 and dispatched to: (1) Qiskit Aer noise-free (theoretical upper bound), (2) Qiskit Aer FakeSherbrooke\footnote{FakeSherbrooke is Qiskit Aer's official calibration-data-backed noise model for the 127-qubit \texttt{ibm\_sherbrooke} device, constructed from the device's published calibration data. The name follows Qiskit's standard nomenclature for fake backends~\cite{QiskitAer2023}.}, and (3) IonQ Aria-1 (cloud trapped-ion QPU, single-qubit fidelity $\geq 99.5\%$, two-qubit fidelity $\geq 98.5\%$~\cite{ionq2024aria}). Each backend executes $N = 4{,}096$ shots. Fidelity is estimated via linear cross-entropy benchmarking (XEB)~\cite{arute2019quantum}:
+Three circuits synthesised by the DRL agent are used as transferability probes: a 4-qubit GHZ state, a 4-qubit W state, and a 4-qubit linear cluster state. Each circuit is the highest-fidelity solution across five independent seeds. Circuits are exported to OpenQASM 2.0 and dispatched to: (1) Qiskit Aer noise-free (theoretical upper bound), (2) Qiskit Aer FakeSherbrooke\footnote{FakeSherbrooke is Qiskit Aer's official calibration-data-backed noise model for the 127-qubit \texttt{ibm\_sherbrooke} device, constructed from the device's published calibration data. The name follows Qiskit's standard nomenclature for fake backends~\cite{QiskitAer2023}.}, and (3) IonQ Aria-1 (cloud trapped-ion QPU, single-qubit fidelity $\geq 99.5\%$, two-qubit fidelity $\geq 98.5\%$~\cite{ionq2024aria}). Each backend executes $N = 4{,}096$ shots. Fidelity is estimated via linear cross-entropy benchmarking (XEB)~\cite{arute2019quantum}:
 \begin{equation}
   \mathcal{F}_\mathrm{XEB} = 2^n \langle p_\mathrm{ideal} \rangle_{p_\mathrm{meas}} - 1.
   \label{eq:xeb}
@@ -283,7 +255,7 @@ Gymnasium compatible & No                                & Yes (SB3 compatible) 
 \end{tabular}
 \end{table}
 
-The complementarity of the two works suggests a natural integration path for future research: Orbell's device tuning pipeline could be used to calibrate the SiMOS hardware profile in SiliQun from experimental data, replacing the current manually chosen conservative parameters with device-specific values obtained through automated Bayesian optimisation. This would close the loop between device characterisation (Orbell's contribution) and gate synthesis (SiliQun's contribution), realising the full SDQF stack from physical hardware to logical gate operations.
+The complementarity of the two works suggests a natural integration path for future research: Orbell's device tuning pipeline could be used to calibrate the SiMOS hardware profile in SiliQun from experimental data, replacing the current manually chosen conservative parameters with device-specific values obtained through automated Bayesian optimisation. This would close the loop between device characterisation (Orbell's contribution) and gate synthesis (SiliQun's contribution), realising the full simulation-to-synthesis pipeline from physical hardware characterisation to gate operations.
 
 %% ----------------------------------------------------------
 %% Bibliography entries for this section (to be merged into main .bib)

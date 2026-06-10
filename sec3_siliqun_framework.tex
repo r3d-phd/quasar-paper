@@ -1,11 +1,11 @@
 %% ============================================================
 %% §3 — The SiliQun Framework
 %% Merged P1+P6 Journal Paper: SiliQun — A Physics-Grounded
-%% Simulation Platform and Framework for the SDQF Data Plane
+%% Simulation Platform for Silicon Spin Qubit Quantum Control
 %%
 %% Sources:
-%%   §3.1 SDQF Architecture  → P6 intro (paper6_sdqf_abstract_intro.tex) + NEW
-%%   §3.2 Lindblad Engine    → P1 §3.2 (QUASAR_Paper1_Full_Manuscript.md) + P6 abstract
+%%   §3.1 PGIRS Architecture and Design Principles
+%%   §3.2 Lindblad Physics Engine
 %%   §3.3 Gymnasium Interface → P1 §3.1 MDP formulation + P6 contributions list
 %%   §3.4 PGIRS Methodology  → P6 abstract (five-phase description)
 %%   §3.5 Analytical Validation → P6 abstract (three benchmarks)
@@ -15,16 +15,15 @@
 \label{sec:framework}
 
 SiliQun is an open-source, physics-grounded simulation platform for silicon metal-oxide-semiconductor (SiMOS) spin qubits.
-Within the Software-Defined Quantum Firmware (SDQF) architecture, SiliQun occupies the \emph{data plane}: it provides the physics simulation substrate on which DRL agents train, but does not itself implement control policy or firmware logic.
-The firmware layer is ANDROMEDA~\cite{ANDROMEDA_P3}, which orchestrates multiple QUASAR~\cite{QUASAR_P2} control-plane agents into higher-level, multi-qubit behaviours; SiliQun is the environment those agents train in.
-This section describes the framework in four layers: the architectural position of SiliQun within the SDQF stack (\S\ref{subsec:sdqf_arch}), the Lindblad physics engine that constitutes its computational core (\S\ref{subsec:lindblad}), the Gymnasium-compatible environment interface that exposes the physics engine to reinforcement learning agents (\S\ref{subsec:gymnasium}), and the Physics-Grounded Iterative RL Stack (PGIRS) methodology that governs how the simulator is designed and validated (\S\ref{subsec:pgirs}). Analytical validation against three closed-form benchmarks is presented in \S\ref{subsec:validation}.
+SiliQun provides the physics simulation substrate on which DRL agents train, but does not itself implement control policy or firmware logic. This clean separation between simulation platform and control agent is the central architectural principle of the PGIRS methodology.
+This section describes the framework in four layers: the PGIRS design principles that govern SiliQun's architecture (\S\ref{subsec:sdqf_arch}), the Lindblad physics engine that constitutes its computational core (\S\ref{subsec:lindblad}), the Gymnasium-compatible environment interface that exposes the physics engine to reinforcement learning agents (\S\ref{subsec:gymnasium}), and the PGIRS methodology that governs how the simulator is designed and validated (\S\ref{subsec:pgirs}). Analytical validation against three closed-form benchmarks is presented in \S\ref{subsec:validation}.
 
 %% ----------------------------------------------------------
-\subsection{SDQF Architecture and the Data Plane}
+\subsection{PGIRS Architecture and Design Principles}
 \label{subsec:sdqf_arch}
 %% ----------------------------------------------------------
 
-The SDQF concept draws its organising principle from software-defined networking~\cite{McKeown2008}: just as SDN separates routing logic (control plane) from packet forwarding (data plane), SDQF separates policy synthesis from physics simulation. We formalise the SDQF system as a tuple $\mathcal{S} = (\mathcal{A}, \mathcal{E}, \mathcal{I}, \mathcal{P})$ where:
+The PGIRS methodology draws its organising principle from software-defined networking~\cite{McKeown2008}: just as SDN separates routing logic from packet forwarding, PGIRS separates policy synthesis from physics simulation. We formalise the SiliQun simulation system as a tuple $\mathcal{S} = (\mathcal{A}, \mathcal{E}, \mathcal{I}, \mathcal{P})$ where:
 
 \begin{itemize}
   \item $\mathcal{A}$ is the DRL agent (control plane), parameterised by a policy $\pi_\theta: \mathcal{S} \rightarrow \Delta(\mathcal{A})$ that maps observations to distributions over gate actions;
@@ -33,16 +32,9 @@ The SDQF concept draws its organising principle from software-defined networking
   \item $\mathcal{P}$ is the device profile, encoding SiMOS hardware parameters $(T_1, T_2, p_1, p_2, \tau_1, \tau_2)$.
 \end{itemize}
 
-\begin{figure}[t]
-  \centering
-  \includegraphics[width=0.95\linewidth]{fig_architecture}
-  \caption{\textbf{SiliQun system architecture and SDQF stack positioning.} SiliQun occupies the data plane of the Software-Defined Quantum Firmware (SDQF) architecture, providing the physics engine ($\mathcal{E}$), Gymnasium interface ($\mathcal{I}$), and device profile ($\mathcal{P}$). The control plane ($\mathcal{A}$, implemented by QUASAR~\cite{QUASAR_P2}) and firmware layer (ANDROMEDA~\cite{ANDROMEDA_P3}) interact with SiliQun exclusively through the standardised Gymnasium API. Arrows indicate data flow; dashed boundaries indicate the scope of each architectural layer.}
-  \label{fig:architecture}
-\end{figure}
-
 SiliQun implements $\mathcal{E}$, $\mathcal{I}$, and $\mathcal{P}$ — the complete data plane. The control plane $\mathcal{A}$ is deliberately left open: any Gymnasium-compatible RL agent can be plugged in without modification. This separation has three practical consequences. First, the physics model can be updated independently of the control policy — a new SiMOS device calibration requires only a change to $\mathcal{P}$, not a rewrite of the agent. Second, the same control agent can be evaluated across multiple device profiles by swapping $\mathcal{P}$, enabling cross-platform benchmarking without code changes. Third, the interface $\mathcal{I}$ acts as a contract: any agent that satisfies the Gymnasium API is guaranteed to be compatible with SiliQun, making the framework immediately accessible to the entire Stable-Baselines3 ecosystem~\cite{Raffin2021}.
 
-The SDQF stack as instantiated in this work has three layers above SiliQun. The QUASAR v9.51 DRL agent~\cite{QUASAR_P2} occupies the control plane, training on SiliQun to produce four-qubit gate synthesis policies at fidelity $F \geq 0.99$. The ANDROMEDA hierarchical framework~\cite{ANDROMEDA_P3} constitutes the firmware layer proper, orchestrating multiple frozen QUASAR modules through a software-defined control plane that coordinates physical quantum processing units (QPUs) without modifying the base-level policies. The logical qubit application layer sits above ANDROMEDA and is the subject of companion work~\cite{LogicalQubit_P7}. SiliQun's contribution is to make all three upper layers possible by providing a physically accurate, computationally efficient, and interface-standardised simulation substrate.
+As instantiated in this work, the DRL control agent (described in \S\ref{sec:drl_agent}) trains on SiliQun to produce four-qubit gate synthesis policies at fidelity $F \geq 0.99$. SiliQun's contribution is to provide a physically accurate, computationally efficient, and interface-standardised simulation substrate that any DRL algorithm can use without modification.
 
 %% ----------------------------------------------------------
 \subsection{Lindblad Physics Engine}
@@ -88,32 +80,18 @@ where $\mathcal{P}_2$ is the two-qubit Pauli group. Single-qubit gates are subje
 
 \textbf{SiMOS hardware calibration.} The noise parameters are set to values drawn from recent experimental demonstrations of SiMOS spin qubits: $T_1 = 1.0$~ms, $T_2 = 0.5$~ms, $p_1 = 0.001$ (0.1\%), $p_2 = 0.01$ (1.0\%), single-qubit gate duration $\tau_1 = 10$~ns, two-qubit gate duration $\tau_2 = 100$~ns~\cite{Xue2022,Noiri2022,Philips2022,Steinacker2023}. These values place SiliQun firmly in the physically realistic regime: the implied single-qubit error rate per gate is $\gamma_1 \approx 10^{-5}$ (dominated by depolarising noise at $p_1 = 10^{-3}$), while the two-qubit error rate of $p_2 = 10^{-2}$ is consistent with the best reported two-qubit gate fidelities for SiMOS devices~\cite{Noiri2022,Philips2022}.
 
-\begin{figure}[t]
-  \centering
-  \includegraphics[width=0.95\linewidth]{fig_device_profiles}
-  \caption{\textbf{Silicon spin qubit device profiles in SiliQun.} Comparison of $T_1$ relaxation times and $T_2^*$ dephasing times across the four device profiles supported by SiliQun: SiMOS (nominal), SiMOS-GAA (gate-all-around), Donor (phosphorus-in-silicon), and Si/SiGe (silicon-germanium heterostructure). Error bars indicate the parameter range reported in the literature for each device class~\cite{Xue2022,Noiri2022,Philips2022,Steinacker2023}. The SiMOS profile is used for all primary experiments in this paper.}
-  \label{fig:device_profiles}
-\end{figure}
-
-\textbf{Simulation backend.} Gate operations are applied as exact tensor contractions on a matrix product state (MPS) representation of the $n$-qubit register, followed by singular value decomposition (SVD) truncation at a cutoff of $10^{-14}$. The maximum bond dimension is $\chi_\text{max} = 32$, which is sufficient to represent all states encountered during 4-qubit GHZ synthesis without approximation error. Circuit fidelity is computed as the squared overlap between the current state and the target state: $F = |\langle \psi_\text{target} | \psi \rangle|^2$. GPU acceleration via CuPy tensor operations achieves a $93\times$ speedup over CPU-based NumPy simulation, enabling the millions of environment steps required by ANDROMEDA's hierarchical training~\cite{ANDROMEDA_P3}.
+\textbf{Simulation backend.} Gate operations are applied as exact tensor contractions on a matrix product state (MPS) representation of the $n$-qubit register, followed by singular value decomposition (SVD) truncation at a cutoff of $10^{-14}$. The maximum bond dimension is $\chi_\text{max} = 32$, which is sufficient to represent all states encountered during 4-qubit GHZ synthesis without approximation error. Circuit fidelity is computed as the squared overlap between the current state and the target state: $F = |\langle \psi_\text{target} | \psi \rangle|^2$. GPU acceleration via CuPy tensor operations achieves a $93\times$ speedup over CPU-based NumPy simulation, enabling the millions of environment steps required by deep reinforcement learning training.
 
 %% ----------------------------------------------------------
 \subsection{Gymnasium-Compatible Environment Interface}
 \label{subsec:gymnasium}
 %% ----------------------------------------------------------
 
-\begin{figure}[t]
-  \centering
-  \includegraphics[width=0.95\linewidth]{fig_env_throughput}
-  \caption{\textbf{DRL environment throughput comparison.} Steps per second achieved by SiliQun (MPS backend), Qiskit Aer (statevector), and QuTiP (density matrix) when used as Gymnasium environments for DRL training on an Intel Xeon E5-2695 v2 CPU (single core). SiliQun maintains near-constant throughput across qubit counts owing to the MPS representation's polynomial scaling, while statevector and density matrix backends degrade exponentially. GPU-accelerated SiliQun (CuPy backend) achieves an additional $93\times$ speedup.}
-  \label{fig:env_throughput}
-\end{figure}
-
 SiliQun exposes the Lindblad physics engine through a standard Gymnasium \texttt{Env} interface~\cite{Towers2023}, making it directly compatible with any RL library that follows the Gymnasium API — including Stable-Baselines3~\cite{Raffin2021}, RLlib~\cite{Liang2018}, and CleanRL~\cite{Huang2022}. The environment is registered as \texttt{SiliQunEnv-v1} and can be instantiated with a single line: \texttt{env = gymnasium.make("SiliQunEnv-v1", device\_profile=simos\_v5)}.
 
 \textbf{MDP formulation.} Quantum circuit synthesis is cast as a Markov Decision Process $\mathcal{M} = (\mathcal{S}, \mathcal{A}, \mathcal{T}, \mathcal{R}, \gamma)$. At each discrete time step $t$, the agent observes a state $s_t \in \mathcal{S}$, selects a gate action $a_t \in \mathcal{A}$, and receives a scalar reward $r_t$. The episode terminates after a fixed horizon of $T = 100$ steps or earlier upon reaching the target fidelity $F_\text{target} = 0.99$.
 
-\textbf{State space.} The observation $s_t \in \mathbb{R}^{16}$ is a flattened real-valued vector comprising the 16 diagonal elements of the four-qubit density matrix — that is, the computational-basis state probabilities $\{|\langle i|\psi\rangle|^2\}_{i=0}^{15}$ extracted from the MPS representation. This encoding captures the population distribution across all basis states and is sufficient for the synthesis task, as confirmed by the F = 0.9930 result achieved by QUASAR v9.51~\cite{QUASAR_P2}. Off-diagonal coherence terms are omitted; a full density-matrix encoding requiring 255 independent real parameters is available as a configuration option for future work.
+\textbf{State space.} The observation $s_t \in \mathbb{R}^{16}$ is a flattened real-valued vector comprising the 16 diagonal elements of the four-qubit density matrix — that is, the computational-basis state probabilities $\{|\langle i|\psi\rangle|^2\}_{i=0}^{15}$ extracted from the MPS representation. This encoding captures the population distribution across all basis states and is sufficient for the synthesis task, as confirmed by the $F = 0.9930$ result achieved by the DRL control agent described in \S\ref{sec:drl_agent}. Off-diagonal coherence terms are omitted; a full density-matrix encoding requiring 255 independent real parameters is available as a configuration option for future work.
 
 \textbf{Action space.} The discrete action space $\mathcal{A}$ contains $|\mathcal{A}| = 11$ gate tokens drawn from the native SiMOS gate set: single-qubit rotations ($R_X(\pi/2)$, $R_X(\pi)$, $R_Y(\pi/2)$, $R_Y(\pi)$, $R_Z(\pi/2)$, $R_Z(\pi)$), two-qubit entangling gates (CNOT, CZ) applied to each of the three adjacent qubit pairs in the linear topology, and the identity (no-op). Each token specifies both the gate type and the target qubit(s); continuous rotation angles are discretised into the fixed vocabulary above, consistent with the native gate set of SiMOS exchange-coupled quantum dots~\cite{Veldhorst2015}.
 
@@ -124,7 +102,7 @@ SiliQun exposes the Lindblad physics engine through a standard Gymnasium \texttt
   \label{eq:reward}
 \end{equation}
 
-where $\Delta F_t$ is the change in circuit fidelity, $\Delta H_t$ is the change in entanglement entropy (encouraging entanglement growth toward the GHZ target), $\Delta \chi_t$ is the change in MPS bond dimension (penalising unnecessary complexity), and $\varepsilon_t$ is the current depolarising noise rate. The weight vector $\mathbf{w} = (w_F, w_E, w_B, w_N)$ is not hand-tuned; it is discovered autonomously by the BRFD module of the QUASAR control agent~\cite{QUASAR_P2}. This design choice reflects the PGIRS principle of reward engineering as a first-class concern: the reward function is part of the framework, not an afterthought.
+where $\Delta F_t$ is the change in circuit fidelity, $\Delta H_t$ is the change in entanglement entropy (encouraging entanglement growth toward the GHZ target), $\Delta \chi_t$ is the change in MPS bond dimension (penalising unnecessary complexity), and $\varepsilon_t$ is the current depolarising noise rate. The weight vector $\mathbf{w} = (w_F, w_E, w_B, w_N)$ is not hand-tuned; it is discovered autonomously by the BRFD module of the DRL control agent described in \S\ref{sec:drl_agent}. This design choice reflects the PGIRS principle of reward engineering as a first-class concern: the reward function is part of the framework, not an afterthought.
 
 \textbf{Episode termination and success criterion.} An episode is considered successful if the evaluation fidelity $F_\text{eval} \geq 0.99$ at any point during the episode. This threshold corresponds to the surface-code fault-tolerance threshold: a per-module physical error rate below 1\% is the necessary condition for fault-tolerant logical qubit construction under the surface code~\cite{Fowler2012,Dennis2002}.
 
@@ -137,11 +115,11 @@ The Physics-Grounded Iterative RL Stack (PGIRS) is a five-phase engineering disc
 
 \textbf{Phase 1 — Noise-First Design.} Before any RL agent is instantiated, the noise model must be calibrated to the target hardware. This means identifying the relevant decoherence channels (T$_1$, T$_2$, depolarising, charge noise), setting their parameters from experimental data, and validating the noise model against analytical benchmarks (see \S\ref{subsec:validation}). Skipping this phase — by using an abstract depolarising model or a noiseless simulator — produces agents that achieve high simulated fidelity but fail on real hardware, as demonstrated by the transferability gap in Table~\ref{tab:cross_backend}.
 
-\textbf{Phase 2 — Interface Abstraction.} The physics engine is wrapped in a Gymnasium-compatible interface that decouples the simulation backend from the RL agent. This phase enforces the SDQF data/control plane separation: the agent interacts only through the standardised \texttt{step}/\texttt{reset} API and has no direct access to the internal state of the Lindblad solver. This abstraction enables backend substitution (e.g., replacing the MPS simulator with a tensor network simulator or a real hardware backend via QuantumExecutor~\cite{QuantumExecutor2025}) without modifying the agent.
+\textbf{Phase 2 — Interface Abstraction.} The physics engine is wrapped in a Gymnasium-compatible interface that decouples the simulation backend from the RL agent. The agent interacts only through the standardised \texttt{step}/\texttt{reset} API and has no direct access to the internal state of the Lindblad solver. This abstraction enables backend substitution (e.g., replacing the MPS simulator with a tensor network simulator or a real hardware backend via QuantumExecutor~\cite{QuantumExecutor2025}) without modifying the agent.
 
 \textbf{Phase 3 — Reward Engineering.} The reward function is designed to provide dense, informative feedback that guides the agent toward the target fidelity. The four-component reward in Eq.~(\ref{eq:reward}) is the result of this phase. Critically, the reward weights are not fixed; they are treated as hyperparameters to be discovered by Bayesian optimisation (BRFD), making the reward function adaptive to the evolving difficulty of the synthesis task.
 
-\textbf{Phase 4 — Hierarchical Decomposition.} For multi-qubit systems beyond the tractable horizon of flat RL agents, the synthesis problem is decomposed into a hierarchy of sub-problems. Each sub-problem is solved independently, and the solutions are composed through a principled fusion mechanism. This phase is implemented by the ANDROMEDA hierarchical framework~\cite{ANDROMEDA_P3}, which decomposes the 20-qubit surface code synthesis task into five 4-qubit sub-problems (solved by QUASAR modules) and two levels of fusion agents.
+\textbf{Phase 4 — Hierarchical Decomposition.} For multi-qubit systems beyond the tractable horizon of flat RL agents, the synthesis problem is decomposed into a hierarchy of sub-problems. Each sub-problem is solved independently, and the solutions are composed through a principled fusion mechanism. This phase is a natural extension of SiliQun's modular design: the same simulation environment can be used to train individual sub-problem agents, which are then composed into a multi-qubit policy.
 
 \textbf{Phase 5 — Empirical Validation.} The trained agent is evaluated against a held-out test set of target states, with results reported as mean fidelity $\pm$ standard deviation across multiple independent seeds. Cross-backend validation using QuantumExecutor~\cite{QuantumExecutor2025} confirms that policies trained on SiliQun transfer to alternative simulation backends (IonQ Aria-1 via FakeSherbrooke, Qiskit Aer statevector) with fidelity degradation below the measurement noise floor.
 
@@ -161,13 +139,6 @@ Before any RL agent is trained on SiliQun, the Lindblad physics engine is valida
 \textbf{Benchmark 3 — Bell state fidelity versus coherence time.} A two-qubit Bell state $|\Phi^+\rangle = (|00\rangle + |11\rangle)/\sqrt{2}$ is prepared and held for a variable time $t$ under the combined T$_1$, T$_2$, and depolarising noise model. The expected fidelity decay is derived analytically from the Lindblad equation. SiliQun reproduces the analytical curve with a maximum absolute deviation of $0.0024$ across the range $t \in [0, 5T_2]$, confirming that the three noise channels interact correctly and that the combined noise model is physically consistent.
 
 These three benchmarks together provide high confidence that the SiliQun physics engine correctly implements the Lindblad master equation for SiMOS qubits. The benchmarks are included in the SiliQun test suite and are run automatically on every commit to the public repository.
-
-\begin{figure}[h]
-  \centering
-  \includegraphics[width=0.95\linewidth]{fig_gate_accuracy}
-  \caption{\textbf{Analytical validation of the SiliQun physics engine.} Gate fidelity for all 11 gate tokens in the SiliQun action space, measured against closed-form analytical solutions. All gates achieve fidelity $F \geq 1 - 10^{-14}$, confirming machine-precision correctness of the tensor contraction implementation. The three rightmost columns show the Rabi oscillation, $T_1$ decay, and Bell state fidelity benchmarks that validate the Lindblad noise channels independently.}
-  \label{fig:gate_accuracy}
-\end{figure}
 
 %% ----------------------------------------------------------
 %% Bibliography entries for this section (to be merged into main .bib)

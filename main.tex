@@ -9,15 +9,15 @@
 %   sec1_abstract_intro.tex  — Abstract + Introduction
 %   sec2_related_work.tex    — Related Work
 %   sec3_siliqun_framework.tex — SiliQun Framework
-%   sec4_quasar_control_agent.tex — QUASAR Control Agent
+%   sec4_quasar_control_agent.tex — DRL Control Agent
 %   sec5_experiments.tex     — Experiments
 %   sec6_discussion.tex      — Discussion
 %   sec7_conclusion.tex      — Conclusion
 %
 % Architecture layers (CRITICAL — do not conflate):
 %   SiliQun   = Data Plane (physics simulation substrate)
-%   QUASAR    = Control Plane Agent (trains ON SiliQun)
-%   ANDROMEDA = Firmware Layer (hierarchical modular RL)
+%   DRL Agent = SAC-based control agent (trains ON SiliQun)
+
 % ============================================================
 
 \documentclass[twocolumn]{article}
@@ -26,7 +26,6 @@
 \usepackage{amsmath,amssymb}
 \usepackage{physics}
 \usepackage{graphicx}
-\graphicspath{{figures/}{./}}
 \usepackage{booktabs}
 \usepackage{multirow}
 \usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
@@ -67,7 +66,7 @@
 % ── §3 SiliQun Framework ─────────────────────────────────────
 \input{sec3_siliqun_framework}
 
-% ── §4 QUASAR Control Agent ──────────────────────────────────
+% ── §4 DRL Control Agent ──────────────────────────────────
 \input{sec4_quasar_control_agent}
 
 % ── §5 Experiments ───────────────────────────────────────────
@@ -337,44 +336,6 @@ B.~Orbell,
 ``Reinforcement learning for silicon spin qubit device tuning and control,''
 DPhil thesis, University of Oxford, 2024.
 
-% ── Companion papers (this series) ───────────────────────────
-\bibitem{QUASAR_P2}
-R.~A.~Al-Shehri,
-``QUASAR v9.51: A Modular Deep Reinforcement Learning Agent for
-Fault-Tolerant Quantum Gate Synthesis on SiliQun,''
-\textit{arXiv preprint}, 2025.
-
-\bibitem{companion:quasar}
-R.~A.~Al-Shehri,
-``QUASAR v9.51: A Modular Deep Reinforcement Learning Agent for
-Fault-Tolerant Quantum Gate Synthesis on SiliQun,''
-\textit{arXiv preprint}, 2025.
-
-\bibitem{ANDROMEDA_P3}
-R.~A.~Al-Shehri,
-``ANDROMEDA: Hierarchical Modular Reinforcement Learning for
-20-Qubit Quantum Firmware Construction,''
-\textit{arXiv preprint}, 2025.
-
-\bibitem{companion:andromeda}
-R.~A.~Al-Shehri,
-``ANDROMEDA: Hierarchical Modular Reinforcement Learning for
-20-Qubit Quantum Firmware Construction,''
-\textit{arXiv preprint}, 2025.
-
-\bibitem{ANDROMEDA2025}
-R.~A.~Al-Shehri,
-``ANDROMEDA: Hierarchical Modular Reinforcement Learning for
-20-Qubit Quantum Firmware Construction,''
-\textit{arXiv preprint}, 2025.
-
-\bibitem{LogicalQubit_P7}
-R.~A.~Al-Shehri,
-``Logical Qubit Encoding via Hierarchical DRL: From Physical Gates to
-Fault-Tolerant Logical Operations,''
-\textit{arXiv preprint}, 2025.
-
-% ── Classical optimal control baselines ─────────────────────
 \bibitem{Khaneja2005}
 N.~Khaneja, T.~Reiss, C.~Kehlet, T.~Schulte-Herbr\"uggen, and S.~J.~Glaser,
 ``Optimal control of coupled spin dynamics: design of NMR pulse sequences by gradient ascent algorithms,'' \textit{J.\ Magn.\ Reson.}, vol.~172, pp.~296--305, 2005.

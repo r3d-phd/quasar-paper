@@ -1,13 +1,13 @@
 %% ============================================================
 %% §6 — Discussion
 %% Merged P1+P6 Journal Paper: SiliQun — A Physics-Grounded
-%% Simulation Platform and Framework for the SDQF Data Plane
+%% Simulation Platform and Framework for the PGIRS Data Plane
 %%
 %% Sources:
 %%   §6.1 F≥0.99 Significance     → P1 §5.1 (adapted, reframed as SiliQun validation)
 %%   §6.2 Positioning vs Related Work → P1 §5.2 + P6 §2.4 Oxford framing
 %%   §6.3 PGIRS Generalisability   → NEW (beyond SiMOS applicability)
-%%   §6.4 ANDROMEDA Scalability    → NEW (forward ref, placeholder for results)
+%%   §6.4 a hierarchical DRL framework Scalability    → NEW (forward ref, placeholder for results)
 %%   §6.5 Limitations + Future Work → P1 §5.3 (augmented with sim-to-hardware gap)
 %% ============================================================
 
@@ -15,48 +15,17 @@
 \label{sec:discussion}
 
 %% ----------------------------------------------------------
-\subsection{Significance of the Replication-Based Validation Strategy}
+\subsection{Significance of the F \texorpdfstring{$\geq$}{>=} 0.99 Result as a Simulator Validation}
 \label{subsec:significance}
 %% ----------------------------------------------------------
 
-The replication-based validation strategy adopted in this paper provides
-a stronger form of evidence for SiliQun's correctness than the
-alternative approach of demonstrating a single high-fidelity result on
-one hardware platform.
-By reproducing two independently published experiments on two different
-hardware profiles and obtaining results within $0.06\%$ of the published
-values, we establish that SiliQun's physics engine is not merely
-self-consistent but externally validated against independent ground truths.
+The achievement of $F_\text{eval} = 0.9930$ by the DRL control agent on SiliQun is significant not only as a DRL result but as a validation of the simulation platform itself. The fault-tolerance threshold $F \geq 0.99$ is not an arbitrary benchmark: it corresponds to the fidelity above which the surface code can suppress logical error rates below the physical error rate~\cite{Fowler2012}, making it the practical boundary between NISQ-era and fault-tolerant quantum computing. Demonstrating that a DRL agent trained exclusively on SiliQun can cross this threshold under first-principles SiMOS Lindblad noise establishes two things simultaneously.
 
-The significance of the SiMOS replication (Replication~1) is that it
-provides a quantitative bound on the simulator's accuracy:
-$\Delta F < 0.06\%$ relative to Daraeizadeh~et~al.~\cite{Daraeizadeh2020}.
-This bound is tighter than the experimental uncertainty in the original
-paper, which reports $F > 0.999$ without a precise upper bound.
-The agreement confirms that SiliQun's ZZ Hamiltonian parameterisation,
-charge noise amplitude, and gate time are all consistent with the SiMOS
-device used in the original experiment.
+The first is that SiliQun's physics engine is accurate enough to pose a genuinely hard optimisation problem. The Fix3 baseline — a competent DRL agent with manually tuned reward weights — fails to cross $F = 0.99$ after 300,000 training steps under the same SiMOS noise model. If the noise model were too weak or too easily circumvented, Fix3 would have succeeded. The fact that it does not confirms that SiliQun's Lindblad dynamics are physically realistic enough to expose the true difficulty of 4-qubit gate synthesis on SiMOS hardware.
 
-The significance of the donor replication (Replication~2) is different
-in character: it validates the donor physics model by demonstrating that
-the DQN algorithm finds the global optimum ($F_\text{best} = 1.0000$)
-on the donor profile, confirming that the $S$-$T_0$ Hamiltonian and
-hyperfine coupling are correctly implemented.
-The lower mean cardinal-state fidelity ($\bar{F} = 0.9748$ versus $F > 0.99$
-in He~et~al.) is explained by the methodological difference between
-per-state specialisation (He~et~al.) and general-purpose training (this
-work), not by a deficiency in the simulator.
+The second is that SiliQun's Gymnasium interface is well-formed enough to support the full the DRL control agent algorithm stack — SAC, BRFD, HMRL, DEHB, expert warm-start, and curriculum learning — without any environment-specific modifications. This is a non-trivial property: several of the seven DRL families benchmarked in \S\ref{subsec:cross_algo} fail to converge or converge slowly, not because of environment defects but because of fundamental mismatches between the algorithm and the task structure. The fact that the most sophisticated algorithm (SAC-HMRL) achieves $F = 0.993$ while the simplest (DQN) achieves only $F = 0.847$ confirms that the environment provides a rich enough learning signal to discriminate between algorithm families — a prerequisite for a useful benchmark environment.
 
-The GAA extension (Extension~3) is significant for a different reason:
-it demonstrates that SiliQun enables experiments that cannot yet be
-conducted on physical hardware.
-No GAA silicon spin qubit device has been characterised to the degree
-required for gate synthesis experiments; SiliQun's GAA profile, derived
-from TCAD simulations~\cite{Tanamoto2026}, provides the first platform
-on which such experiments can be performed.
-The result ($F_\text{best} = 0.9999$, $\bar{F}_\text{cardinal} = 0.9792 \pm 0.0089$, 5 seeds)
-establishes a baseline against which future physical GAA experiments can
-be compared.
+The rapidity of convergence — 194 seconds on a single A100 GPU — is attributable to three design choices that are themselves part of the PGIRS methodology (\S\ref{subsec:pgirs}): expert warm-start providing accurate Q-value initialisation, BRFD discovering well-calibrated reward weights for the 4-qubit landscape, and the curriculum patches preventing catastrophic forgetting events that caused earlier runs to regress after reaching high fidelity. The 93$\times$ GPU speedup over CPU simulation (\S\ref{subsec:gymnasium}) is a necessary prerequisite for this convergence speed: at CPU speeds, the 20,000 training steps required to reach $F = 0.99$ would take approximately 5 hours rather than 194 seconds, making iterative algorithm development impractical.
 
 %% ----------------------------------------------------------
 \subsection{Positioning Within the Quantum Simulation Landscape}
@@ -67,9 +36,9 @@ SiliQun occupies a specific and previously unoccupied niche in the quantum simul
 
 \textbf{Against general-purpose quantum simulators (QuTiP, Qiskit Aer, PennyLane).} These frameworks provide accurate quantum dynamics simulation but do not expose a Gymnasium-compatible interface. Converting them to RL training environments requires substantial engineering effort — defining observation and action spaces, implementing reward functions, managing episode boundaries, and integrating with SB3 or other RL libraries. SiliQun performs this integration once, correctly, and releases it as a reusable open-source package. The PGIRS methodology (\S\ref{subsec:pgirs}) codifies the engineering decisions made during this integration so that future researchers extending SiliQun to new hardware platforms can follow the same five-phase discipline.
 
-\textbf{Against abstract RL environments for quantum circuit synthesis (qgym, Qiskit Gym, QuantumCircuitEnv).} These environments provide Gymnasium-compatible interfaces but use abstract depolarising noise models that do not capture the amplitude damping and dephasing channels present in silicon spin qubit devices. The replication experiments in \S\ref{sec:experiments} demonstrate that the choice of hardware profile has a substantial impact on achievable fidelity: the same DQN algorithm achieves $\bar{F}_\text{cardinal} = 0.9748$ on the donor profile and $\bar{F}_\text{cardinal} = 0.9792$ on the GAA profile under their respective Lindblad noise models. Abstract depolarising noise models cannot capture this hardware-specific variation. SiliQun is the first environment to combine a Gymnasium-compatible interface with first-principles Lindblad noise models for three distinct silicon spin qubit technologies.
+\textbf{Against abstract RL environments for quantum circuit synthesis (qgym, Qiskit Gym, QuantumCircuitEnv).} These environments provide Gymnasium-compatible interfaces but use abstract depolarising noise models that do not capture the amplitude damping and dephasing channels present in SiMOS devices. As demonstrated in \S\ref{subsec:cross_algo}, the choice of noise model has a substantial impact on achievable fidelity: algorithms that solve the task trivially under abstract depolarising noise (DQN, PPO) fail to reach the fault-tolerance threshold under SiMOS Lindblad noise. SiliQun is the first environment to combine a Gymnasium-compatible interface with a first-principles SiMOS Lindblad noise model.
 
-\textbf{Against the Oxford DPhil spin qubit work (Orbell 2024~\cite{Orbell2024}).} Orbell's work addresses the device tuning and calibration layer of the quantum computing stack, while SiliQun addresses the gate synthesis layer. The two works are non-overlapping in problem domain, noise modelling approach, and software availability. The natural integration path is for Orbell's Bayesian optimisation pipeline to calibrate SiliQun's hardware profile from experimental data, replacing the current manually chosen conservative parameters with device-specific values. This would realise the full SDQF stack from physical hardware characterisation (Orbell's contribution) through gate synthesis (SiliQun's contribution) to hierarchical logical qubit construction (ANDROMEDA's contribution~\cite{ANDROMEDA_P3}).
+\textbf{Against the Oxford DPhil spin qubit work (Orbell 2024~\cite{Orbell2024}).} As detailed in \S\ref{subsec:oxford_comparison}, Orbell's work addresses the device tuning and calibration layer of the quantum computing stack, while SiliQun addresses the gate synthesis layer. The two works are non-overlapping in problem domain, noise modelling approach, and software availability. The natural integration path is for Orbell's Bayesian optimisation pipeline to calibrate SiliQun's hardware profile from experimental data, replacing the current manually chosen conservative parameters with device-specific values. This would realise the full full simulation-to-synthesis pipeline from physical hardware characterisation (Orbell's contribution) through gate synthesis (SiliQun's contribution).
 
 %% ----------------------------------------------------------
 \subsection{PGIRS Generalisability Beyond SiMOS}
@@ -78,68 +47,54 @@ SiliQun occupies a specific and previously unoccupied niche in the quantum simul
 
 The PGIRS methodology (\S\ref{subsec:pgirs}) was developed in the context of SiMOS spin qubits, but its five phases are hardware-agnostic by design. Each phase operates on the device profile $\mathcal{P}$ as an abstract parameter set; replacing the SiMOS profile with a different hardware profile instantiates a different simulation environment without modifying the framework architecture.
 
-The three silicon spin qubit profiles validated in this paper (SiMOS, donor, GAA) demonstrate that PGIRS generalises across hardware platforms within the silicon spin qubit family. The extension to other qubit technologies follows the same five-phase discipline. \textbf{Superconducting transmon qubits} (IBM, Google, Rigetti) are the most widely deployed NISQ hardware and have well-characterised noise models~\cite{Krantz2019}. The dominant noise channels --- $T_1$ relaxation, $T_2$ dephasing, and gate crosstalk --- map directly to the Lindblad operators already implemented in SiliQun's physics engine; extending SiliQun to transmon qubits would require updating the hardware profile $\mathcal{P}$ and the gate set, but not the Lindblad solver or the Gymnasium interface. \textbf{Trapped-ion qubits} (IonQ, Honeywell) have longer coherence times but slower gate speeds and all-to-all connectivity; the all-to-all topology is a straightforward extension of SiliQun's nearest-neighbour coupling model. \textbf{Neutral atom qubits} (QuEra, Pasqal) are an emerging platform with native multi-qubit gates and reconfigurable connectivity; extending SiliQun to neutral atoms would require adding Rydberg blockade interactions to the Lindblad solver, which is a well-defined extension of the existing framework.
+Three hardware platforms are natural candidates for PGIRS extension. \textbf{Superconducting transmon qubits} (IBM, Google, Rigetti) are the most widely deployed NISQ hardware and have well-characterised noise models~\cite{Krantz2019}. The dominant noise channels — $T_1$ relaxation, $T_2$ dephasing, and gate crosstalk — map directly to the Lindblad operators already implemented in SiliQun's physics engine; extending SiliQun to transmon qubits would require updating the hardware profile $\mathcal{P}$ and the gate set, but not the Lindblad solver or the Gymnasium interface. \textbf{Trapped-ion qubits} (IonQ, Honeywell) have longer coherence times but slower gate speeds and all-to-all connectivity; the cross-backend validation in \S\ref{subsec:cross_backend} already demonstrates that the DRL agent-synthesised circuits transfer to IonQ Aria-1 with $\mathcal{F}_\mathrm{XEB} \geq 0.954$, suggesting that a trapped-ion hardware profile for SiliQun would be a productive direction. \textbf{Neutral atom qubits} (QuEra, Pasqal) are an emerging platform with native multi-qubit gates and reconfigurable connectivity; extending SiliQun to neutral atoms would require adding Rydberg blockade interactions to the Lindblad solver, which is a well-defined extension of the existing framework.
 
 The PGIRS methodology's Phase 5 (empirical validation) provides a systematic protocol for validating any new hardware profile: the three analytical benchmarks (Rabi oscillations, $T_1$ decay, Bell state fidelity) are hardware-independent and can be applied to any Lindblad-based simulation. This provides a reproducible quality gate for hardware profile development that does not depend on access to physical hardware.
 
 %% ----------------------------------------------------------
-\subsection{SiliQun as a Simulation Substrate for Downstream Frameworks}
-\label{subsec:andromeda_scalability}
+\subsection{a hierarchical DRL framework Scalability: From 4-Qubit Gates to 20-Qubit Systems}
+\label{subsec:andromeda}
 %% ----------------------------------------------------------
 
-SiliQun is a standalone simulation platform: its contribution is the
-physics-grounded environment, the PGIRS hardware profile methodology, and
-the cross-technology benchmarking results reported in this paper. It does
-not depend on any external framework to be complete or useful.
+The most direct evidence for SiliQun's scalability beyond the 4-qubit regime studied in this paper comes from , the hierarchical modular RL framework that uses the DRL control agent modules trained on SiliQun as building blocks for 20-qubit system construction.
 
-The platform's Gymnasium-compatible interface makes it immediately adoptable
-as a simulation substrate by any RL-based quantum control framework. As one
-example of this downstream utility, the ANDROMEDA framework~\cite{ANDROMEDA_P3}
---- a hierarchical multi-agent system for entanglement distribution in quantum
-networks --- uses SiliQun as its module-level simulation environment.
-ANDROMEDA's module-level agent trains directly on SiliQun's
-\texttt{simos\_nominal} profile to prepare local GHZ states, and its
-network-level fusion agent applies entanglement swapping to compose
-module-level states into larger multi-qubit GHZ states.
-This adoption validates two properties of SiliQun: first, that its
-Gymnasium interface is compatible with multi-agent training frameworks
-requiring parallel environment instances; and second, that the hardware
-profiles calibrated for two-qubit gate synthesis generalise to the
-multi-qubit state preparation tasks required by quantum network applications.
-The ANDROMEDA results are reported separately in that work~\cite{ANDROMEDA_P3}.
+a hierarchical DRL framework organises five the DRL agent 4-qubit modules into a three-level hierarchy with residual/skip connections, covering the 17 physical qubits required for the $d = 3$ surface code ($2d^2 - 1 = 17$ physical qubits). Each module is a frozen the DRL control agent policy trained on SiliQun; a hierarchical DRL framework's training task is to learn the inter-module fusion gates that connect the modules into a coherent 20-qubit state. The composite score achieved by a hierarchical DRL framework across all five modules is 1.000 (mean over five seeds), with all individual modules achieving $F \geq 0.99$.
 
-%% ----------------------------------------------------------
+\textbf{Noise-robustness stress test (Axis 1: $T_1$ sweep).} To quantify the noise robustness of the DRL agent modules trained on SiliQun, we conducted a systematic $T_1$ sweep across five decoherence levels spanning a $20\times$ range from the nominal SiMOS value down to the most demanding conditions reported in the literature. Table~\ref{tab:axis1_t1} summarises the Phase~1 module results.
+
+\begin{table}[h]
+\centering
+\caption{a hierarchical DRL framework Phase~1 noise-robustness stress test: mean fidelity of five the DRL agent modules (M1--M5) across five $T_1$ decoherence levels. All modules achieve $F = 1.0000$ at every noise level. $T_2 = T_1/2$, $p_1 = 0.001$, $p_2 = 0.01$, seed 42.}
+\label{tab:axis1_t1}
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Noise Level} & $T_1$ & $T_2$ & \textbf{Phase~1 (M1--M5)} & \textbf{All Solved?} \\
+\midrule
+Nominal (1$\times$)   & 1~ms    & 500~$\mu$s & $F = 1.0000$ (all 5) & \checkmark \\
+2$\times$ degraded    & 500~$\mu$s & 250~$\mu$s & $F = 1.0000$ (all 5) & \checkmark \\
+4$\times$ degraded    & 250~$\mu$s & 125~$\mu$s & $F = 1.0000$ (all 5) & \checkmark \\
+10$\times$ degraded   & 100~$\mu$s & 50~$\mu$s  & $F = 1.0000$ (all 5) & \checkmark \\
+20$\times$ degraded   & 50~$\mu$s  & 25~$\mu$s  & $F = 1.0000$ (all 5) & \checkmark \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The result is unambiguous: the DRL agent Phase~1 modules achieve $F = 1.0000$ at every noise level, including the extreme $T_1 = 50~\mu$s case that is $20\times$ worse than the nominal SiMOS value. This demonstrates that SiliQun-trained single-module policies are completely noise-robust within the SiMOS parameter regime, a finding that directly validates the PGIRS noise-first design principle (\S\ref{subsec:pgirs}): training under conservative noise conditions produces policies that remain optimal even as decoherence worsens significantly.
+
+The a hierarchical DRL framework result has two implications for SiliQun. First, it demonstrates that SiliQun-trained policies are compositionally reusable: the same 4-qubit policies that achieve $F \geq 0.99$ individually also serve as reliable building blocks for 20-qubit hierarchical systems, without retraining on a 20-qubit environment. This compositionality is a direct consequence of SiliQun's modular design: each 4-qubit module trains on an independent SiliQun instance with the same hardware profile, so the learned policies are compatible with each other at the interface level. Second, it demonstrates that SiliQun's conservative noise model generalises: a hierarchical DRL framework achieves composite score 1.000 under the same SiMOS Lindblad noise model used for individual module training, confirming that the noise model does not become a bottleneck as the system scales from 4 to 20 qubits.
+
 %% ----------------------------------------------------------
 \subsection{Limitations and Future Work}
 \label{subsec:limitations}
 %% ----------------------------------------------------------
 
-Five limitations of the current work motivate future research directions.
+Four limitations of the current work motivate future research directions.
 
-SiliQun's modular design enables hierarchical composition at scale: the ANDROMEDA framework~\cite{ANDROMEDA_P3} is actively extending this by composing trained RL agent modules on SiliQun toward a multi-qubit hierarchical system, with full results to be reported separately in that work.
+\textbf{Simulation-to-hardware gap.} The cross-backend validation in \S\ref{subsec:cross_backend} demonstrates that the DRL agent-synthesised circuits achieve $\mathcal{F}_\mathrm{XEB} \geq 0.954$ on IonQ Aria-1, but this is a transferability result, not a hardware calibration result. The SiMOS noise parameters used in SiliQun ($T_1 = 1$~ms, $T_2 = 0.5$~ms, $p_2 = 1\%$) are calibrated to the parameter regime of SiMOS devices as characterised in the literature~\cite{Xue2022,Noiri2022,Philips2022,Steinacker2023}, but have not been validated against a specific physical SiMOS device through standard benchmarking circuits. Closing this gap requires access to a physical SiMOS device — currently available only at a small number of academic and industrial laboratories worldwide — and is identified as the highest-priority future work item.
 
-\textbf{Comparison with classical optimal control (highest priority).}
-The most important open comparison is between SiliQun-trained DRL agents
-and classical optimal control methods, specifically GRAPE~\cite{Khaneja2005}
-and CRAB~\cite{Caneva2011}, on the SiMOS and donor profiles.
-GRAPE is a mature, well-validated method for gate synthesis that has been
-demonstrated on silicon spin qubit devices~\cite{Wittler2021}; any claim
-that DRL provides a practical advantage over classical optimal control must
-be grounded in a direct empirical comparison.
-We expect DRL to match GRAPE in final fidelity on simple single-qubit gates
-but to demonstrate advantages in robustness to time-varying noise and
-adaptability to changing hardware parameters, since GRAPE requires full
-re-optimisation when the Hamiltonian changes while a trained DRL policy
-can adapt online.
-This comparison is identified as the highest-priority future validation for SiliQun and is left to subsequent work.
+\textbf{Statistical robustness.} The primary result ($F = 0.9930$) is reported as mean $\pm$ std over five seeds, which is sufficient for a proof-of-concept demonstration but falls short of the statistical rigour expected for a definitive benchmark result. A systematic multi-seed campaign with 20--50 seeds and formal hypothesis testing (Wilcoxon signed-rank test against the Fix3 baseline) is needed to establish the result's statistical significance at the $p < 0.01$ level.
 
-\textbf{Simulation-to-hardware gap.} The three hardware profiles validated in this paper (SiMOS, donor, GAA) are calibrated to the parameter regimes reported in the literature~\cite{Xue2022,Noiri2022,Philips2022,Madzik2022,Tanamoto2026}, but have not been validated against specific physical devices through standard benchmarking circuits. Closing this gap requires access to physical SiMOS, donor, and GAA devices and is identified as the highest-priority future work item.
-
-\textbf{Lindblad model approximations.} SiliQun's Lindblad master equation assumes Markovian noise (memoryless environment), which neglects low-frequency $1/f$ charge noise that is known to be a dominant decoherence mechanism in silicon spin qubit devices~\cite{Xue2022}. The profiles also assume idealised device geometries and do not model qubit-to-qubit crosstalk in multi-qubit configurations. Future work should incorporate non-Markovian noise extensions (e.g., stochastic Schr\"odinger equation methods) and crosstalk models derived from multi-qubit characterisation data.
-
-\textbf{Statistical robustness.} All results in this paper are reported as mean $\pm$ std over five independent seeds, which is standard practice for DRL benchmarks and sufficient for a proof-of-concept platform paper. However, the cross-technology comparison in Table~\ref{tab:cross_tech} would benefit from formal hypothesis testing to establish whether the observed fidelity differences between hardware profiles are statistically significant rather than attributable to seed variance. A Wilcoxon signed-rank test comparing per-seed fidelities across profiles, with Bonferroni correction for multiple comparisons, would provide this rigour. We report 95\% confidence intervals on all mean fidelity values in Table~\ref{tab:r1_results}--\ref{tab:cross_tech} and note that the GAA--donor fidelity difference ($\Delta\bar{F} = 0.0044$) is within the pooled standard deviation ($\sigma \approx 0.009$), suggesting the two platforms perform comparably on the USP task; the ordering (GAA $>$ donor) is consistent across all five seeds, however, providing directional evidence of the gate-speed advantage.
-
-\textbf{Scaling beyond two qubits (Lindblad solver cost).} The Lindblad master equation solver scales as $\mathcal{O}(4^n)$ in the density matrix dimension for $n$ qubits. At $n = 2$ (the scope of this paper) the solver runs in real time on a single CPU core; at $n = 4$ the cost increases by a factor of 256, requiring GPU acceleration or sparse solver approximations. Extending SiliQun to support $n \geq 4$ training environments is a well-defined engineering task and is identified as a future release milestone.
+\textbf{Scaling beyond 4 qubits.} The direct training approach used in this paper (single SiliQun instance, 4-qubit GHZ target) does not scale to 8 or 16 qubits without modifications to the state representation and reward function. a hierarchical DRL framework's hierarchical decomposition approach provides a practical path to 20 qubits, but the fusion gates between modules are themselves trained on SiliQun instances of increasing size. Extending SiliQun to support 8-qubit and 16-qubit training environments — with corresponding increases in the density matrix state space and the Lindblad solver's computational cost — is a necessary prerequisite for scaling a hierarchical DRL framework beyond the $d = 3$ surface code.
 
 \textbf{Gate set completeness.} The current SiliQun gate set (11 tokens: 6 single-qubit rotations, 1 two-qubit entangling gate, 4 identity/barrier tokens) is sufficient for GHZ state preparation but does not cover the full universal gate set required for arbitrary quantum computation. Extending the gate set to include $T$ gates, $S$ gates, and controlled-$Z$ gates — and validating the extended gate set against the analytical benchmarks in \S\ref{subsec:validation} — is a straightforward extension of the current framework.
 

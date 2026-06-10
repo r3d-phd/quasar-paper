@@ -1,23 +1,77 @@
 %% ============================================================
 %% §7 — Conclusion
-%% Merged P1+P6 Journal Paper: SiliQun — A Physics-Grounded
-%% Simulation Platform and Framework for the SDQF Data Plane
-%%
-%% Sources: P1 §5.4 (rewritten), P6 §1 last paragraph, NEW ANDROMEDA forward ref
+%% Paper: SiliQun — A Physics-Grounded Simulation Platform
+%%        for Silicon Spin Qubit Quantum Control
 %% ============================================================
 
 \section{Conclusion}
 \label{sec:conclusion}
 
-We have presented SiliQun, an open-source, physics-grounded simulation platform purpose-built for silicon metal-oxide-semiconductor (SiMOS) spin qubit gate synthesis.
-SiliQun occupies the \emph{data plane} of the Software-Defined Quantum Firmware (SDQF) architecture: it provides the physics simulation substrate — a Lindblad density-matrix engine calibrated to SiMOS hardware parameters — on which DRL agents train, but does not itself constitute firmware.
-The firmware is ANDROMEDA~\cite{ANDROMEDA_P3}, a hierarchical orchestrator that composes frozen QUASAR~\cite{QUASAR_P2} control-plane modules into multi-qubit, device-spanning gate sequences.
-SiliQun's design is governed by the Physics-Grounded Iterative RL Stack (PGIRS) methodology, a five-phase engineering discipline that enforces noise-first design, interface abstraction, reward engineering, hierarchical decomposition, and empirical validation at each layer of the simulation stack.
+We have presented SiliQun, an open-source, physics-grounded simulation platform
+purpose-built for silicon metal-oxide-semiconductor (SiMOS) spin qubit gate
+synthesis.
+SiliQun provides a Lindblad density-matrix physics engine calibrated to the SiMOS
+parameter regime, wrapped in a fully compliant Gymnasium interface that exposes
+the simulator to any standard deep reinforcement learning library without
+modification.
+Its design is governed by the Physics-Grounded RL Simulation (PGIRS) methodology,
+a five-phase engineering discipline that enforces noise-first design, interface
+abstraction, reward engineering, hierarchical decomposition, and empirical
+validation at each layer of the simulation stack.
 
-The scientific case for SiliQun rests on six results reported in this paper. First, SiliQun's Lindblad physics engine passes three analytical validation benchmarks at machine precision: Rabi oscillations (max deviation 0.00), $T_1$ amplitude decay (max deviation $2.78 \times 10^{-16}$, float64 epsilon), and Bell state fidelity versus coherence time (max deviation 0.0024 over $t \in [0, 5T_2]$). Second, QUASAR v9.51~\cite{QUASAR_P2} trained on SiliQun achieves $F = 0.9930$ on 4-qubit GHZ synthesis under SiMOS Lindblad noise in 194 seconds on a single A100 GPU --- the first reported result to cross the fault-tolerance threshold $F \geq 0.99$ at four qubits under a first-principles silicon spin qubit noise model. Third, a cross-algorithm benchmark of seven DRL families reveals a fidelity range of $F = 0.612$--$0.993$ under SiMOS noise, confirming that SiliQun is a discriminating testbed that exposes genuine algorithmic differences invisible under abstract depolarising models. Fourth, QUASAR generalises to the GAA device profile without retraining, achieving $F = 0.994 \pm 0.012$ on 2-qubit Bell synthesis across five seeds, confirming that SiliQun's device-profile abstraction transfers across silicon qubit architectures. Fifth, classical optimal control baselines (GRAPE: $F = 1.000$, 53.8~s; CRAB: $F = 1.000$, 15.9~s) achieve higher peak fidelity than QUASAR on the training noise level but produce fixed pulses that cannot generalise, while QUASAR produces a reusable policy with comparable noise-robust fidelity ($F_\mathrm{nr} = 0.9930$ vs.~GRAPE's $0.9966$). Sixth, QUASAR-synthesised circuits achieve $\mathcal{F}_\mathrm{XEB} \geq 0.954$ on IonQ Aria-1 trapped-ion hardware, confirming that policies trained on SiliQun transfer to real quantum devices without retraining.
+The scientific case for SiliQun rests on seven results reported in this paper.
+First, SiliQun's Lindblad physics engine passes three analytical validation
+benchmarks at machine precision: Rabi oscillations (max deviation 0.00),
+$T_1$ amplitude decay (max deviation $2.78 \times 10^{-16}$, float64 epsilon),
+and Bell state fidelity versus coherence time (max deviation 0.0024 over
+$t \in [0, 5T_2]$).
+Second, a seven-module SAC-based DRL agent trained on SiliQun achieves
+$F = 0.9930$ on 4-qubit GHZ synthesis under SiMOS Lindblad noise in 194 seconds
+on a single A100 GPU --- the first reported result to cross the fault-tolerance
+threshold $F \geq 0.99$ at four qubits under a first-principles silicon spin
+qubit noise model.
+Third, a cross-algorithm benchmark of seven DRL families reveals a fidelity range
+of $F = 0.612$--$0.993$ under SiMOS noise, confirming that SiliQun is a
+discriminating testbed that exposes genuine algorithmic differences invisible
+under abstract depolarising models.
+Fourth, the DRL agent generalises to the Gate-All-Around (GAA) device profile
+without retraining, achieving $F = 0.994 \pm 0.012$ on 2-qubit Bell synthesis
+across five seeds, confirming that SiliQun's device-profile abstraction transfers
+across silicon qubit architectures.
+Fifth, classical optimal control baselines (GRAPE: $F = 1.000$, 53.8~s;
+CRAB: $F = 1.000$, 15.9~s) achieve higher peak fidelity on the training noise
+level but produce fixed pulses that cannot generalise, while the DRL agent
+produces a reusable policy with comparable noise-robust fidelity
+($F_\mathrm{nr} = 0.9930$ vs.\ GRAPE's $0.9966$).
+Sixth, DRL-synthesised circuits achieve $\mathcal{F}_\mathrm{XEB} \geq 0.954$
+on IonQ Aria-1 trapped-ion hardware, confirming that policies trained on SiliQun
+transfer to real quantum devices without retraining.
+Seventh, an ablation study across seven training components identifies BRFD and
+HMRL as the dominant contributors to convergence speed, with the full seven-module
+agent achieving $15\times$ fewer training steps than the fixed-weight baseline.
 
-Beyond the immediate results, SiliQun's most significant contribution is architectural. By separating the physics simulation layer (SiliQun, data plane) from the DRL control agent (QUASAR~\cite{QUASAR_P2}, control plane) and the hierarchical firmware orchestrator (ANDROMEDA~\cite{ANDROMEDA_P3}, firmware layer), the SDQF architecture enables each layer to be developed, validated, and replaced independently. ANDROMEDA's achievement of composite score 1.000 across five QUASAR modules covering the $d = 3$ surface code demonstrates that this separation is not merely conceptual: SiliQun-trained policies compose hierarchically into 20-qubit systems without retraining, and SiliQun's conservative noise model generalises from 4 to 20 qubits without becoming a bottleneck.
+SiliQun's most significant contribution is its role as a reusable, open-source
+simulation substrate that decouples physics accuracy from algorithmic design.
+Any DRL algorithm, optimal control method, or hybrid approach can be evaluated
+on SiliQun without modifying the physics engine, and any improvement to the
+physics engine (higher-fidelity noise models, additional device profiles, larger
+qubit counts) automatically benefits all algorithms trained on the platform.
+This separation of concerns is the central architectural principle of PGIRS and
+the primary reason SiliQun can serve as a community benchmark for SiMOS quantum
+control research.
 
-The primary open challenge is closing the simulation-to-hardware gap for SiMOS devices specifically. The cross-backend validation reported here uses IonQ Aria-1 as a proxy for real hardware; validating SiliQun against a physical SiMOS device through standard randomised benchmarking circuits would establish the simulator's fidelity to the target hardware at the level required for ANDROMEDA's firmware layer to operate on real QPUs. We identify this as the highest-priority direction for future work, alongside extending the PGIRS methodology to superconducting transmon and neutral atom hardware platforms.
+The primary open challenge is closing the simulation-to-hardware gap for SiMOS
+devices specifically.
+The cross-backend validation reported here uses IonQ Aria-1 as a proxy for real
+hardware; validating SiliQun against a physical SiMOS device through standard
+randomised benchmarking circuits would establish the simulator's fidelity to the
+target hardware at the level required for production deployment.
+We identify this as the highest-priority direction for future work, alongside
+extending the PGIRS methodology to superconducting transmon and neutral atom
+hardware platforms, and scaling SiliQun's density-matrix engine to 8-qubit and
+16-qubit training environments.
 
-SiliQun is released under the MIT licence at \url{https://github.com/r3d-phd/siliqun}. All experiments reported in this paper are fully reproducible using the provided scripts and the Aziz HPC job files archived in the same repository.
+SiliQun is released under the MIT licence at
+\url{https://github.com/r3d-phd/siliqun}.
+All experiments reported in this paper are fully reproducible using the provided
+scripts and the Aziz HPC job files archived in the same repository.
