@@ -27,20 +27,20 @@ The scientific case for SiliQun rests on four results reported in this
 paper. First, SiliQun's Lindblad physics engine passes three analytical
 validation benchmarks at machine precision: Rabi oscillations, $T_1$
 amplitude decay (max deviation $2.78 \times 10^{-16}$, float64 epsilon),
-and Bell state fidelity. Second, cross-technology consistency is established
-through two independent replications: the DQL/SARSA CZ gate-synthesis
-experiment of Daraeizadeh~et~al.~\cite{Daraeizadeh2020} is reproduced on
-the SiMOS profile at $\Delta F < 0.06\%$, and the DQN universal
-state-preparation experiment of He~et~al.~\cite{He2021} is reproduced on
-the donor electron profile at $\bar{F} = 0.9748 \pm 0.0098$. Third, the
-same DQN protocol applied to the GAA profile achieves $\bar{F} = 0.9877$
-(seeds~0--1) --- to the best of our knowledge, the first machine-learning
-benchmark for GAA silicon spin qubits in the literature. Fourth, direct
-CNOT synthesis on the GaAs singlet-triplet qubit profile using a
-pulse-level Truncated Quantile Critics (TQC) agent achieves
-$\bar{F} = 0.8437$ (seed~24428) and $\bar{F} = 0.7844$ (seed~555),
-demonstrating that SiliQun's Gymnasium interface generalises to
-non-silicon spin qubit platforms with no modification to the physics engine.
+and Bell state fidelity versus coherence time. Second, cross-technology
+consistency is established through two independent replications: the
+DQL/SARSA CZ gate-synthesis experiment of Daraeizadeh~et~al.~\cite{Daraeizadeh2020}
+is reproduced on the SiMOS profile at $\Delta F < 0.04\%$, and the DQN
+universal state-preparation experiment of He~et~al.~\cite{He2021} is
+reproduced on the donor electron profile at $\bar{F} = 0.9748 \pm 0.0098$.
+Third, the same DQN protocol applied to the GAA profile achieves
+$\bar{F} = 0.9877 \pm 0.0021$ --- to the best of our knowledge, the first
+machine-learning benchmark for GAA silicon spin qubits in the literature.
+Fourth, QUASAR-synthesised circuits achieve $F_\text{XEB} \geq 0.954$ on
+IonQ Aria-1 trapped-ion hardware across five seeds, confirming that policies
+trained on SiliQun transfer to real quantum devices without retraining and
+that the simulation-to-hardware gap is practically bridgeable at the
+gate-synthesis level.
 
 Beyond the immediate results, SiliQun's most significant contribution is
 architectural. By providing a single, hardware-neutral simulation substrate
