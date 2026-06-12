@@ -6,25 +6,40 @@
 
 \begin{abstract}
 We present \textbf{SiliQun}, an open-source, physics-grounded simulation platform
-for silicon metal-oxide-semiconductor (SiMOS) spin qubits.
-SiliQun provides a Lindblad density-matrix physics engine calibrated to the
-SiMOS parameter regime ($T_1 = 1$\,ms, $T_2 = 0.5$\,ms, two-qubit gate error
-$p_2 = 1\%$), wrapped in a native Gymnasium-compatible interface that exposes
-the simulator to any standard deep reinforcement learning (DRL) library without
-modification.
+that unifies three silicon spin qubit hardware technologies---silicon
+metal-oxide-semiconductor (SiMOS) quantum dots, phosphorus-donor electron spin
+qubits, and gate-all-around (GAA) nanowire spin qubits---within a single
+Lindblad density-matrix physics engine and a Gymnasium-compatible reinforcement
+learning interface.
+SiliQun's Software-Defined Quantum Firmware (SDQF) architecture separates the
+physics engine from the hardware profile, enabling the same RL agent to be
+trained and evaluated across all three technologies by changing a single
+constructor argument.
 Three analytical benchmarks---Rabi oscillations, $T_1$ amplitude decay, and Bell
 state fidelity versus coherence time---validate the physics engine against
 closed-form solutions at machine precision ($\max\,\delta \leq 2.78 \times
 10^{-16}$).
-To demonstrate that the platform supports complex quantum control tasks, we train
-a seven-module SAC-based DRL agent with automated reward engineering
-and DEHB hyperparameter governance directly on SiliQun.
-The agent achieves gate fidelity $F = 0.9930$ on four-qubit GHZ synthesis under
-full SiMOS noise in 20\,000 training steps (194\,s wall-clock), crossing the
-fault-tolerance threshold of $F \geq 0.99$.
-SiliQun is released under the MIT licence and is pip-installable as a Qiskit
-\texttt{BackendV2}-compatible provider, enabling immediate integration with the
-broader Qiskit ecosystem.
+We validate SiliQun through four independent experiments spanning three hardware
+technologies and four RL algorithms.
+Replication~1 reproduces the deep Q-learning and SARSA CZ gate-synthesis results
+of Daraeizadeh~et~al.\ on SiliQun's SiMOS profile, achieving mean fidelity
+$\bar{F} = 0.9996 \pm 0.0001$ and $0.9994 \pm 0.0002$ respectively, within
+$0.04\%$ of the published values.
+Replication~2 reproduces the DQN universal state-preparation results of
+He~et~al.\ on SiliQun's donor-electron profile, achieving a mean cardinal-state
+fidelity of $\bar{F} = 0.9748 \pm 0.0098$.
+Extension~3 applies the same DQN protocol to SiliQun's GAA profile,
+establishing the first machine-learning benchmark for GAA silicon spin qubits
+with mean fidelity $\bar{F} = 0.9877 \pm 0.0021$.
+A fourth experiment using Proximal Policy Optimisation on the SiMOS profile
+achieves $F = 1.000$ across all five independent seeds, converging within
+200 episodes and demonstrating that SiliQun supports modern policy-gradient
+algorithms without modification.
+Across all four experiments, consistent cross-technology fidelity confirms that
+SiliQun's physics engine correctly models hardware-specific decoherence rather
+than introducing simulator-induced artefacts.
+SiliQun is released under the MIT licence and is fully reproducible from the
+provided scripts and Aziz HPC job files.
 \end{abstract}
 
 \section{Introduction}
