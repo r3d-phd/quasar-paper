@@ -229,6 +229,82 @@ The expert warm-start reduces the number of training steps required to reach
 $F \geq 0.99$ by approximately $15\times$ compared to random initialisation.
 
 %% ----------------------------------------------------------
+\subsection{Two-Loop DEHB: Conditional Hyperparameter Optimisation in QUASAR v12}
+\label{subsec:two_loop_dehb}
+%% ----------------------------------------------------------
+
+The single-loop DEHB sweep described above treats the environment configuration
+(noise stage, episode budget, reward weights) as fixed and searches only over
+SAC hyperparameters.
+This is sufficient for a single, well-specified task, but it conflates two
+fundamentally different sources of variation: the \emph{difficulty} of the
+learning problem (determined by the environment) and the \emph{efficiency} of
+the learning algorithm (determined by the agent hyperparameters).
+When the environment configuration is itself uncertain --- as it is during
+curriculum design, where the optimal noise stage and episode length are not
+known a priori --- a single-loop search produces a configuration that is
+optimal on average across environments but suboptimal for any specific one.
+
+QUASAR v12 resolves this by introducing a \emph{two-loop DEHB} architecture
+that searches both levels simultaneously:
+
+\begin{itemize}
+  \item \textbf{Outer loop} (environment/curriculum configuration space):
+    searches over noise stage $n_s \in \{0,\ldots,5\}$, maximum episode
+    steps $T_{\max} \in [100, 1000]$, and reward weight triplet
+    $(w_F, w_S, w_{\text{str}}) \in [0.05, 0.90]^3$.
+    The outer fidelity budget is the number of inner DEHB brackets allocated
+    to each outer configuration.
+  \item \textbf{Inner loop} (SAC hyperparameter space):
+    for each outer configuration, runs a full DEHB sweep over entropy
+    coefficient $\alpha \in [0.005, 0.50]$ (log scale), actor and critic
+    learning rates $\eta_\pi, \eta_Q \in [10^{-4}, 5 \times 10^{-3}]$,
+    soft update rate $\tau \in [0.001, 0.05]$, batch size
+    $B \in \{64, \ldots, 512\}$, and network dimensions
+    $(d_h, d_c) \in [128, 512] \times [32, 128]$.
+    The inner fidelity budget is the number of training steps allocated to
+    each candidate configuration (minimum $5 \times 10^4$, maximum
+    $5 \times 10^5$).
+\end{itemize}
+
+The key scientific question this architecture answers is whether the optimal
+SAC hyperparameters depend on the noise stage.
+Based on the plateau behaviour observed in E4 v5 (best\_F $= 0.7285$ under
+Stage~5 noise with $\alpha = 0.05$), we hypothesise that $\alpha$ must increase
+monotonically with noise stage: low-noise environments are well-served by
+low-entropy policies (exploitation), while high-noise environments require
+higher entropy to escape noise-induced local optima.
+The two-loop architecture tests this hypothesis directly by reporting the
+inner-optimal $\alpha^*$ for each outer noise stage, producing a
+\emph{noise-conditional hyperparameter map} that cannot be obtained from any
+fixed-hyperparameter experiment.
+
+Figure~\ref{fig:two_loop_dehb} illustrates the two-loop architecture.
+The outer DEHB bracket allocates more compute to outer configurations that
+produce higher inner fitness, naturally concentrating the search budget on
+the most promising curriculum designs.
+Transfer learning (IMP-6) is applied across qubit counts within each inner
+evaluation: the best agent from $n$-qubit training is used as the warm-start
+for $(n+1)$-qubit training, so the inner DEHB search inherits the scaling
+benefit of the FiLM architecture.
+
+Formally, the two-loop objective is:
+\begin{equation}
+  \label{eq:two_loop}
+  \mathbf{c}^*_{\text{out}}, \mathbf{c}^*_{\text{in}} =
+  \arg\max_{\mathbf{c}_{\text{out}}} \arg\max_{\mathbf{c}_{\text{in}}}
+  \frac{1}{|\mathcal{T}| \cdot |\mathcal{S}|}
+  \sum_{\tau \in \mathcal{T}} \sum_{s \in \mathcal{S}}
+  F^*\bigl(n_q,\, \tau,\, s,\, \mathbf{c}_{\text{out}},\, \mathbf{c}_{\text{in}},\, B_{\text{inner}}\bigr),
+\end{equation}
+where $\mathcal{T}$ is the set of target states, $\mathcal{S}$ is the set of
+random seeds, $n_q$ is the qubit count, and $B_{\text{inner}}$ is the inner
+fidelity budget.
+The outer DEHB uses $\eta = 2$ (halving) with minimum bracket count 2 and
+maximum 4; the inner DEHB uses $\eta = 3$ (thirds) with minimum budget
+$5 \times 10^4$ steps and maximum $5 \times 10^5$ steps.
+
+%% ----------------------------------------------------------
 \subsection{Training Results on SiliQun}
 \label{subsec:agent_results}
 %% ----------------------------------------------------------
