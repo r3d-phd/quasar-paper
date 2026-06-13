@@ -757,8 +757,8 @@ The reward weight vector $\mathbf{w}$ is initialised uniformly and optimised
 via Bayesian search; no target-state-specific reward engineering is performed.
 Results are reported as mean fidelity $\pm$ standard deviation across
 the three seeds at the end of training.
-Experiments were run on a local GPU testbed (NVIDIA RTX~2070 Max-Q, 8\,GB VRAM)
-and completed on 2026-06-13; total wall-clock time $\approx$1.5\,h.
+GHZ-3 and Bell-3 experiments were run on a local GPU testbed (NVIDIA RTX~2070 Max-Q, 8\,GB VRAM) and completed on 2026-06-13; total wall-clock time $\approx$1.5\,h.
+Cluster-1D and Dicke-$k_3$ experiments are running on the Aziz HPC H100 node (job~181008, E4~v5, SAC multi-target multi-seed, 3 seeds $\times$ 4 targets, $10^6$ steps per run).
 
 \textbf{Results.}
 Table~\ref{tab:e4_results} reports the per-target results for the three
@@ -797,8 +797,8 @@ Cluster-1D and Dicke-$k_3$ results are pending from the Aziz A100 cluster.
 GHZ-3   & Biseparable (1 ebit)     & $0.9957 \pm 0.0026$ & $[0.9928,\,0.9987]$ & $\mathbf{0.9986}$ & \checkmark \\
 Bell-3  & Biseparable (1 ebit)     & $0.9957 \pm 0.0026$ & $[0.9928,\,0.9987]$ & $\mathbf{0.9986}$ & \checkmark \\
 W-3     & Genuine multipartite     & $0.8551 \pm 0.0085$ & $[0.8454,\,0.8648]$ & $0.8642$          & $\times$ \\
-Cluster-1D & Graph state (1D chain) & \multicolumn{4}{c}{\textit{Pending: Aziz A100 (job 179483)}} \\
-Dicke-$k_3$ & Permutation-symmetric & \multicolumn{4}{c}{\textit{Pending: Aziz A100 (job 179485)}} \\
+Cluster-1D & Graph state (1D chain) & \multicolumn{4}{c}{\textit{Pending: Aziz H100 (job 181008, E4~v5, running)}} \\
+Dicke-$k_3$ & Permutation-symmetric & \multicolumn{4}{c}{\textit{Pending: Aziz H100 (job 181008, E4~v5, running)}} \\
 \bottomrule
 \end{tabular}}
 \end{table*}
