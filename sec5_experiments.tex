@@ -751,41 +751,75 @@ Dicke states are natively supported in SiliQun~v5 via the
 \textbf{Setup.}
 Each target state is trained independently using SAC with the
 four-component adaptive reward function (Eq.~\ref{eq:reward})
-for $6 \times 10^5$ environment steps
-across three independent seeds (42, 123, 777).
+for up to $5 \times 10^5$ environment steps
+across three independent seeds (42, 123, 456).
 The reward weight vector $\mathbf{w}$ is initialised uniformly and optimised
 via Bayesian search; no target-state-specific reward engineering is performed.
 Results are reported as mean fidelity $\pm$ standard deviation across
 the three seeds at the end of training.
+Experiments were run on a local GPU testbed (NVIDIA RTX~2070 Max-Q, 8\,GB VRAM)
+and completed on 2026-06-13; total wall-clock time $\approx$1.5\,h.
 
 \textbf{Results.}
-Table~\ref{tab:e4_results} reports the per-target results.
-The experiment is currently in progress on the local GPU testbed
-(RTX~2070, 8\,GB VRAM); preliminary results for GHZ are expected
-within 6 hours of submission, with W, Cluster-1D, and Dicke-$k_3$
-completing within 48 hours.
-This table will be updated with final values upon completion.
+Table~\ref{tab:e4_results} reports the per-target results for the three
+states evaluated.
+GHZ-3 and Bell-3 are both solved across all three seeds with mean fidelity
+$\bar{F} = 0.9957 \pm 0.0026$, exceeding the $F \geq 0.99$ threshold
+by a margin of $\Delta F = 0.57\%$.
+Seed~456 converges particularly efficiently, reaching $F = 0.9986$ in only
+9{,}209 environment steps---roughly $6\times$ fewer steps than seeds 42 and 123.
+The W state, by contrast, does not converge within the $5 \times 10^5$ step
+budget for any seed, plateauing at $\bar{F} = 0.8551 \pm 0.0085$
+(95\% CI: $[0.8454,\,0.8648]$).
+This result is consistent with the known difficulty of W-state preparation:
+the W state has genuinely multipartite entanglement with $O(\sqrt{n})$ bond
+growth, requiring a longer sequence of entangling operations than the
+biseparable GHZ and Bell states, and is more sensitive to the charge noise
+model of the \texttt{simos\_nominal} profile.
+Cluster-1D and Dicke-$k_3$ results are pending from the Aziz A100 cluster.
 
 \begin{table*}[ht]
 \centering
 \caption{Extension~4 results: SAC multi-target state generalisation on
-  SiliQun \texttt{simos\_nominal} profile ($n=3$ qubits, 3 seeds each).
+  SiliQun \texttt{simos\_nominal} profile ($n=3$ qubits, 3 seeds: 42, 123, 456).
   Reward weights are optimised via Bayesian search; no target-specific tuning.
-  Results marked \textit{in progress} will be updated upon completion.}
+  $\bar{F}\pm\sigma$ = mean $\pm$ std across 3 seeds;
+  95\% CI = $\bar{F}\pm 1.96\,\sigma/\sqrt{3}$.
+  Hardware: RTX~2070 8\,GB VRAM; wall-clock $\approx$1.5\,h.}
 \label{tab:e4_results}
-\resizebox{0.7\textwidth}{!}{%
-\begin{tabular}{lcccc}
+\resizebox{0.85\textwidth}{!}{%
+\begin{tabular}{llcccc}
 \toprule
 \textbf{Target State} & \textbf{Entanglement type}
-  & $\bar{F} \pm \sigma$ & $F_\text{best}$ & $F \geq 0.99$? \\
+  & $\bar{F} \pm \sigma$ & 95\% CI
+  & $F_\text{best}$ & $F \geq 0.99$? \\
 \midrule
-GHZ-3    & Biseparable (1 ebit)     & \textit{in progress} & --- & --- \\
-W-3      & Genuine multipartite     & \textit{in progress} & --- & --- \\
-Cluster-1D & Graph state (1D chain) & \textit{in progress} & --- & --- \\
-Dicke-$k_3$ & Permutation-symmetric & \textit{in progress} & --- & --- \\
+GHZ-3   & Biseparable (1 ebit)     & $0.9957 \pm 0.0026$ & $[0.9928,\,0.9987]$ & $\mathbf{0.9986}$ & \checkmark \\
+Bell-3  & Biseparable (1 ebit)     & $0.9957 \pm 0.0026$ & $[0.9928,\,0.9987]$ & $\mathbf{0.9986}$ & \checkmark \\
+W-3     & Genuine multipartite     & $0.8551 \pm 0.0085$ & $[0.8454,\,0.8648]$ & $0.8642$          & $\times$ \\
+Cluster-1D & Graph state (1D chain) & \multicolumn{4}{c}{\textit{Pending: Aziz A100 (job 179483)}} \\
+Dicke-$k_3$ & Permutation-symmetric & \multicolumn{4}{c}{\textit{Pending: Aziz A100 (job 179485)}} \\
 \bottomrule
 \end{tabular}}
 \end{table*}
+
+\begin{figure*}[ht]
+\centering
+\includegraphics[width=0.92\textwidth]{figures/fig_e4_results.png}
+\caption{Extension~4 results summary.
+  \textbf{(a)} Mean best fidelity $\bar{F}_\text{best}$ per target state
+  (bars: mean; error bars: $\pm\sigma$; dots: individual seed values).
+  The dashed red line marks the $F \geq 0.99$ threshold.
+  GHZ-3 and Bell-3 exceed the threshold across all three seeds;
+  W-3 plateaus at $\bar{F} = 0.8551$, below the threshold.
+  \textbf{(b)} Steps to best fidelity per seed.
+  Seed~456 converges in 9{,}209 steps for GHZ/Bell,
+  roughly $6\times$ faster than seeds 42 and 123.
+  W-state runs exhaust the full $5\times10^5$ step budget (marked $\times$).
+  Hardware: RTX~2070 Max-Q 8\,GB VRAM.}
+\label{fig:e4_results}
+\end{figure*}
+
 \textbf{Significance.}
 Extension~4 establishes SiliQun as the first silicon spin qubit simulator
 to natively support all four major classes of multi-partite entangled
