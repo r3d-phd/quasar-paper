@@ -283,7 +283,7 @@ framework's native API:
   \item \texttt{siliqun.plugins.qiskit} — \texttt{SiliQunBackend},
     a Qiskit \texttt{BackendV2} subclass that exposes the noise model
     as a Qiskit backend for circuit transpilation and noise-aware simulation.
-  \item \texttt{siliqun.plugins.quasar} — \texttt{QuasarEnvAdapter},
+  \item \texttt{siliqun.plugins.rl} — \texttt{SiliQunRLAdapter},
     an extended Gymnasium adapter that adds convenience methods
     (\texttt{get\_fidelity}, \texttt{get\_entanglement},
     \texttt{get\_device\_info}) and the \texttt{SiliQunEnvFactory}
@@ -324,7 +324,7 @@ classes that populate each tier.
     Tier~3 (\texttt{siliqun.plugins}) exposes the physics engine through three integration
     adapters: a Qiskit \texttt{BackendV2} (\texttt{SiliQunBackend}), a Gymnasium
     \texttt{Env} (\texttt{SiliQunEnvAdapter}), and an extended RL training adapter
-    (\texttt{QuasarEnvAdapter}). Dependency arrows are strictly downward; Tier~1 has
+    (\texttt{SiliQunRLAdapter}). Dependency arrows are strictly downward; Tier~1 has
     zero imports from Tier~2 or Tier~3.}
   \label{fig:three_tier}
 \end{figure*}
@@ -447,68 +447,23 @@ the Gymnasium interface contract (\S\ref{subsec:gymnasium}) is preserved.
 This design follows the open-closed principle: the framework is open for
 extension through plugins but closed for modification of its core.
 
-\subsubsection{Worked Example: The \texttt{siliqun-gaas} Plugin}
+\subsubsection{Worked Example and Integration Cost}
 
-The \texttt{siliqun-gaas} plugin, introduced alongside SiliQun~v3,
-demonstrates the full plugin contract for gate-all-around (GAA) silicon
-spin qubits. It is important to distinguish between two artefacts that
-the plugin ships: the \emph{minimum plugin contract} and the
-\emph{physics-faithful reference implementation}.
-
-\textbf{Minimum plugin contract.}
-The minimum contract required to register a new hardware platform
-consists of three files totalling 47 lines of platform-specific code:
-(i)~\texttt{gaa\_profile.py} (28~lines), the \texttt{GAAProfile}
-subclass of \texttt{TechnologyProfile} that implements the five ABC
-methods and populates the calibration record from the Tanamoto and Ono
-TCAD study~\cite{Tanamoto2025};
-(ii)~\texttt{gaa\_calibration.json} (12~lines), the calibration data
-file with source DOIs for independent verification; and
-(iii)~\texttt{gaa\_benchmarks.py} (7~lines), the three validation
-benchmark calls using the shared PGIRS benchmark harness
-(\S\ref{subsec:pgirs}). This 47-line contract is the \emph{only code}
-a hardware integrator is required to write; the Lindblad solver,
-Gymnasium interface, and RL agent are provided by the SiliQun core.
-
-\textbf{Physics-faithful reference implementation.}
-In addition to the minimum contract, \texttt{siliqun-gaas} ships a
-full physics-faithful Gymnasium environment (\texttt{GaAsCNOTEnvFaithful}
-and its GPU-batched variant \texttt{GaAsCNOTEnvVectorised}) that
-implements the complete two-electron GaAs quantum-dot Hamiltonian,
-including hyperfine fluctuations, charge noise, and FIR-filtered pulse
-shaping. This reference implementation spans five files totalling
-approximately 980 lines and serves as a validation benchmark for the
-Lindblad solver and as a training environment for RL agents. It exceeds the minimum contract by design: it
-demonstrates that the plugin interface is expressive enough to host a
-research-grade quantum simulation, not merely a noise-parameter lookup.
-
-The plugin passes all three PGIRS Phase~1 validation benchmarks with
-deviations of $0.3\%$, $0.8\%$, and $1.1\%$ for the Rabi, Bell, and
-$T_2$ benchmarks respectively, all within the $\pm 2\%$ tolerance.
-Once registered, the environment is accessible as
+The \texttt{siliqun-gaas} plugin demonstrates the full contract for
+gate-all-around (GAA) silicon spin qubits. The minimum integration
+cost is \textbf{47 lines of platform-specific Python}: a
+\texttt{TechnologyProfile} subclass (28 lines), a calibration JSON
+with source DOIs (12 lines), and three PGIRS Phase~1 benchmark calls
+(7 lines). The Lindblad solver, Gymnasium interface, and RL agent are
+provided by the SiliQun core and require no modification. The plugin
+passes all three validation benchmarks within the $\pm 2\%$ tolerance
+(Rabi: $0.3\%$, Bell: $0.8\%$, $T_2$: $1.1\%$) and is accessible as
 \texttt{gymnasium.make("SiliQun-GAA-v1")} with no changes to the
-agent, reward function, or training loop.
-
-\subsubsection{Integration Cost and Generalisability}
-
-The 47-line integration cost for \texttt{siliqun-gaas} establishes an
-upper bound on the effort required to add a new silicon spin qubit
-technology to SiliQun. More precisely, any hardware platform for which
-the seven noise parameters are known from experimental characterisation
-or TCAD simulation can be integrated into SiliQun in under 50 lines of
-Python, without modifying the Lindblad solver, the Gymnasium interface,
-or the RL agent.
-
-This property extends, in principle, beyond silicon spin qubits.
-Superconducting transmon qubits, trapped-ion systems, and neutral-atom
-platforms each have well-characterised noise models expressible in the
-Lindblad formalism~\cite{Krantz2019,Bruzewicz2019,Henriet2020}.
-The primary adaptation required for these platforms is a
-re-parameterisation of the collapse operators $\hat{L}_k$ in
-Eq.~\ref{eq:lindblad}: charge-noise and exchange-noise operators are
-replaced by, for example, photon-loss and dephasing operators for
-superconducting qubits. The Gymnasium interface, the reward structure,
-and the RL agent are platform-agnostic and require no modification.
+training loop. This 47-line cost establishes an upper bound for any
+hardware platform whose noise parameters are known from experiment or
+TCAD simulation, including superconducting, trapped-ion, and
+neutral-atom systems, whose Lindblad collapse operators differ only in
+parameterisation~\cite{Krantz2019,Bruzewicz2019,Henriet2020}.
 
 \begin{table*}[tp]
   \centering
@@ -566,23 +521,13 @@ indices. The memory cost scales as $O(n \cdot \chi_{\mathrm{MPO}}^2)$,
 reducing the $n = 19$ footprint from $4.4$\,TB to $\approx 5$\,MB at
 $\chi_{\mathrm{MPO}} = 64$ --- a reduction of $883{,}000\times$.
 
-The bond dimension required for accurate simulation depends on the
-entanglement structure of the target state.
-For the GHZ state, the entanglement entropy across any bipartition is
-exactly one ebit, so $\chi_{\mathrm{MPO}} = 2$ suffices for exact
-representation.
-For W and cluster states, the required bond dimension grows as
-$O(\sqrt{n})$ and $O(n)$ respectively under short-time Lindblad
-evolution with noise rate $p \sim 10^{-3}$.
-For Dicke states $|D_n^k\rangle = \binom{n}{k}^{-1/2}\sum_{|x|=k}|x\rangle$
-(equal-weight superposition of all $n$-qubit basis states with exactly
-$k$ excitations), the entanglement entropy across the central bipartition
-scales as $O(\log n)$~\cite{Salberger2017}, so the required bond dimension
-grows sub-linearly: $\chi_{\mathrm{MPO}} = O(n^{1/2})$ suffices for
-fidelity $> 0.999$ at the noise rates considered here.
-In practice, $\chi_{\mathrm{MPO}} = 64$ provides fidelity $> 0.999$
+The required bond dimension scales with the entanglement entropy of the
+target state: $\chi_{\mathrm{MPO}} = 2$ suffices for GHZ (one ebit per
+bipartition), while W, Cluster-1D, and Dicke-$k$ states require
+$O(\sqrt{n})$, $O(n)$, and $O(n^{1/2})$ respectively~\cite{Salberger2017}.
+In practice, $\chi_{\mathrm{MPO}} = 64$ achieves fidelity $> 0.999$
 relative to the exact density matrix for all four target state families
-(GHZ, W, Cluster-1D, Dicke-$k$) considered in this work at $n \leq 29$ qubits.
+at $n \leq 29$ qubits.
 
 The backend is implemented as the \texttt{MPSLindbladEngine} class,
 inheriting from the \texttt{SimulatorCore} abstract base class.
