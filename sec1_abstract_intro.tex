@@ -127,34 +127,27 @@ gate synthesis layer; it provides no open-source Gymnasium environment.
 \subsection{Contributions}
 \label{subsec:contributions}
 
-This paper makes the following contributions. Our work delivers eight key advances spanning the physics engine, the RL interface, the training methodology, and the empirical validation:
+This paper makes three categories of contribution, ordered by their centrality
+to the SiliQun simulation platform.
+
+\textbf{Primary contributions --- the SiliQun simulation platform:}
 \begin{enumerate}
   \item \textbf{SiliQun physics engine:} A Lindblad density-matrix simulator
     calibrated to the SiMOS parameter regime, validated against three
-    analytical benchmarks at machine precision, with a 93$\times$ GPU
-    speedup enabling practical RL training throughput.
+    analytical benchmarks at machine precision ($\max\,\delta \leq 2.78 \times
+    10^{-16}$), with a 93$\times$ GPU speedup enabling practical RL training
+    throughput.
+
+  \item \textbf{Multi-technology hardware profiles:} A \texttt{TechnologyProfile}
+    abstraction encoding the complete physics characterisation of SiMOS,
+    donor-electron, Gate-All-Around (GAA), GaAs singlet-triplet, and SLEDGE
+    silicon spin qubit technologies, each grounded in published calibration data
+    and switchable by a single constructor argument.
 
   \item \textbf{Gymnasium-compatible interface:} A fully compliant
     \texttt{SiliQunEnv} environment with a discrete 11-token gate action
     space, a 16-element density-matrix state representation, and a
     four-component reward function with automatically discovered weights.
-
-  \item \textbf{PGIRS methodology:} A five-phase engineering discipline
-    (Noise-First Design, Gymnasium Compliance, Reward Engineering,
-    Hierarchical Decomposition, Empirical Validation) that governs the
-    design, implementation, and validation of physics-grounded RL
-    simulation platforms.
-
-  \item \textbf{DRL validation agent:} A seven-module SAC-based control agent achieving $F = 0.9930$ on four-qubit GHZ synthesis under SiMOS noise in 194\,s, demonstrating that SiliQun supports complex quantum control tasks at fault-tolerance threshold.
-
-  \item \textbf{Cross-algorithm benchmark:} A systematic evaluation of six DRL algorithm families (DQL, SARSA, PPO, DQN, TQC, SAC) on the 4-qubit GHZ synthesis task under SiMOS noise, providing the first comparative benchmark of DRL algorithms specifically designed for a physically calibrated silicon spin qubit noise environment.
-
-  \item \textbf{Cross-backend validation:} A multi-backend dispatch interface that transfers SiliQun-trained circuits across four backends (SiliQun, Qiskit Aer, FakeSherbrooke, and GaAs singlet-triplet), demonstrating hardware-portable policy transfer. TQC achieves $\bar{F} = 0.9036 \pm 0.0914$ on direct GaAs CNOT synthesis, with two of four seeds exceeding $F \geq 0.986$, confirming that SiliQun-trained policies transfer across silicon spin qubit architectures.
-
-  \item \textbf{GAA device generalisation:} Validation on a Gate-All-Around
-    (GAA) silicon device profile demonstrating that SiliQun's device-profile
-    abstraction transfers across silicon qubit architectures without retraining,
-    achieving $F = 0.994 \pm 0.012$ on 2-qubit Bell synthesis across five seeds.
 
   \item \textbf{Qiskit BackendV2 provider:} A pip-installable package
     (\texttt{siliqun-provider}) that registers SiliQun as a Qiskit
@@ -162,13 +155,44 @@ This paper makes the following contributions. Our work delivers eight key advanc
     with the Qiskit ecosystem and standard \texttt{transpile()} workflows.
 \end{enumerate}
 
+\textbf{Secondary contribution --- the PGIRS engineering methodology:}
+\begin{enumerate}\setcounter{enumi}{4}
+  \item \textbf{PGIRS methodology:} A five-phase engineering discipline
+    (Noise-First Design, Gymnasium Compliance, Reward Engineering,
+    Hierarchical Decomposition, Empirical Validation) that governs the
+    design, implementation, and validation of physics-grounded RL
+    simulation platforms. SiliQun is the reference implementation of PGIRS
+    for the silicon spin qubit domain.
+\end{enumerate}
+
+\textbf{Tertiary contributions --- empirical validation of the platform:}
+\begin{enumerate}\setcounter{enumi}{5}
+  \item \textbf{Cross-algorithm benchmark:} A systematic evaluation of six DRL
+    algorithm families (DQL, SARSA, PPO, DQN, TQC, SAC) on the 4-qubit GHZ
+    synthesis task under SiMOS noise, providing the first comparative benchmark
+    of DRL algorithms on a physically calibrated silicon spin qubit environment.
+
+  \item \textbf{Cross-backend validation:} A multi-backend dispatch interface
+    transferring SiliQun-trained circuits across four backends (SiliQun,
+    Qiskit Aer, FakeSherbrooke, and GaAs singlet-triplet). TQC achieves
+    $\bar{F} = 0.9036 \pm 0.0914$ on direct GaAs CNOT synthesis, with two of
+    four seeds exceeding $F \geq 0.986$, confirming hardware-portable policy
+    transfer across silicon spin qubit architectures.
+
+  \item \textbf{GAA device generalisation:} Validation on a Gate-All-Around
+    silicon device profile demonstrating that SiliQun's device-profile
+    abstraction transfers across silicon qubit architectures without retraining,
+    achieving $\bar{F} = 0.994 \pm 0.012$ on 2-qubit Bell synthesis across
+    five seeds.
+\end{enumerate}
+
 \noindent
 The remainder of the paper is organised as follows.
 Section~\ref{sec:related_work} surveys related work across five categories.
 Section~\ref{sec:framework} presents the SiliQun framework and PGIRS
 methodology.
-Section~\ref{sec:drl_agent} describes the SAC-based DRL control agent used
-for validation.
+Section~\ref{sec:drl_agent} presents the DRL validation experiment that
+demonstrates SiliQun's usability for non-trivial quantum control tasks.
 Section~\ref{sec:experiments} reports experimental results including the
 cross-algorithm benchmark, cross-backend validation, and GAA generalisation.
 Section~\ref{sec:discussion} discusses implications, limitations, and future

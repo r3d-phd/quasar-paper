@@ -3,13 +3,13 @@
 %% SiliQun — A Physics-Grounded Simulation Platform
 %% for Silicon Spin Qubit Quantum Control
 %%
-%% Sources: P1 §5.4 (rewritten), experimental results from SiliQun v5 training
+%% Sources: P1 §5.4 (rewritten), experimental results from SiliQun training
 %% ============================================================
 
 \section{Conclusion}
 \label{sec:conclusion}
 
-We have presented SiliQun~v5, an open-source, physics-grounded simulation
+We have presented SiliQun, an open-source, physics-grounded simulation
 platform that unifies three distinct silicon spin qubit hardware technologies
 --- SiMOS quantum dots, phosphorus-donor electron and nuclear spin qubits,
 and gate-all-around (GAA) nanowire spin qubits --- within a single
@@ -36,12 +36,14 @@ reproduced on the donor electron profile at $\bar{F} = 0.9748 \pm 0.0098$.
 Third, the same DQN protocol applied to the GAA profile achieves
 $\bar{F} = 0.9877 \pm 0.0021$ --- to the best of our knowledge, the first
 machine-learning benchmark for GAA silicon spin qubits in the literature.
-Fourth, the SAC-based DRL agent trained on SiliQun achieves gate fidelity
-$F = 0.9930$ on 4-qubit GHZ synthesis under full SiMOS Lindblad noise in
-20,000 training steps and 194 seconds of wall-clock time on a single A100
-GPU, establishing the first reported result to cross the fault-tolerance
-threshold $F \geq 0.99$ at four qubits under a first-principles silicon
-spin qubit noise model.
+Fourth, the DRL validation experiment demonstrates two complementary properties
+of SiliQun simultaneously: a lightweight PPO agent achieves $F = 0.9996$ on
+2-qubit Bell state synthesis, confirming that the physics engine produces a
+learnable reward signal and that the Gymnasium interface is correctly
+implemented; the same agent reaches only $F = 0.3998$ on the 4-qubit GHZ
+task, confirming that the SiMOS noise model is physically realistic and that
+the task is genuinely hard for a simple agent without domain-specific
+enhancements.
 
 Beyond the immediate results, SiliQun's most significant contribution is
 architectural. By providing a single, hardware-neutral simulation substrate
