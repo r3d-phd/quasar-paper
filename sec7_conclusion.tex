@@ -1,9 +1,9 @@
 %% ============================================================
 %% §7 — Conclusion
-%% Merged P1+P6 Journal Paper: SiliQun — A Physics-Grounded
-%% Simulation Platform and Framework for the SDQF Data Plane
+%% SiliQun — A Physics-Grounded Simulation Platform
+%% for Silicon Spin Qubit Quantum Control
 %%
-%% Sources: P1 §5.4 (rewritten), P6 §1 last paragraph, NEW ANDROMEDA forward ref
+%% Sources: P1 §5.4 (rewritten), experimental results from SiliQun v5 training
 %% ============================================================
 
 \section{Conclusion}
@@ -36,11 +36,12 @@ reproduced on the donor electron profile at $\bar{F} = 0.9748 \pm 0.0098$.
 Third, the same DQN protocol applied to the GAA profile achieves
 $\bar{F} = 0.9877 \pm 0.0021$ --- to the best of our knowledge, the first
 machine-learning benchmark for GAA silicon spin qubits in the literature.
-Fourth, QUASAR-synthesised circuits achieve $F_\text{XEB} \geq 0.954$ on
-IonQ Aria-1 trapped-ion hardware across five seeds, confirming that policies
-trained on SiliQun transfer to real quantum devices without retraining and
-that the simulation-to-hardware gap is practically bridgeable at the
-gate-synthesis level.
+Fourth, the SAC-based DRL agent trained on SiliQun achieves gate fidelity
+$F = 0.9930$ on 4-qubit GHZ synthesis under full SiMOS Lindblad noise in
+20,000 training steps and 194 seconds of wall-clock time on a single A100
+GPU, establishing the first reported result to cross the fault-tolerance
+threshold $F \geq 0.99$ at four qubits under a first-principles silicon
+spin qubit noise model.
 
 Beyond the immediate results, SiliQun's most significant contribution is
 architectural. By providing a single, hardware-neutral simulation substrate
@@ -59,10 +60,12 @@ when and why DRL provides a practical advantage; (2) validation of
 SiliQun's hardware profiles against physical SiMOS and donor devices through
 standard randomised benchmarking circuits, to close the simulation-to-hardware
 gap that currently limits the deployment of SiliQun-trained policies on
-real quantum processors; and (3) extension to hierarchical multi-agent quantum control, where SiliQun
-serves as the module-level simulation substrate for training independent
-gate-synthesis agents whose policies are composed through entanglement
-swapping or fusion operations toward scalable quantum network applications.
+real quantum processors; and (3) extension to multi-qubit scalability studies beyond four qubits,
+exploring whether the noise-conditional hyperparameter relationships
+identified here generalise to larger registers and whether the PGIRS
+methodology can guide the design of simulation substrates for
+superconducting transmon and neutral atom platforms without modification
+to the Lindblad solver or the Gymnasium interface.
 
 SiliQun is released under the MIT licence at
 \url{https://github.com/r3d-phd/siliqun}. All experiments reported in
