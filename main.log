@@ -1,0 +1,1346 @@
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2026.6.15)  15 JUN 2026 13:01
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**main.tex
+(./main.tex
+LaTeX2e <2023-11-01> patch level 1
+L3 programming layer <2024-01-22>
+(/usr/share/texlive/texmf-dist/tex/latex/ieeetran/IEEEtran.cls
+Document Class: IEEEtran 2015/08/26 V1.8b by Michael Shell
+-- See the "IEEEtran_HOWTO" manual for usage information.
+-- http://www.michaelshell.org/tex/ieeetran/
+\@IEEEtrantmpdimenA=\dimen140
+\@IEEEtrantmpdimenB=\dimen141
+\@IEEEtrantmpdimenC=\dimen142
+\@IEEEtrantmpcountA=\count187
+\@IEEEtrantmpcountB=\count188
+\@IEEEtrantmpcountC=\count189
+\@IEEEtrantmptoksA=\toks17
+LaTeX Font Info:    Trying to load font information for OT1+ptm on input line 5
+03.
+(/usr/share/texlive/texmf-dist/tex/latex/psnfss/ot1ptm.fd
+File: ot1ptm.fd 2001/06/04 font definitions for OT1/ptm.
+)
+-- Using 8.5in x 11in (letter) paper.
+-- Using PDF output.
+\@IEEEnormalsizeunitybaselineskip=\dimen143
+-- This is a 10 point document.
+\CLASSINFOnormalsizebaselineskip=\dimen144
+\CLASSINFOnormalsizeunitybaselineskip=\dimen145
+\IEEEnormaljot=\dimen146
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <5> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1090.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <5> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1090.
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <7> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1090.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <7> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1090.
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <8> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1090.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <8> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1090.
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <9> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1090.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <9> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1090.
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1090.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <10> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1090.
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <11> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1090.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <11> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1090.
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <12> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1090.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <12> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1090.
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <17> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1090.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <17> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1090.
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <20> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1090.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <20> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1090.
+
+LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <24> not available
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 1090.
+LaTeX Font Info:    Font shape `OT1/ptm/bx/it' in size <24> not available
+(Font)              Font shape `OT1/ptm/b/it' tried instead on input line 1090.
+
+\IEEEquantizedlength=\dimen147
+\IEEEquantizedlengthdiff=\dimen148
+\IEEEquantizedtextheightdiff=\dimen149
+\IEEEilabelindentA=\dimen150
+\IEEEilabelindentB=\dimen151
+\IEEEilabelindent=\dimen152
+\IEEEelabelindent=\dimen153
+\IEEEdlabelindent=\dimen154
+\IEEElabelindent=\dimen155
+\IEEEiednormlabelsep=\dimen156
+\IEEEiedmathlabelsep=\dimen157
+\IEEEiedtopsep=\skip48
+\c@section=\count190
+\c@subsection=\count191
+\c@subsubsection=\count192
+\c@paragraph=\count193
+\c@IEEEsubequation=\count194
+\abovecaptionskip=\skip49
+\belowcaptionskip=\skip50
+\c@figure=\count195
+\c@table=\count196
+\@IEEEeqnnumcols=\count197
+\@IEEEeqncolcnt=\count198
+\@IEEEsubeqnnumrollback=\count199
+\@IEEEquantizeheightA=\dimen158
+\@IEEEquantizeheightB=\dimen159
+\@IEEEquantizeheightC=\dimen160
+\@IEEEquantizeprevdepth=\dimen161
+\@IEEEquantizemultiple=\count266
+\@IEEEquantizeboxA=\box51
+\@IEEEtmpitemindent=\dimen162
+\IEEEPARstartletwidth=\dimen163
+\c@IEEEbiography=\count267
+\@IEEEtranrubishbin=\box52
+) (/usr/share/texlive/texmf-dist/tex/latex/base/fontenc.sty
+Package: fontenc 2021/04/29 v2.0v Standard LaTeX package
+LaTeX Font Info:    Trying to load font information for T1+ptm on input line 11
+2.
+
+(/usr/share/texlive/texmf-dist/tex/latex/psnfss/t1ptm.fd
+File: t1ptm.fd 2001/06/04 font definitions for T1/ptm.
+))
+(/usr/share/texlive/texmf-dist/tex/latex/base/inputenc.sty
+Package: inputenc 2021/02/14 v1.3d Input encoding file
+\inpenc@prehook=\toks18
+\inpenc@posthook=\toks19
+)
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsmath.sty
+Package: amsmath 2023/05/13 v2.17o AMS math features
+\@mathmargin=\skip51
+
+For additional information on amsmath, use the `?' option.
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amstext.sty
+Package: amstext 2021/08/26 v2.01 AMS text
+
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsgen.sty
+File: amsgen.sty 1999/11/30 v2.0 generic functions
+\@emptytoks=\toks20
+\ex@=\dimen164
+))
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsbsy.sty
+Package: amsbsy 1999/11/29 v1.2d Bold Symbols
+\pmbraise@=\dimen165
+)
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsopn.sty
+Package: amsopn 2022/04/08 v2.04 operator names
+)
+\inf@bad=\count268
+LaTeX Info: Redefining \frac on input line 234.
+\uproot@=\count269
+\leftroot@=\count270
+LaTeX Info: Redefining \overline on input line 399.
+LaTeX Info: Redefining \colon on input line 410.
+\classnum@=\count271
+\DOTSCASE@=\count272
+LaTeX Info: Redefining \ldots on input line 496.
+LaTeX Info: Redefining \dots on input line 499.
+LaTeX Info: Redefining \cdots on input line 620.
+\Mathstrutbox@=\box53
+\strutbox@=\box54
+LaTeX Info: Redefining \big on input line 722.
+LaTeX Info: Redefining \Big on input line 723.
+LaTeX Info: Redefining \bigg on input line 724.
+LaTeX Info: Redefining \Bigg on input line 725.
+\big@size=\dimen166
+LaTeX Font Info:    Redeclaring font encoding OML on input line 743.
+LaTeX Font Info:    Redeclaring font encoding OMS on input line 744.
+\macc@depth=\count273
+LaTeX Info: Redefining \bmod on input line 905.
+LaTeX Info: Redefining \pmod on input line 910.
+LaTeX Info: Redefining \smash on input line 940.
+LaTeX Info: Redefining \relbar on input line 970.
+LaTeX Info: Redefining \Relbar on input line 971.
+\c@MaxMatrixCols=\count274
+\dotsspace@=\muskip16
+\c@parentequation=\count275
+\dspbrk@lvl=\count276
+\tag@help=\toks21
+\row@=\count277
+\column@=\count278
+\maxfields@=\count279
+\andhelp@=\toks22
+\eqnshift@=\dimen167
+\alignsep@=\dimen168
+\tagshift@=\dimen169
+\tagwidth@=\dimen170
+\totwidth@=\dimen171
+\lineht@=\dimen172
+\@envbody=\toks23
+\multlinegap=\skip52
+\multlinetaggap=\skip53
+\mathdisplay@stack=\toks24
+LaTeX Info: Redefining \[ on input line 2953.
+LaTeX Info: Redefining \] on input line 2954.
+)
+(/usr/share/texlive/texmf-dist/tex/latex/amsfonts/amssymb.sty
+Package: amssymb 2013/01/14 v3.01 AMS font symbols
+
+(/usr/share/texlive/texmf-dist/tex/latex/amsfonts/amsfonts.sty
+Package: amsfonts 2013/01/14 v3.01 Basic AMSFonts support
+\symAMSa=\mathgroup4
+\symAMSb=\mathgroup5
+LaTeX Font Info:    Redeclaring math symbol \hbar on input line 98.
+LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
+(Font)                  U/euf/m/n --> U/euf/b/n on input line 106.
+))
+(/usr/share/texlive/texmf-dist/tex/latex/physics/physics.sty
+Package: physics 
+
+(/usr/share/texlive/texmf-dist/tex/latex/l3packages/xparse/xparse.sty
+(/usr/share/texlive/texmf-dist/tex/latex/l3kernel/expl3.sty
+Package: expl3 2024-01-22 L3 programming layer (loader) 
+
+(/usr/share/texlive/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
+File: l3backend-pdftex.def 2024-01-04 L3 backend support: PDF output (pdfTeX)
+\l__color_backend_stack_int=\count280
+\l__pdf_internal_box=\box55
+))
+Package: xparse 2023-10-10 L3 Experimental document command parser
+))
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/graphicx.sty
+Package: graphicx 2021/09/16 v1.2d Enhanced LaTeX Graphics (DPC,SPQR)
+
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/keyval.sty
+Package: keyval 2022/05/29 v1.15 key=value parser (DPC)
+\KV@toks@=\toks25
+)
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/graphics.sty
+Package: graphics 2022/03/10 v1.4e Standard LaTeX Graphics (DPC,SPQR)
+
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/trig.sty
+Package: trig 2021/08/11 v1.11 sin cos tan (DPC)
+)
+(/usr/share/texlive/texmf-dist/tex/latex/graphics-cfg/graphics.cfg
+File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
+)
+Package graphics Info: Driver file: pdftex.def on input line 107.
+
+(/usr/share/texlive/texmf-dist/tex/latex/graphics-def/pdftex.def
+File: pdftex.def 2022/09/22 v1.2b Graphics/color driver for pdftex
+))
+\Gin@req@height=\dimen173
+\Gin@req@width=\dimen174
+)
+(/usr/share/texlive/texmf-dist/tex/latex/booktabs/booktabs.sty
+Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
+\heavyrulewidth=\dimen175
+\lightrulewidth=\dimen176
+\cmidrulewidth=\dimen177
+\belowrulesep=\dimen178
+\belowbottomsep=\dimen179
+\aboverulesep=\dimen180
+\abovetopsep=\dimen181
+\cmidrulesep=\dimen182
+\cmidrulekern=\dimen183
+\defaultaddspace=\dimen184
+\@cmidla=\count281
+\@cmidlb=\count282
+\@aboverulesep=\dimen185
+\@belowrulesep=\dimen186
+\@thisruleclass=\count283
+\@lastruleclass=\count284
+\@thisrulewidth=\dimen187
+)
+(/usr/share/texlive/texmf-dist/tex/latex/multirow/multirow.sty
+Package: multirow 2021/03/15 v2.8 Span multiple rows of a table
+\multirow@colwidth=\skip54
+\multirow@cntb=\count285
+\multirow@dima=\skip55
+\bigstrutjot=\dimen188
+)
+(/usr/share/texlive/texmf-dist/tex/latex/tools/array.sty
+Package: array 2023/10/16 v2.5g Tabular extension package (FMi)
+\col@sep=\dimen189
+\ar@mcellbox=\box56
+\extrarowheight=\dimen190
+\NC@list=\toks26
+\extratabsurround=\skip56
+\backup@length=\skip57
+\ar@cellbox=\box57
+)
+(/usr/share/texlive/texmf-dist/tex/latex/url/url.sty
+\Urlmuskip=\muskip17
+Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
+)
+(/usr/share/texlive/texmf-dist/tex/latex/xcolor/xcolor.sty
+Package: xcolor 2023/11/15 v3.01 LaTeX color extensions (UK)
+
+(/usr/share/texlive/texmf-dist/tex/latex/graphics-cfg/color.cfg
+File: color.cfg 2016/01/02 v1.6 sample color configuration
+)
+Package xcolor Info: Driver file: pdftex.def on input line 274.
+
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/mathcolor.ltx)
+Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1350.
+Package xcolor Info: Model `hsb' substituted by `rgb' on input line 1354.
+Package xcolor Info: Model `RGB' extended on input line 1366.
+Package xcolor Info: Model `HTML' substituted by `rgb' on input line 1368.
+Package xcolor Info: Model `Hsb' substituted by `hsb' on input line 1369.
+Package xcolor Info: Model `tHsb' substituted by `hsb' on input line 1370.
+Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1371.
+Package xcolor Info: Model `Gray' substituted by `gray' on input line 1372.
+Package xcolor Info: Model `wave' substituted by `hsb' on input line 1373.
+)
+(/usr/share/texlive/texmf-dist/tex/latex/placeins/placeins.sty
+Package: placeins 2005/04/18  v 2.2
+)
+(/usr/share/texlive/texmf-dist/tex/latex/needspace/needspace.sty
+Package: needspace 2010/09/12 v1.3d reserve vertical space
+)
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/hyperref.sty
+Package: hyperref 2024-01-20 v7.01h Hypertext links for LaTeX
+
+(/usr/share/texlive/texmf-dist/tex/generic/iftex/iftex.sty
+Package: iftex 2022/02/03 v1.0f TeX engine tests
+)
+(/usr/share/texlive/texmf-dist/tex/latex/kvsetkeys/kvsetkeys.sty
+Package: kvsetkeys 2022-10-05 v1.19 Key value parser (HO)
+)
+(/usr/share/texlive/texmf-dist/tex/generic/kvdefinekeys/kvdefinekeys.sty
+Package: kvdefinekeys 2019-12-19 v1.6 Define keys (HO)
+)
+(/usr/share/texlive/texmf-dist/tex/generic/pdfescape/pdfescape.sty
+Package: pdfescape 2019/12/09 v1.15 Implements pdfTeX's escape features (HO)
+
+(/usr/share/texlive/texmf-dist/tex/generic/ltxcmds/ltxcmds.sty
+Package: ltxcmds 2023-12-04 v1.26 LaTeX kernel commands for general use (HO)
+)
+(/usr/share/texlive/texmf-dist/tex/generic/pdftexcmds/pdftexcmds.sty
+Package: pdftexcmds 2020-06-27 v0.33 Utility functions of pdfTeX for LuaTeX (HO
+)
+
+(/usr/share/texlive/texmf-dist/tex/generic/infwarerr/infwarerr.sty
+Package: infwarerr 2019/12/03 v1.5 Providing info/warning/error messages (HO)
+)
+Package pdftexcmds Info: \pdf@primitive is available.
+Package pdftexcmds Info: \pdf@ifprimitive is available.
+Package pdftexcmds Info: \pdfdraftmode found.
+))
+(/usr/share/texlive/texmf-dist/tex/latex/hycolor/hycolor.sty
+Package: hycolor 2020-01-27 v1.10 Color options for hyperref/bookmark (HO)
+)
+(/usr/share/texlive/texmf-dist/tex/latex/auxhook/auxhook.sty
+Package: auxhook 2019-12-17 v1.6 Hooks for auxiliary files (HO)
+)
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
+Package: nameref 2023-11-26 v2.56 Cross-referencing by name of section
+
+(/usr/share/texlive/texmf-dist/tex/latex/refcount/refcount.sty
+Package: refcount 2019/12/15 v3.6 Data extraction from label references (HO)
+)
+(/usr/share/texlive/texmf-dist/tex/generic/gettitlestring/gettitlestring.sty
+Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
+
+(/usr/share/texlive/texmf-dist/tex/latex/kvoptions/kvoptions.sty
+Package: kvoptions 2022-06-15 v3.15 Key value format for package options (HO)
+))
+\c@section@level=\count286
+)
+(/usr/share/texlive/texmf-dist/tex/latex/etoolbox/etoolbox.sty
+Package: etoolbox 2020/10/05 v2.5k e-TeX tools for LaTeX (JAW)
+\etb@tempcnta=\count287
+)
+\@linkdim=\dimen191
+\Hy@linkcounter=\count288
+\Hy@pagecounter=\count289
+
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/pd1enc.def
+File: pd1enc.def 2024-01-20 v7.01h Hyperref: PDFDocEncoding definition (HO)
+Now handling font encoding PD1 ...
+... no UTF-8 mapping file for font encoding PD1
+)
+(/usr/share/texlive/texmf-dist/tex/generic/intcalc/intcalc.sty
+Package: intcalc 2019/12/15 v1.3 Expandable calculations with integers (HO)
+)
+\Hy@SavedSpaceFactor=\count290
+
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/puenc.def
+File: puenc.def 2024-01-20 v7.01h Hyperref: PDF Unicode definition (HO)
+Now handling font encoding PU ...
+... no UTF-8 mapping file for font encoding PU
+)
+Package hyperref Info: Option `colorlinks' set `true' on input line 4062.
+Package hyperref Info: Hyper figures OFF on input line 4179.
+Package hyperref Info: Link nesting OFF on input line 4184.
+Package hyperref Info: Hyper index ON on input line 4187.
+Package hyperref Info: Plain pages OFF on input line 4194.
+Package hyperref Info: Backreferencing OFF on input line 4199.
+Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
+Package hyperref Info: Bookmarks ON on input line 4446.
+\c@Hy@tempcnt=\count291
+LaTeX Info: Redefining \url on input line 4784.
+\XeTeXLinkMargin=\dimen192
+
+(/usr/share/texlive/texmf-dist/tex/generic/bitset/bitset.sty
+Package: bitset 2019/12/09 v1.3 Handle bit-vector datatype (HO)
+
+(/usr/share/texlive/texmf-dist/tex/generic/bigintcalc/bigintcalc.sty
+Package: bigintcalc 2019/12/15 v1.5 Expandable calculations on big integers (HO
+)
+))
+\Fld@menulength=\count292
+\Field@Width=\dimen193
+\Fld@charsize=\dimen194
+Package hyperref Info: Hyper figures OFF on input line 6063.
+Package hyperref Info: Link nesting OFF on input line 6068.
+Package hyperref Info: Hyper index ON on input line 6071.
+Package hyperref Info: backreferencing OFF on input line 6078.
+Package hyperref Info: Link coloring ON on input line 6081.
+Package hyperref Info: Link coloring with OCG OFF on input line 6088.
+Package hyperref Info: PDF/A mode OFF on input line 6093.
+
+(/usr/share/texlive/texmf-dist/tex/latex/base/atbegshi-ltx.sty
+Package: atbegshi-ltx 2021/01/10 v1.0c Emulation of the original atbegshi
+package with kernel methods
+)
+\Hy@abspage=\count293
+\c@Item=\count294
+\c@Hfootnote=\count295
+)
+Package hyperref Info: Driver (autodetected): hpdftex.
+
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/hpdftex.def
+File: hpdftex.def 2024-01-20 v7.01h Hyperref driver for pdfTeX
+
+(/usr/share/texlive/texmf-dist/tex/latex/base/atveryend-ltx.sty
+Package: atveryend-ltx 2020/08/19 v1.0a Emulation of the original atveryend pac
+kage
+with kernel methods
+)
+\Fld@listcount=\count296
+\c@bookmark@seq@number=\count297
+
+(/usr/share/texlive/texmf-dist/tex/latex/rerunfilecheck/rerunfilecheck.sty
+Package: rerunfilecheck 2022-07-10 v1.10 Rerun checks for auxiliary files (HO)
+
+(/usr/share/texlive/texmf-dist/tex/generic/uniquecounter/uniquecounter.sty
+Package: uniquecounter 2019/12/15 v1.4 Provide unlimited unique counter (HO)
+)
+Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
+85.
+)
+\Hy@SectionHShift=\skip58
+)
+(/usr/share/texlive/texmf-dist/tex/latex/algorithms/algorithm.sty
+Package: algorithm 2009/08/24 v0.1 Document Style `algorithm' - floating enviro
+nment
+
+(/usr/share/texlive/texmf-dist/tex/latex/float/float.sty
+Package: float 2001/11/08 v1.3d Float enhancements (AL)
+\c@float@type=\count298
+\float@exts=\toks27
+\float@box=\box58
+\@float@everytoks=\toks28
+\@floatcapt=\box59
+)
+(/usr/share/texlive/texmf-dist/tex/latex/base/ifthen.sty
+Package: ifthen 2022/04/13 v1.1d Standard LaTeX ifthen package (DPC)
+)
+\@float@every@algorithm=\toks29
+\c@algorithm=\count299
+)
+(/usr/share/texlive/texmf-dist/tex/latex/algorithmicx/algpseudocode.sty
+Package: algpseudocode 
+
+(/usr/share/texlive/texmf-dist/tex/latex/algorithmicx/algorithmicx.sty
+Package: algorithmicx 2005/04/27 v1.2 Algorithmicx
+
+Document Style algorithmicx 1.2 - a greatly improved `algorithmic' style
+\c@ALG@line=\count300
+\c@ALG@rem=\count301
+\c@ALG@nested=\count302
+\ALG@tlm=\skip59
+\ALG@thistlm=\skip60
+\c@ALG@Lnr=\count303
+\c@ALG@blocknr=\count304
+\c@ALG@storecount=\count305
+\c@ALG@tmpcounter=\count306
+\ALG@tmplength=\skip61
+)
+Document Style - pseudocode environments for use with the `algorithmicx' style
+) (./main.aux)
+\openout1 = `main.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 58.
+LaTeX Font Info:    ... okay on input line 58.
+
+-- Lines per column: 58 (exact).
+(/usr/share/texlive/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count307
+\scratchdimen=\dimen195
+\scratchbox=\box60
+\nofMPsegments=\count308
+\nofMParguments=\count309
+\everyMPshowfont=\toks30
+\MPscratchCnt=\count310
+\MPscratchDim=\dimen196
+\MPnumerator=\count311
+\makeMPintoPDFobject=\count312
+\everyMPtoPDFconversion=\toks31
+) (/usr/share/texlive/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
+Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
+Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
+85.
+
+(/usr/share/texlive/texmf-dist/tex/latex/latexconfig/epstopdf-sys.cfg
+File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
+e
+))
+Package hyperref Info: Link coloring ON on input line 58.
+
+(./main.out) (./main.out)
+\@outlinefile=\write3
+\openout3 = `main.out'.
+
+
+Underfull \hbox (badness 6396) in paragraph at lines 61--61
+[][][]\T1/ptm/m/n/8 R. M. Al-shehri is a PhD Can-di-date with the De-part-ment 
+of
+ []
+
+
+Underfull \hbox (badness 1789) in paragraph at lines 61--61
+\T1/ptm/m/n/8 King Ab-du-laziz Uni-ver-sity, Jed-dah 21589, Saudi Ara-bia (e-ma
+il: ral-
+ []
+
+(./sec1_abstract_intro.tex
+LaTeX Font Info:    Trying to load font information for U+msa on input line 2.
+
+(/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
+)
+LaTeX Font Info:    Trying to load font information for U+msb on input line 2.
+
+(/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+)
+Underfull \hbox (badness 3977) in paragraph at lines 13--14
+[]\T1/ptm/m/n/10 Silicon spin qubits^^Vparticularly SiMOS de-vices^^Vare
+ []
+
+
+Underfull \hbox (badness 2020) in paragraph at lines 20--21
+[]\T1/ptm/m/n/10 We in-tro-duce the \T1/ptm/b/n/10 Physics-Grounded RL Sim-u-la
+-tion
+ []
+
+LaTeX Font Info:    Trying to load font information for T1+pcr on input line 24
+.
+(/usr/share/texlive/texmf-dist/tex/latex/psnfss/t1pcr.fd
+File: t1pcr.fd 2001/06/04 font definitions for T1/pcr.
+) [1{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}{/usr/share/texlive/texm
+f-dist/fonts/enc/dvips/base/8r.enc}
+
+
+]
+Underfull \hbox (badness 10000) in paragraph at lines 45--46
+[]\T1/ptm/b/n/10 Multi-technology hard-ware pro-files: \T1/ptm/m/n/10 A
+ []
+
+
+Underfull \hbox (badness 5161) in paragraph at lines 45--46
+\T1/ptm/m/n/10 physics for SiMOS, donor-electron, GAA, GaAs
+ []
+
+
+Underfull \hbox (badness 5446) in paragraph at lines 47--48
+[]\T1/ptm/b/n/10 Qiskit Back-endV2 provider: \T1/ptm/m/n/10 The pip-installable
+
+ []
+
+) (./sec2_related_work.tex
+Underfull \hbox (badness 1448) in paragraph at lines 10--11
+[]\T1/ptm/m/n/10 SiliQun bridges three re-search com-mu-ni-ties that have
+ []
+
+[2]
+Underfull \hbox (badness 2111) in paragraph at lines 172--178
+\T1/ptm/m/n/10 work for the au-to-mated dis-cov-ery of qubit op-er-a-tional
+ []
+
+[3]
+Underfull \hbox (badness 2521) in paragraph at lines 215--215
+[]|\T1/ptm/m/n/9 Pulse-level (con-tin-u-ous ac-tion space:
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 215--215
+\T1/ptm/m/n/9 pulse am-pli-tudes, fre-quen-cies,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 216--217
+[]|\T1/ptm/m/n/9 Gate-level (dis-crete ac-tion space:
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 220--221
+[]|\T1/ptm/m/n/9 First-principles Lind-blad: am-pli-tude
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 220--221
+\T1/ptm/m/n/9 damp-ing ($\OML/cmm/m/it/9 T[]$\T1/ptm/m/n/9 ), de-phas-ing ($\OM
+L/cmm/m/it/9 T[]$\T1/ptm/m/n/9 ),
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 228--229
+\T1/ptm/m/n/9 di-rectly com-pat-i-ble with Stable-
+ []
+
+
+Underfull \hbox (badness 2538) in paragraph at lines 232--233
+[]|\T1/ptm/m/n/9 Open-source MIT li-cence at [][]$https : / /
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 236--237
+\T1/ptm/m/n/9 DQN, DDPG, TD3, A2C; cross-
+ []
+
+
+Underfull \hbox (badness 1715) in paragraph at lines 239--239
+\T1/ptm/m/n/9 the-sise gate se-quences for en-tan-gled
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 244--245
+\T1/ptm/m/n/9 Gym-na-sium in-ter-face, re-pro-ducible
+ []
+
+
+Underfull \hbox (badness 1622) in paragraph at lines 247--247
+\T1/ptm/m/n/9 de-vices; no sim-to-real trans-fer-abil-ity
+ []
+
+LaTeX Font Info:    Trying to load font information for TS1+ptm on input line 3
+47.
+(/usr/share/texlive/texmf-dist/tex/latex/psnfss/ts1ptm.fd
+File: ts1ptm.fd 2001/06/04 font definitions for TS1/ptm.
+)
+
+LaTeX Font Warning: Font shape `TS1/ptm/m/sc' undefined
+(Font)              using `TS1/ptm/m/n' instead
+(Font)              for symbol `texttimes' on input line 347.
+
+) (./sec3_siliqun_framework.tex [4]
+Underfull \vbox (badness 1043) has occurred while \output is active []
+
+ [5
+pdfTeX warning (ext4): destination with the same identifier (name{table.1}) has
+ been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.37 
+     ] [6
+pdfTeX warning (ext4): destination with the same identifier (name{table.2}) has
+ been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.83 
+     ]
+Underfull \hbox (badness 1521) in paragraph at lines 89--90
+\T1/ptm/m/n/10 stan-dard Gym-na-sium \T1/pcr/m/n/10 Env \T1/ptm/m/n/10 in-ter-f
+ace [[]], mak-ing it di-
+ []
+
+
+Underfull \hbox (badness 1496) in paragraph at lines 89--90
+\T1/ptm/m/n/10 lib [[]], and CleanRL [[]]. The en-vi-ron-ment is reg-is-
+ []
+
+<figures/fig1_siliqun_arch_ai.png, id=385, 2569.6pt x 1445.4pt>
+File: figures/fig1_siliqun_arch_ai.png Graphic file (type png)
+<use figures/fig1_siliqun_arch_ai.png>
+Package pdftex.def Info: figures/fig1_siliqun_arch_ai.png  used on input line 1
+11.
+(pdftex.def)             Requested size: 516.0pt x 290.24379pt.
+Package hyperref Info: bookmark level for unknown algorithm defaults to 0 on in
+put line 141.
+
+Underfull \hbox (badness 4805) in paragraph at lines 153--154
+[] \T1/ptm/m/n/10 Wrap physics en-gine in Gym-na-sium \T1/pcr/m/n/10 Env \T1/pt
+m/m/n/10 with
+ []
+
+<figures/fig2_pgirs_ai.png, id=397, 2569.6pt x 1445.4pt>
+File: figures/fig2_pgirs_ai.png Graphic file (type png)
+<use figures/fig2_pgirs_ai.png>
+Package pdftex.def Info: figures/fig2_pgirs_ai.png  used on input line 174.
+(pdftex.def)             Requested size: 516.0pt x 290.24379pt.
+[7]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+
+Underfull \hbox (badness 6944) in paragraph at lines 207--220
+[]\T1/ptm/b/n/10 Tier 1 ^^V Hardware-agnostic sim-u-la-tion prim-i-
+ []
+
+
+Underfull \hbox (badness 2591) in paragraph at lines 207--220
+\T1/ptm/b/n/10 tives (\T1/pcr/b/n/10 siliqun.core\T1/ptm/b/n/10 ). \T1/ptm/m/n/
+10 Tier 1 con-tains the Lind-blad
+ []
+
+
+Underfull \hbox (badness 7030) in paragraph at lines 207--220
+\T1/ptm/m/n/10 mas-ter equa-tion solver (\T1/pcr/m/n/10 LindbladSolver\T1/ptm/m
+/n/10 ), the ab-
+ []
+
+
+Underfull \hbox (badness 1400) in paragraph at lines 207--220
+\T1/ptm/m/n/10 stract base classes that de-fine the con-tracts for Tier 2
+ []
+
+
+Underfull \hbox (badness 3657) in paragraph at lines 207--220
+\T1/ptm/m/n/10 and Tier 3 (\T1/pcr/m/n/10 TechnologyProfile\T1/ptm/m/n/10 , \T1
+/pcr/m/n/10 NoiseChannel\T1/ptm/m/n/10 ,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 221--224
+[]\T1/ptm/m/n/10 The cen-tral data struc-ture in Tier 1 is
+ []
+
+
+Underfull \hbox (badness 1867) in paragraph at lines 221--224
+\T1/pcr/m/n/10 DeviceParameters\T1/ptm/m/n/10 , a Python dat-a-class that en-co
+des
+ []
+
+[8
+pdfTeX warning (ext4): destination with the same identifier (name{figure.1}) ha
+s been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.238 
+       <./figures/fig1_siliqun_arch_ai.png (PNG copy)>]
+Underfull \hbox (badness 10000) in paragraph at lines 240--252
+[]\T1/ptm/b/n/10 Tier 2 ^^V Technology-specific physics mod-ules
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 240--252
+\T1/ptm/m/n/10 five meth-ods: \T1/pcr/m/n/10 device_parameters() \T1/ptm/m/n/10
+ re-turn-ing a
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 256--261
+[]\T1/pcr/m/n/10 siliqun.tech.simos \T1/ptm/m/n/10 ^^V SiMOS spin qubits
+ []
+
+
+Underfull \hbox (badness 3780) in paragraph at lines 256--261
+\T1/ptm/m/n/10 (\T1/pcr/m/n/10 simos_nominal\T1/ptm/m/n/10 , \T1/pcr/m/n/10 sim
+os_best\T1/ptm/m/n/10 , \T1/pcr/m/n/10 simos_worst\T1/ptm/m/n/10 ,
+ []
+
+
+Underfull \hbox (badness 1400) in paragraph at lines 256--261
+\T1/pcr/m/n/10 simos_sledge\T1/ptm/m/n/10 ); pa-ram-e-ters from Xue et al. [[]]
+,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 264--268
+[]\T1/pcr/m/n/10 siliqun.tech.donor \T1/ptm/m/n/10 ^^V Donor spin qubits
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 281--286
+[]\T1/pcr/m/n/10 siliqun.plugins.gymnasium \T1/ptm/m/n/10 ^^V
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 286--289
+[]\T1/pcr/m/n/10 siliqun.plugins.qiskit \T1/ptm/m/n/10 ^^V
+ []
+
+
+Underfull \hbox (badness 1616) in paragraph at lines 286--289
+\T1/pcr/m/n/10 SiliQunBackend\T1/ptm/m/n/10 , a Qiskit \T1/pcr/m/n/10 BackendV2
+ \T1/ptm/m/n/10 sub-class
+ []
+
+
+Underfull \hbox (badness 2189) in paragraph at lines 289--294
+[]\T1/pcr/m/n/10 siliqun.plugins.rl \T1/ptm/m/n/10 ^^V \T1/pcr/m/n/10 SiliQunRL
+Adapter\T1/ptm/m/n/10 ,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 289--294
+\T1/ptm/m/n/10 meth-ods (\T1/pcr/m/n/10 get_fidelity\T1/ptm/m/n/10 , \T1/pcr/m/
+n/10 get_entanglement\T1/ptm/m/n/10 ,
+ []
+
+[9
+pdfTeX warning (ext4): destination with the same identifier (name{figure.2}) ha
+s been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.294 \end{itemize}
+                    <./figures/fig2_pgirs_ai.png (PNG copy)>]
+<figures/siliqun_three_tier_architecture.png, id=441, 1413.28pt x 1059.96pt>
+File: figures/siliqun_three_tier_architecture.png Graphic file (type png)
+<use figures/siliqun_three_tier_architecture.png>
+Package pdftex.def Info: figures/siliqun_three_tier_architecture.png  used on i
+nput line 321.
+(pdftex.def)             Requested size: 438.60315pt x 328.95619pt.
+
+Underfull \hbox (badness 3312) in paragraph at lines 417--421
+ \T1/ptm/m/it/10 1) Plu-gin Con-tract: [][][] \T1/ptm/m/n/10 A SiliQun plu-gin 
+is a Python
+ []
+
+
+Underfull \hbox (badness 3803) in paragraph at lines 417--421
+\T1/ptm/m/n/10 pack-age that ex-ports ex-actly one class de-riv-ing from
+ []
+
+
+Underfull \hbox (badness 5563) in paragraph at lines 417--421
+\T1/pcr/m/n/10 TechnologyProfile \T1/ptm/m/n/10 (the Tier 2 ABC de-fined in
+ []
+
+
+Underfull \hbox (badness 2512) in paragraph at lines 422--428
+[]\T1/ptm/b/n/10 Profile class. \T1/ptm/m/n/10 A sub-class of \T1/pcr/m/n/10 Te
+chnologyProfile
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 422--428
+\T1/ptm/m/n/10 that im-ple-ments the five manda-tory meth-ods
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 422--428
+\T1/ptm/m/n/10 (\T1/pcr/m/n/10 device_parameters\T1/ptm/m/n/10 , \T1/pcr/m/n/10
+ drift_hamiltonian\T1/ptm/m/n/10 ,
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 422--428
+\T1/pcr/m/n/10 control_hamiltonians\T1/ptm/m/n/10 , \T1/pcr/m/n/10 noise_channe
+ls\T1/ptm/m/n/10 ,
+ []
+
+
+Underfull \hbox (badness 4096) in paragraph at lines 422--428
+\T1/pcr/m/n/10 gate_library\T1/ptm/m/n/10 ) and pop-u-lates the cal-i-bra-tion 
+record
+ []
+
+
+Underfull \hbox (badness 1838) in paragraph at lines 440--445
+\T1/ptm/m/n/10 tered with the Gym-na-sium reg-istry, fol-low-ing the con-
+ []
+
+
+Underfull \hbox (badness 1565) in paragraph at lines 440--445
+\T1/ptm/m/n/10 ven-tion \T1/pcr/m/n/10 SiliQun-{TechnologyName}-v{N}\T1/ptm/m/n
+/10 , so that
+ []
+
+
+Underfull \hbox (badness 3396) in paragraph at lines 440--445
+\T1/ptm/m/n/10 the plu-gin en-vi-ron-ment is ac-ces-si-ble via the stan-dard
+ []
+
+[10]
+Underfull \hbox (badness 10000) in paragraph at lines 455--470
+ \T1/ptm/m/it/10 2) Worked Ex-am-ple and In-te-gra-tion Cost: [][][] \T1/ptm/m/
+n/10 The
+ []
+
+
+Underfull \hbox (badness 4084) in paragraph at lines 455--470
+\T1/pcr/m/n/10 siliqun-gaas \T1/ptm/m/n/10 plu-gin demon-strates the full con-t
+ract
+ []
+
+
+Underfull \hbox (badness 2221) in paragraph at lines 455--470
+\T1/ptm/m/n/10 JSON with source DOIs (12 lines), and three PGIRS
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 455--470
+\T1/pcr/m/n/10 gymnasium.make("SiliQun-GAA-v1") \T1/ptm/m/n/10 with no
+ []
+
+
+Underfull \hbox (badness 2469) in paragraph at lines 455--470
+\T1/ptm/m/n/10 in-clud-ing su-per-con-duct-ing, trapped-ion, and neutral-atom
+ []
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [11
+pdfTeX warning (ext4): destination with the same identifier (name{figure.3}) ha
+s been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.470 
+      
+pdfTeX warning (ext4): destination with the same identifier (name{table.3}) has
+ been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.470 
+       <./figures/siliqun_three_tier_architecture.png (PNG copy)>]
+Underfull \hbox (badness 10000) in paragraph at lines 535--544
+[]\T1/ptm/m/n/10 The back-end is im-ple-mented as the
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 535--544
+\T1/pcr/m/n/10 MPSLindbladEngine \T1/ptm/m/n/10 class, in-her-it-ing from the
+ []
+
+
+Underfull \hbox (badness 3601) in paragraph at lines 535--544
+\T1/ptm/m/n/10 is used (ex-act, no ap-prox-i-ma-tion); for $\OML/cmm/m/it/10 n 
+> \OT1/cmr/m/n/10 8$ \T1/ptm/m/n/10 the
+ []
+
+<figures/fig_bond_dim.png, id=478, 2055.68pt x 1455.4375pt>
+File: figures/fig_bond_dim.png Graphic file (type png)
+<use figures/fig_bond_dim.png>
+Package pdftex.def Info: figures/fig_bond_dim.png  used on input line 565.
+(pdftex.def)             Requested size: 252.0pt x 178.39815pt.
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 577--586
+[]\T1/ptm/m/n/10 Cross-validation ex-per-i-ments con-firm that the
+ []
+
+
+Underfull \hbox (badness 1953) in paragraph at lines 577--586
+\T1/pcr/m/n/10 MPSLindbladEngine \T1/ptm/m/n/10 re-pro-duces ex-act den-sity ma
+-trix
+ []
+
+) (./sec4_drl_control_agent.tex
+Underfull \hbox (badness 3954) in paragraph at lines 12--13
+[]\T1/ptm/m/n/10 SiliQun pro-vides a phys-i-cally ac-cu-rate, Gymnasium-
+ []
+
+[12
+pdfTeX warning (ext4): destination with the same identifier (name{figure.4}) ha
+s been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.42 
+      <./figures/fig_bond_dim.png>]
+<figures/fig3_siliqun_agent_architecture.png, id=492, 2184.16pt x 1638.12pt>
+File: figures/fig3_siliqun_agent_architecture.png Graphic file (type png)
+<use figures/fig3_siliqun_agent_architecture.png>
+Package pdftex.def Info: figures/fig3_siliqun_agent_architecture.png  used on i
+nput line 48.
+(pdftex.def)             Requested size: 231.83954pt x 173.86984pt.
+
+Underfull \hbox (badness 2302) in paragraph at lines 57--57
+\T1/ptm/m/n/8 blad pulse solver (\T1/pcr/m/n/8 siliqun.pulse\T1/ptm/m/n/8 ), th
+e Open-QASM 3.0 com-piler
+ []
+
+
+Underfull \hbox (badness 3735) in paragraph at lines 57--57
+\T1/ptm/m/n/8 (\T1/pcr/m/n/8 siliqun.compiler\T1/ptm/m/n/8 ), the physics layer
+ with de-vice pro-files and
+ []
+
+
+Underfull \hbox (badness 4403) in paragraph at lines 57--57
+\T1/ptm/m/n/8 noise chan-nels (\T1/pcr/m/n/8 siliqun.physics\T1/ptm/m/n/8 ), th
+ird-party frame-work plu-g-ins
+ []
+
+[13
+pdfTeX warning (ext4): destination with the same identifier (name{table.4}) has
+ been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.140 
+      
+pdfTeX warning (ext4): destination with the same identifier (name{table.5}) has
+ been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.140 
+      
+pdfTeX warning (ext4): destination with the same identifier (name{figure.5}) ha
+s been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.140 
+      
+pdfTeX warning (ext4): destination with the same identifier (name{table.6}) has
+ been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.140 
+       <./figures/fig3_siliqun_agent_architecture.png (PNG copy)>])
+(./sec5_experiments.tex
+Underfull \hbox (badness 6380) in paragraph at lines 11--29
+[]\T1/ptm/m/n/10 We re-port three ex-per-i-ments that col-lec-tively val-i-
+ []
+
+
+Underfull \hbox (badness 1430) in paragraph at lines 11--29
+\T1/ptm/m/n/10 the DQL and SARSA CZ gate-synthesis ex-per-i-ment of
+ []
+
+
+Underfull \hbox (badness 1831) in paragraph at lines 35--42
+[]\T1/ptm/m/n/10 All ex-per-i-ments were con-ducted on the King Ab-du-
+ []
+
+
+Underfull \hbox (badness 1960) in paragraph at lines 35--42
+\T1/ptm/m/n/10 nodes (40GB HBM2 VRAM) with Py-Torch 2.5.1 and
+ []
+
+
+LaTeX Warning: Reference `subsec:methods_rl' on page 14 undefined on input line
+ 50.
+
+[14]
+
+LaTeX Warning: Reference `subsec:methods_rl' on page 15 undefined on input line
+ 156.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 260--270
+[]\T1/ptm/b/n/10 Results. \T1/ptm/m/n/10 Ta-ble [][]IX[][] sum-marises the com-
+par-i-son.
+ []
+
+[15
+pdfTeX warning (ext4): destination with the same identifier (name{table.7}) has
+ been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.270 
+      ]
+Underfull \hbox (badness 1838) in paragraph at lines 326--351
+[]\T1/ptm/b/n/10 Setup. \T1/ptm/m/n/10 To com-ple-ment the con-cep-tual com-par
+-i-son of
+ []
+
+
+Underfull \hbox (badness 4001) in paragraph at lines 326--351
+\T1/ptm/m/n/10 Ÿ[][][][][], we con-duct a \T1/ptm/m/it/10 di-rect \T1/ptm/m/n/1
+0 repli-ca-tion of the Abedi
+ []
+
+
+Underfull \vbox (badness 5460) has occurred while \output is active []
+
+ [16
+pdfTeX warning (ext4): destination with the same identifier (name{table.8}) has
+ been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.412 
+      ]
+
+LaTeX Warning: Reference `subsec:methods_rl' on page 17 undefined on input line
+ 419.
+
+<figures/fig5_cross_backend_ai.png, id=568, 2569.6pt x 1445.4pt>
+File: figures/fig5_cross_backend_ai.png Graphic file (type png)
+<use figures/fig5_cross_backend_ai.png>
+Package pdftex.def Info: figures/fig5_cross_backend_ai.png  used on input line 
+523.
+(pdftex.def)             Requested size: 474.71906pt x 267.01988pt.
+[17
+pdfTeX warning (ext4): destination with the same identifier (name{table.9}) has
+ been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.545 T
+       he SiMOS agent (blue) converges most rapidly, reaching $F > 0.95$
+pdfTeX warning (ext4): destination with the same identifier (name{table.10}) ha
+s been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.545 T
+       he SiMOS agent (blue) converges most rapidly, reaching $F > 0.95$]
+<figures/fig4_convergence_ai.png, id=580, 719.0865pt x 397.84634pt>
+File: figures/fig4_convergence_ai.png Graphic file (type png)
+<use figures/fig4_convergence_ai.png>
+Package pdftex.def Info: figures/fig4_convergence_ai.png  used on input line 55
+8.
+(pdftex.def)             Requested size: 474.71906pt x 262.65224pt.
+
+[18
+pdfTeX warning (ext4): destination with the same identifier (name{table.11}) ha
+s been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.661 
+      
+pdfTeX warning (ext4): destination with the same identifier (name{table.12}) ha
+s been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.661 
+      ]
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [19
+pdfTeX warning (ext4): destination with the same identifier (name{figure.6}) ha
+s been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.661 
+      
+pdfTeX warning (ext4): destination with the same identifier (name{figure.7}) ha
+s been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.661 
+       <./figures/fig5_cross_backend_ai.png (PNG copy)> <./figures/fig4_converg
+ence_ai.png>]
+<figures/fig_noise_overhead.png, id=605, 2055.68pt x 1068.99374pt>
+File: figures/fig_noise_overhead.png Graphic file (type png)
+<use figures/fig_noise_overhead.png>
+Package pdftex.def Info: figures/fig_noise_overhead.png  used on input line 666
+.
+(pdftex.def)             Requested size: 490.19843pt x 254.89996pt.
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+<figures/fig_speed_scaling.png, id=606, 2055.68pt x 755.82375pt>
+File: figures/fig_speed_scaling.png Graphic file (type png)
+<use figures/fig_speed_scaling.png>
+Package pdftex.def Info: figures/fig_speed_scaling.png  used on input line 683.
+
+(pdftex.def)             Requested size: 490.19843pt x 180.22504pt.
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 697.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `subscript' on input line 697.
+
+
+Package hyperref Warning: Token not allowed in a PDF string (Unicode):
+(hyperref)                removing `math shift' on input line 697.
+
+
+Underfull \hbox (badness 1675) in paragraph at lines 701--719
+\T1/ptm/m/n/10 the lin-ear clus-ter state $\OMS/cmsy/m/n/10 j\OML/cmm/m/it/10 C
+[]\OMS/cmsy/m/n/10 i$ \T1/ptm/m/n/10 (de-fined by the sta-bilis-ers
+ []
+
+<figures/fig_e4_results.png, id=612, 763.1712pt x 295.5843pt>
+File: figures/fig_e4_results.png Graphic file (type png)
+<use figures/fig_e4_results.png>
+Package pdftex.def Info: figures/fig_e4_results.png  used on input line 777.
+(pdftex.def)             Requested size: 474.71906pt x 183.86473pt.
+) (./sec6_discussion.tex [20
+pdfTeX warning (ext4): destination with the same identifier (name{table.13}) ha
+s been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.14 
+     ]
+Underfull \hbox (badness 1642) in paragraph at lines 20--21
+[]\T1/ptm/m/n/10 Compared to general-purpose quan-tum sim-u-la-tors like
+ []
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [21
+pdfTeX warning (ext4): destination with the same identifier (name{figure.8}) ha
+s been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.23 
+     
+pdfTeX warning (ext4): destination with the same identifier (name{figure.9}) ha
+s been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.23 
+      <./figures/fig_noise_overhead.png> <./figures/fig_speed_scaling.png>]
+Underfull \hbox (badness 1442) in paragraph at lines 24--25
+\T1/ptm/m/n/10 rather than gate syn-the-sis, cre-at-ing com-ple-men-tary non-
+ []
+
+
+Underfull \hbox (badness 1603) in paragraph at lines 24--25
+\T1/ptm/m/n/10 hard-ware pro-files from ex-per-i-men-tal data, re-plac-ing our
+ []
+
+
+Underfull \hbox (badness 1496) in paragraph at lines 24--25
+\T1/ptm/m/n/10 con-ser-va-tive man-ual pa-ram-e-ters with device-specific val-
+ []
+
+[22
+pdfTeX warning (ext4): destination with the same identifier (name{table.14}) ha
+s been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.39 
+     
+pdfTeX warning (ext4): destination with the same identifier (name{figure.10}) h
+as been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.39 
+      <./figures/fig_e4_results.png>]
+Underfull \hbox (badness 2119) in paragraph at lines 42--43
+\T1/ptm/m/n/10 Two-dimensional grid topolo-gies, which are rel-e-vant to
+ []
+
+) (./sec7_conclusion.tex
+Underfull \hbox (badness 1478) in paragraph at lines 4--5
+[]\T1/ptm/m/n/10 We present SiliQun, an open-source quan-tum sim-u-la-
+ []
+
+
+Underfull \hbox (badness 3439) in paragraph at lines 4--5
+\T1/ptm/m/n/10 tion plat-form that uni-fies sil-i-con spin qubit tech-nolo-
+ []
+
+
+Underfull \hbox (badness 2334) in paragraph at lines 4--5
+\T1/ptm/m/n/10 gies^^Vincluding SiMOS quan-tum dots, phosphorus-donor
+ []
+
+)
+Underfull \vbox (badness 1895) has occurred while \output is active []
+
+ [23]
+[24]
+Underfull \hbox (badness 10000) in paragraph at lines 370--373
+[]\T1/ptm/m/n/8 Z. Liang et al., ``Vari-a-tional quan-tum cir-cuit com-pi-la-ti
+on,''
+ []
+
+[25
+
+] (./main.aux)
+ ***********
+LaTeX2e <2023-11-01> patch level 1
+L3 programming layer <2024-01-22>
+ ***********
+
+
+LaTeX Font Warning: Some font shapes were not available, defaults substituted.
+
+
+LaTeX Warning: There were undefined references.
+
+Package rerunfilecheck Info: File `main.out' has not changed.
+(rerunfilecheck)             Checksum: 05A19DCCE1461A0553D895B05CF639DC;11952.
+ ) 
+Here is how much of TeX's memory you used:
+ 13351 strings out of 476106
+ 205073 string characters out of 5793933
+ 1956975 words of memory out of 5000000
+ 34939 multiletter control sequences out of 15000+600000
+ 700892 words of font info for 193 fonts, out of 8000000 for 9000
+ 59 hyphenation exceptions out of 8191
+ 79i,17n,93p,1257b,579s stack positions out of 10000i,1000n,20000p,200000b,200000s
+</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></us
+r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx7.pfb></usr/share
+/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx8.pfb></usr/share/texliv
+e/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texlive/texm
+f-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/texmf-dist
+/fonts/type1/public/amsfonts/cm/cmmi5.pfb></usr/share/texlive/texmf-dist/fonts/
+type1/public/amsfonts/cm/cmmi6.pfb></usr/share/texlive/texmf-dist/fonts/type1/p
+ublic/amsfonts/cm/cmmi7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/a
+msfonts/cm/cmmi8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts
+/cm/cmmi9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmm
+ib10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cmextra/cmm
+ib8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb
+></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr5.pfb></usr/s
+hare/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/share/tex
+live/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></usr/share/texlive/tex
+mf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texlive/texmf-dist/
+fonts/type1/public/amsfonts/cm/cmr9.pfb></usr/share/texlive/texmf-dist/fonts/ty
+pe1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/pu
+blic/amsfonts/cm/cmsy5.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/am
+sfonts/cm/cmsy6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/
+cm/cmsy7.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy
+8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb><
+/usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msam10.pfb></
+usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></u
+sr/share/texlive/texmf-dist/fonts/type1/urw/courier/ucrb8a.pfb></usr/share/texl
+ive/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></usr/share/texlive/texmf-dis
+t/fonts/type1/urw/times/utmb8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/u
+rw/times/utmbi8a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmr8
+a.pfb></usr/share/texlive/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
+Output written on main.pdf (25 pages, 14672994 bytes).
+PDF statistics:
+ 849 PDF objects out of 1000 (max. 8388607)
+ 732 compressed objects within 8 object streams
+ 172 named destinations out of 1000 (max. 500000)
+ 467 words of extra memory for PDF output out of 10000 (max. 10000000)
+

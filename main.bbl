@@ -21,32 +21,4 @@
 \providecommand{\BIBdecl}{\relax}
 \BIBdecl
 
-
-\bibitem{Tanttu2019}
-T.~Tanttu \textit{et al.},
-``Controlling spin-orbit interactions in silicon quantum dots using magnetic field direction,''
-\emph{Phys. Rev. X}, vol.~9, no.~2, p.~021028, 2019.
-DOI: 10.1103/PhysRevX.9.021028
-
-
-\bibitem{Huang2019}
-W.~Huang \textit{et al.},
-``Fidelity benchmarks for two-qubit gates in silicon,''
-\emph{Nature}, vol.~569, no.~7757, pp.~532--536, 2019.
-DOI: 10.1038/s41586-019-1197-0
-
-
-\bibitem{Muhonen2014}
-J.~T.~Muhonen \textit{et al.},
-``Storing quantum information for 30 seconds in a nanoelectronic device,''
-\emph{Nature Nanotechnology}, vol.~9, no.~12, pp.~986--991, 2014.
-DOI: 10.1038/nnano.2014.211
-
-
-\bibitem{Tanamoto2026}
-T.~Tanamoto,
-``Gate-all-around silicon spin qubit for quantum computing,''
-\emph{IEEE Access}, vol.~14, pp.~1--12, 2026.
-DOI: 10.1109/ACCESS.2026.XXXXXXX
-
 \end{thebibliography}

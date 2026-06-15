@@ -1,0 +1,106 @@
+This is BibTeX, Version 0.99d (TeX Live 2023/Debian)
+Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
+The top-level auxiliary file: main.aux
+The style file: IEEEtran.bst
+I found no \bibdata command---while reading file main.aux
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Reallocated wiz_functions (elt_size=4) to 6000 items from 3000.
+Reallocated singl_function (elt_size=4) to 100 items from 50.
+Warning--I didn't find a database entry for "Xue2022"
+Warning--I didn't find a database entry for "Noiri2022"
+Warning--I didn't find a database entry for "Philips2022"
+Warning--I didn't find a database entry for "Steinacker2023"
+Warning--I didn't find a database entry for "Veldhorst2015"
+Warning--I didn't find a database entry for "Fogarty2018"
+Warning--I didn't find a database entry for "Lambert2024"
+Warning--I didn't find a database entry for "VanDerLinde2023"
+Warning--I didn't find a database entry for "QiskitGym2024"
+Warning--I didn't find a database entry for "Alexander2020"
+Warning--I didn't find a database entry for "Wittler2021"
+Warning--I didn't find a database entry for "Broughton2020"
+Warning--I didn't find a database entry for "Orbell2024"
+Warning--I didn't find a database entry for "vanderLinde2023qgym"
+Warning--I didn't find a database entry for "Bernard2024QuantumCircuitEnv"
+Warning--I didn't find a database entry for "Kremer2024"
+Warning--I didn't find a database entry for "Altmann2024challenges"
+Warning--I didn't find a database entry for "Sivak2022"
+Warning--I didn't find a database entry for "Bolens2021"
+Warning--I didn't find a database entry for "Khaneja2005"
+Warning--I didn't find a database entry for "Caneva2011"
+Warning--I didn't find a database entry for "Moro2021"
+Warning--I didn't find a database entry for "Niu2018"
+Warning--I didn't find a database entry for "Qiskit2024"
+Warning--I didn't find a database entry for "Bergholm2018"
+Warning--I didn't find a database entry for "Efthymiou2021"
+Warning--I didn't find a database entry for "SimOS2025"
+Warning--I didn't find a database entry for "Nguyen2021"
+Warning--I didn't find a database entry for "Zen2025"
+Warning--I didn't find a database entry for "Raffin2021"
+Warning--I didn't find a database entry for "NielsenChuang2000"
+Warning--I didn't find a database entry for "Towers2023"
+Warning--I didn't find a database entry for "Liang2018"
+Warning--I didn't find a database entry for "Huang2022"
+Warning--I didn't find a database entry for "Fowler2012"
+Warning--I didn't find a database entry for "Dennis2002"
+Warning--I didn't find a database entry for "Abedi2025"
+Warning--I didn't find a database entry for "Madzik2022"
+Warning--I didn't find a database entry for "Morello2020"
+Warning--I didn't find a database entry for "Tanamoto2025"
+Warning--I didn't find a database entry for "Krantz2019"
+Warning--I didn't find a database entry for "Bruzewicz2019"
+Warning--I didn't find a database entry for "Henriet2020"
+Warning--I didn't find a database entry for "Salberger2017"
+Warning--I didn't find a database entry for "Schulman2017"
+Warning--I didn't find a database entry for "Daraeizadeh2020"
+Warning--I didn't find a database entry for "He2021"
+Warning--I didn't find a database entry for "Cerfontaine2020"
+Warning--I didn't find a database entry for "AzizHPC"
+-- IEEEtran.bst version 1.14 (2015/08/26) by Michael Shell.
+-- http://www.michaelshell.org/tex/ieeetran/bibtex/
+-- See the "IEEEtran_bst_HOWTO.pdf" manual for usage information.
+
+Done.
+You've used 0 entries,
+            4087 wiz_defined-function locations,
+            918 strings with 8405 characters,
+and the built_in function-call counts, 104 in all, are:
+= -- 0
+> -- 0
+< -- 0
++ -- 0
+- -- 0
+* -- 19
+:= -- 27
+add.period$ -- 0
+call.type$ -- 0
+change.case$ -- 0
+chr.to.int$ -- 0
+cite$ -- 0
+duplicate$ -- 0
+empty$ -- 1
+format.name$ -- 0
+if$ -- 3
+int.to.chr$ -- 0
+int.to.str$ -- 0
+missing$ -- 0
+newline$ -- 23
+num.names$ -- 0
+pop$ -- 0
+preamble$ -- 1
+purify$ -- 0
+quote$ -- 2
+skip$ -- 1
+stack$ -- 0
+substring$ -- 0
+swap$ -- 0
+text.length$ -- 0
+text.prefix$ -- 0
+top$ -- 5
+type$ -- 0
+warning$ -- 0
+while$ -- 0
+width$ -- 0
+write$ -- 22
+(There was 1 error message)
