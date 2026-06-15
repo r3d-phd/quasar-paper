@@ -10,6 +10,7 @@
 \documentclass{iopjournal}
 
 % ── Packages ─────────────────────────────────────────────────
+\usepackage{lmodern}  % fix missing EC bitmap fonts (ecsx0800 etc.)
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath,amssymb,amsfonts}
@@ -21,7 +22,8 @@
 \usepackage{xcolor}
 \usepackage{placeins}
 \usepackage{needspace}
-\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+% hyperref is already loaded by iopjournal.cls — do not reload
+% \usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 
