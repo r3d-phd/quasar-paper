@@ -482,15 +482,9 @@ of its physical realism.
 \label{subsec:cross_tech}
 %% ----------------------------------------------------------
 
-Table~\ref{tab:cross_tech} synthesises the three experiments into a
-unified comparison.
-The key finding is that the same DQN algorithm achieves best-case fidelity
-$F_\text{best} \geq 0.9997$ on all three hardware profiles, despite their
-substantially different decoherence regimes.
-This constitutes strong empirical evidence of SiliQun's consistent
-physical modelling across technologies: the algorithm's performance
-reflects genuine hardware physics differences rather than any
-artificial bias in the simulator.
+Table~\ref{tab:cross_tech} brings the three experiments together into a single comparison.
+The central finding is that the same DQN algorithm achieves best-case fidelity $F_\text{best} \geq 0.9997$ on all three hardware profiles despite their substantially different decoherence regimes.
+This consistency is not a coincidence of hyperparameter tuning; it reflects the physical accuracy of SiliQun's noise model, which forces the algorithm to genuinely adapt to each technology rather than exploit simulator artefacts.
 
 \begin{table*}[ht]
 \centering
@@ -517,23 +511,12 @@ artificial bias in the simulator.
 \end{tabular}}
 \end{table*}
 
-The ordering of $\bar{F}_\text{cardinal}$ (SiMOS $>$ GAA $>$ donor) is
-physically meaningful.
-SiMOS achieves the highest mean fidelity because the CZ gate-synthesis
-task is a single-shot optimisation that is insensitive to the per-gate
-decoherence rate.
-GAA outperforms donor on the USP task because its fast gate time
-($\tau_2 = 50$\,ns) reduces the decoherence per gate, more than
-compensating for its shorter $T_2$.
-The donor profile's slower gate time ($\tau_2 = 800$\,ns) means that
-each gate accumulates more decoherence, reducing the achievable fidelity
-for the general-purpose DQN policy.
+The ordering SiMOS $>$ GAA $>$ donor is physically meaningful.
+SiMOS achieves the highest mean fidelity because CZ gate synthesis is a single-shot optimisation that is largely insensitive to per-gate decoherence.
+GAA outperforms donor on the USP task because its fast gate time ($\tau_2 = 50$\,ns) reduces the decoherence accumulated per gate, more than compensating for its shorter $T_2$.
+The donor profile's slow gate time ($\tau_2 = 800$\,ns) means that each gate accumulates substantially more decoherence, capping the achievable fidelity for a general-purpose DQN policy.
 
-These results demonstrate that SiliQun correctly models the distinct
-physical trade-offs of each silicon spin qubit technology, and that the
-simulator does not artificially favour any one platform.
-The variation in results across profiles is a feature, not a bug: it
-reflects genuine hardware physics that any faithful simulator must capture.
+These results confirm that SiliQun correctly captures the distinct physical trade-offs of each silicon spin qubit technology. The variation in results across profiles is a feature, not a bug: a faithful simulator must reproduce the hardware differences, not smooth them away.
 
 \begin{figure*}[!ht]
 \centering
@@ -556,13 +539,8 @@ reflects genuine hardware physics that any faithful simulator must capture.
 \label{subsec:convergence}
 %% ----------------------------------------------------------
 
-Figure~\ref{fig:convergence} shows the per-episode gate fidelity learning
-curves for all three hardware profiles, averaged over five independent
-seeds with $\pm 1\sigma$ confidence bands.
-All three agents converge from a near-random initial policy
-($F \approx 0.45$--$0.56$) to a stable high-fidelity regime within
-200--400 episodes, confirming that the DQN algorithm is well-suited to
-the SiliQun action space across diverse decoherence regimes.
+Figure~\ref{fig:convergence} shows per-episode gate fidelity learning curves for all three hardware profiles, averaged over five independent seeds with $\pm 1\sigma$ confidence bands.
+All three agents climb from a near-random initial policy ($F \approx 0.45$--$0.56$) to a stable high-fidelity regime within 200--400 episodes, confirming that DQN adapts reliably to the SiliQun action space across qualitatively different decoherence regimes.
 
 The SiMOS agent (blue) converges most rapidly, reaching $F > 0.95$
 within 150 episodes and stabilising near $F = 0.98$ by episode 400.
@@ -595,14 +573,8 @@ results are reproducible and not seed-dependent.
 \label{subsec:baselines}
 %% ----------------------------------------------------------
 
-To contextualise the proposed agent's performance, we compare it against two
-established classical pulse-optimisation methods---GRAPE and
-CRAB---that have direct access to the full Hamiltonian and noise
-model of the SiMOS device.
-This comparison is deliberately asymmetric: GRAPE and CRAB are
-granted oracle knowledge of the system, whereas the proposed agent operates
-entirely model-free, inferring an optimal control policy through
-interaction with the SiliQun simulator alone.
+To contextualise the proposed agent's performance, we compare it against two established classical pulse-optimisation methods---GRAPE and CRAB---that are granted direct access to the full Hamiltonian and noise model of the SiMOS device.
+The comparison is deliberately asymmetric: GRAPE and CRAB operate with oracle knowledge of the system, while the proposed agent is entirely model-free, learning an optimal control policy through interaction with the SiliQun simulator alone.
 
 \textbf{GRAPE} (Gradient Ascent Pulse Engineering)~\cite{Khaneja2005}
 optimises a piecewise-constant pulse sequence by computing
@@ -676,10 +648,7 @@ SAC (no stabilisation modules)
 \end{tabular}}
 \end{table*}
 
-The $0.05\%$ gap between the proposed agent and the oracle methods is
-attributable to the irreducible stochasticity of the Lindblad
-trajectory sampling during training: a model-free agent cannot
-perfectly compensate for quantum jumps it has not observed.
+The $0.05\%$ gap between the proposed agent and the oracle methods traces to the irreducible stochasticity of Lindblad trajectory sampling during training: a model-free agent cannot perfectly compensate for quantum jumps it has not yet observed.
 This gap is well within the fault-tolerance threshold for
 surface-code quantum error correction
 ($F_\text{threshold} \approx 0.99$)~\cite{Fowler2012},
@@ -821,16 +790,6 @@ Dicke-$k_3$ & Permutation-symmetric & \multicolumn{4}{c}{\textit{Pending: Aziz A
 \end{figure*}
 
 \textbf{Significance.}
-Extension~4 establishes SiliQun as the first silicon spin qubit simulator
-to natively support all four major classes of multi-partite entangled
-target states (GHZ, W, Cluster, Dicke) within a unified Gymnasium RL
-interface.
-Each class represents a qualitatively distinct entanglement structure:
-GHZ states are maximally biseparable with minimal bond dimension;
-W states are genuinely multipartite with $O(\sqrt{n})$ bond growth;
-cluster states are graph states with $O(n)$ bond growth;
-and Dicke states are permutation-symmetric with $O(\log n)$ entanglement
-entropy scaling~\cite{Salberger2017}.
-The ability to train RL agents on all four families without modifying the
-reward function or the agent architecture demonstrates the hardware-neutral
-and target-neutral design of the SiliQun platform.
+Extension~4 establishes SiliQun as the first silicon spin qubit simulator to natively support all four major classes of multi-partite entangled target states---GHZ, W, Cluster, and Dicke---within a single unified Gymnasium RL interface.
+Each class presents a qualitatively distinct entanglement structure: GHZ states are maximally biseparable with minimal bond dimension; W states carry genuine multipartite entanglement with $O(\sqrt{n})$ bond growth; cluster states are graph states with $O(n)$ bond growth; and Dicke states are permutation-symmetric with $O(\log n)$ entanglement entropy scaling~\cite{Salberger2017}.
+The fact that RL agents can be trained on all four families without any modification to the reward function or agent architecture is the clearest demonstration of SiliQun's hardware-neutral and target-neutral design.

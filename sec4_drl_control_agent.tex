@@ -9,14 +9,7 @@
 \section{DRL Validation Experiment}
 \label{sec:drl_agent}
 
-SiliQun provides a physically accurate, Gymnasium-compatible simulation substrate.
-To demonstrate that this substrate supports non-trivial quantum control tasks,
-we train a lightweight actor-critic agent on SiliQun and report the results
-as the primary end-to-end validation of the framework.
-The agent interacts with SiliQun exclusively through the standard Gymnasium
-\texttt{step}/\texttt{reset} API and has no direct access to the Lindblad
-solver internals, confirming the clean separation between simulation platform
-and control policy.
+SiliQun provides a physically accurate, Gymnasium-compatible simulation substrate that enables $93\times$ faster RL training cycles for silicon spin qubit control. To confirm that this substrate supports non-trivial quantum control tasks, we train a lightweight actor-critic agent and report the results as the primary end-to-end validation of the framework. The agent interacts with SiliQun exclusively through the standard Gymnasium \texttt{step}/\texttt{reset} API, with no direct access to the Lindblad solver internals—confirming the clean separation between simulation platform and control policy.
 
 %% ----------------------------------------------------------
 \subsection{Agent Architecture}

@@ -7,13 +7,7 @@
 \section{Related Work}
 \label{sec:related_work}
 
-The development of SiliQun sits at the intersection of three research
-communities that have largely evolved in parallel: reinforcement learning
-environments for quantum computing, physics-grounded quantum simulation
-frameworks, and hardware-specific control of semiconductor spin qubits.
-This section surveys each community, identifies specific gaps motivating
-SiliQun's design, and provides a detailed comparison with closely related
-work.
+SiliQun bridges three research communities that have largely evolved in parallel: reinforcement learning environments for quantum computing, physics-grounded quantum simulation frameworks, and hardware-specific control of semiconductor spin qubits. Each community has made substantial progress in isolation, yet none has produced a platform that satisfies all three requirements simultaneously. This section surveys each community, identifies the specific gaps that motivated SiliQun's design, and positions the platform against closely related work.
 
 % -------------------------------------------------------------------
 \subsection{Reinforcement Learning Environments for Quantum Circuit Synthesis}
@@ -379,14 +373,7 @@ Nguyen \emph{et al.}~\cite{Nguyen2021}           & \texttimes & \texttimes & $\c
 }%
 \end{table*}
 
-As evident from Table~\ref{tab:rw_comparison}, no existing framework
-currently satisfies all five properties simultaneously. SiliQun uniquely
-emerges as the first open-source, Gymnasium-compatible simulation
-environment to seamlessly integrate physics-derived Lindblad noise models,
-SiMOS-calibrated hardware parameters, and gate-level circuit synthesis
-within a unified and reusable framework. This unique intersection defines SiliQun's scientific
-contribution and motivates the PGIRS methodology described in
-Section~\ref{subsec:pgirs}.
+Table~\ref{tab:rw_comparison} makes the gap concrete: no existing framework satisfies all five properties simultaneously. Gymnasium-compatible environments (qgym, Qiskit Gym) lack Lindblad physics; physics simulators (QuTiP wrappers) lack RL interfaces; hardware-specific tools (Orbell 2024) lack gate-synthesis support. SiliQun is the first open-source platform to close all five gaps at once, providing the physics-grounded RL interface that silicon spin qubit control research requires. This unique intersection defines SiliQun's scientific contribution and motivates the PGIRS methodology described in Section~\ref{subsec:pgirs}.
 
 % ---- Bibliography entries for this section ----
 % (to be merged into main .bib file)
