@@ -1,18 +1,26 @@
-%% Experimental Setup Section
+%% Experimental Setup Section — updated 2026-06-17 to reflect QUASAR v15 + SiliQun
 \section{Experimental Setup}
 \label{sec:experiments}
 
-\subsection{QUASAR v14 Framework}
+\subsection{QUASAR v15 Framework}
 
-QUASAR v14 (Quantum Universal Adaptive State pReparation) is a multi-target
-quantum state preparation framework built on the following components:
+QUASAR v15 (Quantum Universal Adaptive State pReparation, version 15) is the
+production implementation used for all experiments reported in this paper.
+It extends QUASAR v14 with a six-layer modular architecture connected by a
+typed Signal Bus, implementing a \emph{proactive-plus-reactive} training
+philosophy: the outer DEHB loop establishes an optimal hyperparameter
+configuration before training begins, while the reactive pipeline (SWDFT
+$\to$ ERL $\to$ SDFT $\to$ TTT $\to$ DEHB inner) provides mid-flight
+correction without restarting.
 
 \paragraph{Base RL algorithm.}
 We use Soft Actor-Critic (SAC) \cite{haarnoja2018soft} with automatic entropy
-tuning. The actor and critic networks are multilayer perceptrons with two hidden
-layers of 256 units each and ReLU activations. The replay buffer has capacity
-$10^6$ transitions, and we use a batch size of 256 with a learning rate of
-$3 \times 10^{-4}$ for all networks.
+tuning and Feature-wise Linear Modulation (FiLM) \cite{perez2018film} for
+goal conditioning. The actor and critic networks are multilayer perceptrons
+with two hidden layers of 256 units each and ReLU activations, with FiLM
+layers injecting the target state embedding $\phi_{\mathrm{tgt}} \in \mathbb{R}^{2^n}$
+at each hidden layer. The replay buffer has capacity $10^6$ transitions and
+we use a batch size of 256.
 
 \paragraph{Continual multi-target learning.}
 To enable a single agent to learn control policies for multiple entangled state
@@ -27,26 +35,60 @@ SAC objective:
 \end{equation}
 where $\mathcal{B}_{\mathrm{DER}}$ is the DER++ buffer and $\lambda = 0.5$.
 
-\paragraph{Exploration enhancement.}
-We introduce Stochastic Layer Modulation (SLM), a novel exploration mechanism
-that randomly scales the activations of a randomly selected hidden layer by a
-factor drawn from $\mathcal{U}(0.8, 1.2)$ during exploration episodes. SLM
-provides structured perturbations to the policy that are more informative than
-isotropic Gaussian noise, particularly near the target state where the gradient
-landscape is flat.
+\paragraph{Adaptive Convergence Control.}
+The Adaptive Convergence Controller (ACC) replaces fixed training budgets and
+heuristic plateau counters with a principled stopping criterion based on
+saturating exponential model fitting (see Section~\ref{sec:acc}). In v15,
+ACC is integrated with the Stochastic Layer Modulation (SLM) module: SLM
+fires only when the Signal Bus receives a \textsc{Stagnation} signal from the
+SWDFT detector, not on a fixed timer. This makes SLM a reactive corrector
+rather than a periodic one, reducing wasted compute on already-converging runs.
+
+\paragraph{Stagnation detection and reactive correction.}
+The Sliding-Window Discrete Fourier Transform (SWDFT) detector monitors the
+fidelity trajectory $\{F_t\}$ using a window of 2,000 steps. Stagnation is
+declared when the dominant spectral power falls below a threshold $\gamma$,
+indicating that the trajectory has become stationary. Upon stagnation, the
+Emergency Reactive Layer (ERL) escalates through three correction stages:
+\begin{enumerate}
+  \item \textbf{ERL / SLM (Stage 1):} BRFD-calibrated probe episodes (200--500
+    steps) with supervised actor update. Cost: $O(500)$ environment steps.
+  \item \textbf{SDFT (Stage 2):} Spectral decomposition of the fidelity
+    trajectory to identify the dominant plateau frequency, followed by a
+    targeted perturbation of the critic's value estimates.
+    Cost: $O(2{,}000)$ environment steps.
+  \item \textbf{TTT (Stage 3):} Test-time training on the current observation
+    distribution using the historical best policy checkpoint as a teacher.
+    Cost: $O(5{,}000)$ environment steps.
+\end{enumerate}
+If all three stages fail to escape the plateau, the inner DEHB loop performs a
+narrow re-search over $\alpha$ and $\mathrm{lr\_actor}$ (8 brackets, 10,000
+steps each) to escape at the hyperparameter level.
+
+\paragraph{Bayesian reward function discovery.}
+The BRFD module learns the reward weight vector
+$\mathbf{w} = (w_F, w_S, w_{\mathrm{str}}, w_{\log})$ jointly with the
+policy using a Gaussian process surrogate over the reward parameter space.
+BRFD calibrates the probe budget for each ERL invocation based on the
+current training difficulty, as measured by the ACC model's predicted
+$F_\infty$ and $\tau$ parameters.
 
 \paragraph{Hyperparameter optimisation.}
-The entropy coefficient $\alpha$ is optimised using DEHB \cite{awad2021dehb}
-with 12 trials per qubit level. Each trial runs for an initial budget of 40,000
-steps, with ACC providing early termination for unreachable configurations.
-The best $\alpha$ from the HP search phase is used for the full-budget run,
-with the budget set to $T^* \times 1.2$ as predicted by ACC.
+All architecture-wide hyperparameters are learned by the outer DEHB loop
+\cite{awad2021dehb} with 36 successive halving brackets. Each bracket runs a
+short-budget trial (40,000 steps), with ACC providing early termination for
+unreachable configurations. The best configuration from the HP search phase
+is used for the full-budget run, with the budget set to $T^* \times 1.2$ as
+predicted by ACC's saturating exponential model.
 
 \subsection{Quantum Simulation Environment}
 
 We simulate $n$-qubit systems using SiliQun v2 \cite{TODO_siliqun}, a
-silicon spin qubit simulator that models exchange-coupled spin-1/2 particles
-with realistic device parameters. The Hamiltonian is:
+modular silicon spin qubit simulator that models exchange-coupled spin-1/2
+particles with realistic device parameters. SiliQun supports three simulation
+backends: Matrix Product State (MPS) for pure-state simulation (used for
+$n < 8$), and GPU-accelerated exact state-vector simulation (used for
+$n \geq 8$). The Hamiltonian is:
 \begin{equation}
   H_0 = \sum_{i=1}^{n} \frac{\omega_i}{2} \sigma_z^{(i)}
         + \sum_{\langle i,j\rangle} J_{ij} \bigl(\sigma_x^{(i)}\sigma_x^{(j)}
@@ -54,12 +96,27 @@ with realistic device parameters. The Hamiltonian is:
 \end{equation}
 where $\omega_i / 2\pi \in [4.5, 5.5]\,\mathrm{GHz}$ are qubit frequencies and
 $J_{ij} / 2\pi \in [1, 10]\,\mathrm{MHz}$ are exchange coupling strengths,
-drawn from the SiMOS device profile \cite{TODO_siliqun}.
+drawn from the donor device profile \cite{TODO_siliqun}. The action space
+consists of parameterised single-qubit rotations and two-qubit gates with
+continuous angle parameters in $[-1, 1]$.
+
+\subsection{Target State Families}
+
+We evaluate QUASAR v15 on four canonical entangled state families across
+qubit counts $n \in \{2, 3, \ldots, 12\}$:
+\begin{enumerate}
+  \item \textbf{GHZ states:} $\ket{\mathrm{GHZ}_n} = (\ket{0}^{\otimes n} + \ket{1}^{\otimes n})/\sqrt{2}$.
+  \item \textbf{W states:} $\ket{W_n} = n^{-1/2}\sum_{i=1}^{n}\ket{0\cdots 1_i \cdots 0}$.
+  \item \textbf{Linear cluster states:} $\ket{\mathrm{CL}_n}$, prepared by
+    applying $H^{\otimes n}$ followed by $CZ$ on all neighbouring pairs.
+  \item \textbf{Dicke states:} $\ket{D_n^k}$ with $k = 3$ excitations,
+    equal superposition of all $\binom{n}{k}$ computational basis states
+    with Hamming weight $k$.
+\end{enumerate}
 
 \subsection{Baseline Methods}
 
 We compare ACC against three baselines:
-
 \begin{enumerate}
   \item \textbf{Fixed budget (FB)}: the standard approach used in prior work
     \cite{yao2021reinforcement,moro2021quantum}, with a fixed budget of
@@ -69,22 +126,23 @@ We compare ACC against three baselines:
     consecutive steps.
   \item \textbf{ASHA}: the Asynchronous Successive Halving Algorithm
     \cite{li2020system} applied to the training budget allocation problem,
-    using the same 12-trial budget as DEHB+ACC.
+    using the same 36-trial budget as DEHB+ACC.
 \end{enumerate}
 
 \subsection{Evaluation Protocol}
 
 All experiments are run with three random seeds (42, 123, 456) per
-(target family, qubit count) combination. We report the mean and standard
-deviation of the best fidelity achieved, the total number of training steps,
-and the wall-clock time on the Aziz Supercomputer A100 nodes. Statistical
-significance is assessed using a two-sided Wilcoxon signed-rank test with
-$\alpha = 0.05$.
+(target family, qubit count) combination, yielding $4 \times 11 \times 3 = 132$
+independent training runs. We report the mean and standard deviation of the
+best fidelity achieved, the total number of training steps consumed, and the
+wall-clock time on the Aziz Supercomputer A100 nodes. Statistical significance
+is assessed using a two-sided Wilcoxon signed-rank test with $\alpha = 0.05$.
 
 \subsection{Computational Resources}
 
 All experiments were performed on the Aziz Supercomputer at King Abdulaziz
-University, using NVIDIA A100-PCIE-40GB GPUs (job 181423) and
-NVIDIA H100-SXM5-80GB GPUs (job 181404). Each job ran under PBS Pro with
-a 72-hour walltime limit. The total compute budget for the main experiments
-is approximately 200 GPU-hours.
+University, using NVIDIA A100-PCIE-40GB GPUs. Each seed is assigned a
+dedicated A100 node (jobs 181560, 181561, 181562 for seeds 42, 123, 456
+respectively), running in parallel under PBS Pro with a 72-hour walltime limit.
+The total compute budget for the main experiments is approximately 216 GPU-hours
+($3 \times 72\,\mathrm{h}$).
