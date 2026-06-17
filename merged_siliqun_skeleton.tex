@@ -1,0 +1,269 @@
+% ============================================================
+% MERGED SILIQUN JOURNAL PAPER — SKELETON + SECTION MAPPING
+% Title: SiliQun: A Software-Defined Quantum Firmware Framework
+%        for Silicon Spin Qubits with Deep Reinforcement Learning
+% Target: npj Quantum Information (primary) / QST (secondary) /
+%         IEEE TQE (fallback)
+%
+% SOURCE MAPPING KEY:
+%   [P1]  = QUASAR_Paper1_Full_Manuscript.md (SiliQun simulator paper)
+%   [P6]  = paper6-siliqun-framework/*.tex   (SiliQun framework/PGIRS paper)
+%   [NEW] = New content required for the merged manuscript
+% ============================================================
+
+\documentclass[twocolumn]{article}
+\usepackage{amsmath,amssymb,physics,graphicx,booktabs,hyperref,cleveref}
+\usepackage[margin=1in]{geometry}
+
+% ── TITLE ────────────────────────────────────────────────────────────────────
+% [NEW] Merged title that foregrounds both the framework AND the result.
+% Rationale: npj QI and QST reward papers that introduce a reusable artifact
+% AND demonstrate its scientific utility in a single manuscript.
+\title{SiliQun: A Software-Defined Quantum Firmware Framework for Silicon
+       Spin Qubits with Deep Reinforcement Learning Validation}
+
+\author{Raad A. Al-Shehri$^{1}$ \\
+        $^{1}$Faculty of Computing and Information Technology,
+        King Abdulaziz University, Jeddah, Saudi Arabia \\
+        \texttt{ralshehri0468@stu.kau.edu.sa}}
+
+\date{}
+
+\begin{document}
+\maketitle
+
+% ── ABSTRACT ─────────────────────────────────────────────────────────────────
+% SOURCE: Merge of P6 abstract (framework framing) + P1 abstract (result claim)
+% STRATEGY: Lead with the SDQF concept (P6), then land the F≥0.99 result (P1).
+% LENGTH TARGET: 250 words (npj QI limit).
+%
+% [P6] → paragraphs 1–3: firmware gap, SiliQun architecture, PGIRS methodology,
+%         Gymnasium interface, Lindblad physics, analytical validation benchmarks
+% [P1] → paragraph 4: QUASAR v9.51 result — F≥0.99 on 4q GHZ under SiMOS noise,
+%         BRFD reward discovery, DEHB hyperparameter governance, expert warm-start
+% [P6] → paragraph 5: cross-algorithm benchmark (7 DRL families, F=0.847–0.993),
+%         cross-backend validation via QuantumExecutor, MIT licence
+% [NEW] → closing sentence: positions SiliQun as the first open-source SDQF layer
+%         for SiMOS — analogous to BIOS/UEFI in classical computing
+\begin{abstract}
+% TODO: Write merged abstract (~250 words) following the source mapping above.
+% Draft hook: "Between physical quantum hardware and high-level quantum algorithms
+% lies a critical but under-theorised abstraction layer — the quantum firmware gap.
+% We present SiliQun, an open-source framework that closes this gap for silicon
+% metal-oxide-semiconductor (SiMOS) spin qubits by implementing the Software-Defined
+% Quantum Firmware (SDQF) architecture..."
+\end{abstract}
+
+% ── §1 INTRODUCTION ──────────────────────────────────────────────────────────
+% SOURCE MAPPING:
+%   [P6 §1, ¶1–3]  → The firmware gap concept; SDQF as BIOS/UEFI analogy;
+%                     control/data plane separation (SiliQun=data, QUASAR=control)
+%   [P1 §1, ¶1–4]  → The fault-tolerance threshold motivation; why SiMOS is the
+%                     target; the gap in existing RL environments (abstract noise)
+%   [NEW ¶]        → Explicit statement of the dual contribution: (1) framework
+%                     infrastructure, (2) empirical validation crossing F≥0.99
+%   [P6 §1, ¶last] → Contributions list (5 items from P6, augmented with P1 result)
+%   [P1 §1, ¶last] → Paper organisation paragraph (adapt for merged structure)
+%
+% WRITING NOTE: The introduction must not read as two papers glued together.
+% The unifying narrative is: "We built the firmware layer (SiliQun/PGIRS),
+% then used it to demonstrate the first fault-tolerance-threshold result on
+% a physically calibrated SiMOS simulator." The framework enables the result;
+% the result validates the framework.
+\section{Introduction}
+% TODO: ~800 words. Follow source mapping above.
+
+% ── §2 RELATED WORK ──────────────────────────────────────────────────────────
+% SOURCE MAPPING:
+%   [P6 §2, all subsections] → USE AS-IS from sec2_related_work.tex
+%     §2.1 RL Environments for Quantum Circuit Synthesis
+%     §2.2 Pulse-Level Quantum Control with RL
+%     §2.3 Quantum Noise Simulation Frameworks
+%     §2.4 The Closest Competitor: Orbell (2024) Oxford DPhil
+%     §2.5 Fault-Tolerant Logical Qubit Encoding with RL
+%     §2.6 Summary: SiliQun's Unique Contribution
+%   [P1 §2]  → MERGE selectively: P1's related work covers RL for gate-based
+%              circuit synthesis (Moro, He, Kuo, Bi) — these belong in §2.1
+%              of the merged paper. They are NOT currently in P6 §2.1.
+%              ACTION: Extract P1 §2 ¶1–4 and insert into merged §2.1 as the
+%              "gate-level DRL" sub-paragraph before the environment papers.
+%
+% NET RESULT: Merged §2 = P6 §2 + P1 §2 gate-synthesis paragraph inserted into §2.1
+\section{Related Work}
+\input{sec2_related_work}  % P6 base — already written
+
+% ── §3 THE SILIQUN FRAMEWORK ─────────────────────────────────────────────────
+% SOURCE MAPPING:
+%   [P6 §3 — NOT YET WRITTEN] → This is the main framework section.
+%   Content to write (new for merged paper, expanding P6 §3 skeleton):
+%
+%   §3.1 The SDQF Architecture and Firmware Gap
+%     [P6 §1 intro material] → Expand the firmware gap concept into a full subsection.
+%     [NEW] → Formal definition of SDQF: control plane (QUASAR/DRL agents) +
+%             data plane (SiliQun Lindblad physics engine) + interface layer (Gymnasium)
+%
+%   §3.2 Physics Engine: Lindblad Master Equation Solver
+%     [P1 §3.2 SiMOS environment] → The SiMOS simulation environment description.
+%     [P6 abstract/intro physics paragraphs] → T1 amplitude damping, T2 dephasing,
+%       depolarising noise, SiMOS-calibrated parameters (T1=1ms, T2=0.5ms, p2=1%)
+%     [NEW] → Formal Lindblad equation with all three collapse operators;
+%             parameter table (T1, T2, gate fidelity, qubit frequency)
+%
+%   §3.3 Gymnasium Interface and Environment Design
+%     [P6 §3 — to be written] → Action space (discrete gate set: H, CNOT, Rz, CZ),
+%       observation space (density matrix flattened), reward structure,
+%       episode termination conditions, reset protocol
+%     [P1 §3.1 Problem Formulation] → MDP formulation (S, A, R, γ, T)
+%
+%   §3.4 The PGIRS Methodology
+%     [P6 §3 PGIRS — to be written] → Five-phase engineering discipline:
+%       Phase 1: Noise-first design
+%       Phase 2: Interface abstraction
+%       Phase 3: Reward engineering (BRFD)
+%       Phase 4: Hierarchical decomposition
+%       Phase 5: Empirical validation
+%
+%   §3.5 Analytical Validation Benchmarks
+%     [P6 abstract validation results] → Three benchmarks:
+%       (a) Rabi oscillations: max deviation 0.00 (machine precision)
+%       (b) T1 amplitude decay: max deviation 2.78×10⁻¹⁶ (float64 epsilon)
+%       (c) Bell state fidelity vs coherence time: max deviation 0.0024
+%     [NEW] → Figures: Rabi oscillation plot, T1 decay curve, Bell fidelity curve
+\section{The SiliQun Framework}
+
+\subsection{The SDQF Architecture and the Firmware Gap}
+% TODO: ~400 words. Sources: [P6 §1] + [NEW formal SDQF definition]
+
+\subsection{Physics Engine: Lindblad Master Equation Solver}
+% TODO: ~500 words. Sources: [P1 §3.2] + [P6 physics paragraphs] + [NEW Lindblad eq]
+
+\subsection{Gymnasium Interface and MDP Formulation}
+% TODO: ~400 words. Sources: [P1 §3.1] + [P6 §3 interface — to write]
+
+\subsection{The PGIRS Methodology}
+% TODO: ~500 words. Sources: [P6 §3 PGIRS — to write]
+
+\subsection{Analytical Validation Benchmarks}
+% TODO: ~400 words + 3 figures. Sources: [P6 abstract validation] + [NEW figures]
+
+% ── §4 QUASAR v9.51: DRL AGENT ARCHITECTURE ──────────────────────────────────
+% SOURCE MAPPING:
+%   [P1 §3.3] → QUASAR v9.51 Architecture: 7 specialised training components,
+%               event-driven registry, SAC algorithm choice
+%   [P1 §3.4] → Curriculum Learning and Expert Injection (warm-start)
+%   [P1 §3.3] → BRFD: Bayesian Reward Function Discovery
+%   [P1 §3.3] → DEHB: Differential Evolution Hyperband governance
+%   [NEW]     → Brief paragraph positioning QUASAR as the "control plane" agent
+%               that runs on top of the SiliQun "data plane" — making the
+%               SDQF architecture concrete
+%
+% WRITING NOTE: This section is essentially P1 §3 reframed as "here is the DRL
+% agent we used to validate SiliQun" rather than "here is our main contribution."
+% The framing shift is subtle but important for the merged paper's narrative.
+\section{QUASAR v9.51: The DRL Control Plane}
+
+\subsection{Agent Architecture and Training Components}
+% TODO: ~600 words. Source: [P1 §3.3]
+
+\subsection{Autonomous Reward Discovery via BRFD}
+% TODO: ~300 words. Source: [P1 §3.3 BRFD subsection]
+
+\subsection{Hyperparameter Governance via DEHB}
+% TODO: ~300 words. Source: [P1 §3.3 DEHB subsection]
+
+\subsection{Curriculum Learning and Expert Warm-Start}
+% TODO: ~300 words. Source: [P1 §3.4]
+
+% ── §5 EXPERIMENTAL VALIDATION ───────────────────────────────────────────────
+% SOURCE MAPPING — this is the most complex merge section:
+%
+%   §5.1 Experimental Setup
+%     [P1 §4.1] → Hardware (NVIDIA RTX 2070), software stack (PyTorch, SB3),
+%                 training budget (500k steps), evaluation protocol (100 episodes)
+%     [NEW]     → Add: SiliQun version, Gymnasium version, Python version,
+%                 reproducibility statement (seed, GitHub link)
+%
+%   §5.2 Primary Result: Fault-Tolerance Threshold on 4q GHZ
+%     [P1 §4.2] → Fidelity progression and convergence (F=0.9923 best, F≥0.99 threshold)
+%     [P1 §4.3] → Comparison with baseline pipeline (ablation of BRFD, DEHB, warm-start)
+%     [P1 §4.4] → Component contribution analysis
+%     [P1 §4.5] → Statistical significance (5 seeds, mean±std)
+%     [P1 §4.6] → Fault-tolerance implications (threshold theorem context)
+%
+%   §5.3 Cross-Algorithm Benchmark: Seven DRL Families
+%     [P6 abstract cross-algorithm results] → F=0.847 (DQN, T3) to F=0.993 (SAC-HMRL, T7)
+%     [NEW]     → Full table: 7 algorithm families × fidelity × convergence steps
+%                 Algorithms: DQN (T3), PPO (T4), SAC (T5), TD3 (T6), SAC-HMRL (T7),
+%                 DDPG (T1), A2C (T2) — map to the 7-category taxonomy from P5 survey
+%
+%   §5.4 Cross-Backend Policy Transferability
+%     [P6 §5.3 sec53_cross_backend_validation.tex] → USE AS-IS
+%       QuantumExecutor VirtualProvider, 3 circuits × 4 backends × 4096 shots,
+%       XEB + TVD metrics, transferability results
+%
+%   §5.5 Baseline Transferability Evaluation
+%     [P1 §4.7 E5] → Transfer of trained policy to unseen noise configurations
+\section{Experimental Validation}
+
+\subsection{Experimental Setup}
+% TODO: ~300 words. Sources: [P1 §4.1] + [NEW reproducibility statement]
+
+\subsection{Primary Result: Crossing the Fault-Tolerance Threshold}
+% TODO: ~700 words + 3 figures. Sources: [P1 §4.2–4.6]
+
+\subsection{Cross-Algorithm Benchmark: Seven DRL Families}
+% TODO: ~400 words + 1 table. Sources: [P6 abstract] + [NEW full table]
+
+\subsection{Cross-Backend Policy Transferability}
+% TODO: ~400 words + 1 table. Sources: [P6 §5.3 — already written]
+\input{sec53_cross_backend_validation}  % P6 §5.3 — already written
+
+\subsection{Noise Robustness and Baseline Transferability}
+% TODO: ~300 words. Source: [P1 §4.7]
+
+% ── §6 DISCUSSION ────────────────────────────────────────────────────────────
+% SOURCE MAPPING:
+%   [P1 §5.1] → Interpretation of the breakthrough result (F≥0.99 significance)
+%   [P1 §5.2] → Comparison with related work (He et al., Bi et al., Orbell 2024)
+%   [P6 §2.4 Orbell comparison] → Expand the Oxford DPhil comparison here
+%   [NEW]     → Discussion of PGIRS as a reusable methodology beyond SiMOS:
+%               applicability to trapped ions, superconducting qubits, NV centres
+%   [NEW]     → SDQF as a software engineering paradigm: versioning, hot-patching,
+%               reconfigurability analogies with classical firmware
+%   [P1 §5.3] → Limitations: 4-qubit ceiling, SiMOS-only calibration,
+%               simulation-to-hardware gap
+\section{Discussion}
+
+\subsection{Significance of the Fault-Tolerance Threshold Result}
+% TODO: ~400 words. Source: [P1 §5.1]
+
+\subsection{Positioning Against Related Work}
+% TODO: ~500 words. Sources: [P1 §5.2] + [P6 §2.4 Orbell]
+
+\subsection{Generalisability of the PGIRS Methodology}
+% TODO: ~400 words. Source: [NEW]
+
+\subsection{Limitations and Future Work}
+% TODO: ~400 words. Sources: [P1 §5.3] + [NEW simulation-to-hardware gap discussion]
+
+% ── §7 CONCLUSION ────────────────────────────────────────────────────────────
+% SOURCE MAPPING:
+%   [P1 §5.4] → Core conclusion paragraph (F≥0.99 result)
+%   [P6 §1 last paragraph] → Framework conclusion (SDQF, open-source, PGIRS)
+%   [NEW]     → Forward-looking sentence: ANDROMEDA (P3) as the next layer
+%               (hierarchical modular RL for logical qubit construction on SiliQun)
+\section{Conclusion}
+% TODO: ~300 words. Sources: [P1 §5.4] + [P6 §1] + [NEW ANDROMEDA forward reference]
+
+% ── REFERENCES ───────────────────────────────────────────────────────────────
+% SOURCE MAPPING:
+%   [P1 References]  → All P1 references (gate synthesis, SiMOS, BRFD, DEHB)
+%   [P6 §2 bibitem blocks] → All P6 references (environments, Orbell, QuTiP, etc.)
+%   [NEW]            → QuantumExecutor (arXiv 2507.07597v1), PGIRS methodology refs
+%
+% ACTION: Merge both reference lists, deduplicate, renumber sequentially.
+% Estimated total: ~50–60 references (appropriate for npj QI / QST)
+\bibliographystyle{unsrt}
+\bibliography{merged_siliqun_refs}
+
+\end{document}
