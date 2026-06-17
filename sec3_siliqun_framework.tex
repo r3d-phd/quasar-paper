@@ -109,7 +109,7 @@ where $\Delta F_t$ is the change in circuit fidelity, $\Delta H_t$ is the change
 \begin{figure*}[ht]
   \centering
   \includegraphics[width=\textwidth]{figures/fig1_siliqun_arch_ai.png}
-  \caption{SiliQun system architecture. The Lindblad engine implements three physically-motivated noise channels across four silicon spin qubit technology profiles~\cite{Xue2022,Noiri2022}: amplitude damping ($T_1 = 1$~ms), phase dephasing ($T_2 = 0.5$~ms), and depolarising ($p_2 = 0.01$). The engine is wrapped in a Gymnasium-compatible \texttt{SiliQunEnv} interface exposing the standard \texttt{step}/\texttt{reset} API, making it directly compatible with Stable-Baselines3, RLlib, and CleanRL. Three analytical benchmarks (Rabi oscillations, $T_1$ amplitude decay, and Bell state fidelity) validate the physics engine before any RL training is performed.}
+  \caption{SiliQun system architecture. The Lindblad engine implements three physically-motivated noise channels (amplitude damping, phase dephasing, and depolarising) across \textbf{five} spin qubit technology profiles: SiMOS quantum dot~\cite{Xue2022,Noiri2022,Philips2022}, GaAs singlet-triplet (ST)~\cite{Abedi2025}, phosphorus donor (P:Si)~\cite{Madzik2022,Morello2020}, gate-all-around (GAA) nanowire~\cite{Tanamoto2025}, and SLEDGE topology. The engine is wrapped in a Gymnasium-compatible \texttt{SiliQunEnv} interface exposing the standard \texttt{step}/\texttt{reset} API, making it directly compatible with Stable-Baselines3, RLlib, and CleanRL. Three analytical benchmarks (Rabi oscillations, $T_1$ amplitude decay, and Bell state fidelity) validate the physics engine before any RL training is performed.}
   \label{fig:siliqun_arch}
 \end{figure*}
 
