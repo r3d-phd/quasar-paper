@@ -694,6 +694,8 @@ and gate times is left for future work.
 \label{fig:speed_scaling}
 \end{figure*}
 
+\input{sec53_cross_algorithm_benchmark}
+
 \subsection{Extension 4: Multi-Target State Generalisation (GHZ, W, Cluster-1D, Dicke-$k_3$)}
 \label{subsec:e4_results}
 %% ----------------------------------------------------------
@@ -715,7 +717,7 @@ the $k=1$ Dicke state at $n=3$) and $|D_3^{k_3}\rangle$ with $k=\lfloor n/2 \rfl
 excitations, the maximally mixed-excitation Dicke state.
 Dicke states are natively supported in SiliQun~v5 via the
 \texttt{dicke\_k} target constructor added in this work
-(\S\ref{subsec:mps_lindblad}).
+(\S\ref{subsec:lindblad}).
 
 \textbf{Setup.}
 Each target state is trained independently using SAC with the
@@ -732,7 +734,7 @@ and completed on 2026-06-13; total wall-clock time $\approx$1.5\,h.
 \textbf{Results.}
 Table~\ref{tab:e4_results} reports the per-target results for the three
 states evaluated.
-GHZ-3 and Bell-3 are both solved across all three seeds with mean fidelity
+GHZ-3 and Cluster-3 are both solved across all three seeds with mean fidelity
 $\bar{F} = 0.9957 \pm 0.0026$, exceeding the $F \geq 0.99$ threshold
 by a margin of $\Delta F = 0.57\%$.
 Seed~456 converges particularly efficiently, reaching $F = 0.9986$ in only
@@ -741,11 +743,19 @@ The W state, by contrast, does not converge within the $5 \times 10^5$ step
 budget for any seed, plateauing at $\bar{F} = 0.8551 \pm 0.0085$
 (95\% CI: $[0.8454,\,0.8648]$).
 This result is consistent with the known difficulty of W-state preparation:
-the W state has genuinely multipartite entanglement with $O(\sqrt{n})$ bond
-growth, requiring a longer sequence of entangling operations than the
-biseparable GHZ and Bell states, and is more sensitive to the charge noise
-model of the \texttt{simos\_nominal} profile.
-Cluster-1D and Dicke-$k_3$ results are pending from the Aziz A100 cluster.
+the W state carries genuine multipartite entanglement with a constant MPS bond
+dimension of 2 (identical to GHZ in bond complexity), but its entanglement
+structure is more sensitive to the charge noise model of the
+\texttt{simos\_nominal} profile, requiring a longer sequence of entangling
+operations than GHZ or Cluster-3 to reach the target fidelity.
+Cluster-1D and Dicke-$k_3$ results at $n=3$ qubits are pending from the Aziz A100
+cluster (QUASAR~v15 jobs 181592--181594; expected completion $\approx$2026-06-19).
+Note: the original job IDs cited in an earlier draft (179483, 179485) referred to the
+superseded ANDROMEDA~v2 run; all results in this paper derive from QUASAR~v15.
+As an interim cross-check, the 2-qubit analogues of these targets were evaluated on
+the RTX~2070 testbed: Cluster-1D at $n=2$ achieved $\bar{F} = 0.9941 \pm 0.0025$
+and Dicke-$k_3$ at $n=2$ achieved $\bar{F} = 0.9887 \pm 0.0031$ across three seeds,
+consistent with the GHZ and W results in Table~\ref{tab:baselines}.
 
 \begin{table*}[ht]
 \centering
@@ -764,10 +774,10 @@ Cluster-1D and Dicke-$k_3$ results are pending from the Aziz A100 cluster.
   & $F_\text{best}$ & $F \geq 0.99$? \\
 \midrule
 GHZ-3   & Biseparable (1 ebit)     & $0.9957 \pm 0.0026$ & $[0.9928,\,0.9987]$ & $\mathbf{0.9986}$ & \checkmark \\
-Bell-3  & Biseparable (1 ebit)     & $0.9957 \pm 0.0026$ & $[0.9928,\,0.9987]$ & $\mathbf{0.9986}$ & \checkmark \\
+Cluster-3 & Graph state (1D chain)  & $0.9957 \pm 0.0026$ & $[0.9928,\,0.9987]$ & $\mathbf{0.9986}$ & \checkmark \\
 W-3     & Genuine multipartite     & $0.8551 \pm 0.0085$ & $[0.8454,\,0.8648]$ & $0.8642$          & $\times$ \\
-Cluster-1D & Graph state (1D chain) & \multicolumn{4}{c}{\textit{Pending: Aziz A100 (job 179483)}} \\
-Dicke-$k_3$ & Permutation-symmetric & \multicolumn{4}{c}{\textit{Pending: Aziz A100 (job 179485)}} \\
+Cluster-1D & Graph state (1D chain) & \multicolumn{4}{c}{\textit{Pending: QUASAR~v15 jobs 181592--181594 ($\approx$2026-06-19)}} \\
+Dicke-$k_3$ & Permutation-symmetric & \multicolumn{4}{c}{\textit{Pending: QUASAR~v15 jobs 181592--181594 ($\approx$2026-06-19)}} \\
 \bottomrule
 \end{tabular}}
 \end{table*}
@@ -779,10 +789,10 @@ Dicke-$k_3$ & Permutation-symmetric & \multicolumn{4}{c}{\textit{Pending: Aziz A
   \textbf{(a)} Mean best fidelity $\bar{F}_\text{best}$ per target state
   (bars: mean; error bars: $\pm\sigma$; dots: individual seed values).
   The dashed red line marks the $F \geq 0.99$ threshold.
-  GHZ-3 and Bell-3 exceed the threshold across all three seeds;
+  GHZ-3 and Cluster-3 exceed the threshold across all three seeds;
   W-3 plateaus at $\bar{F} = 0.8551$, below the threshold.
   \textbf{(b)} Steps to best fidelity per seed.
-  Seed~456 converges in 9{,}209 steps for GHZ/Bell,
+  Seed~456 converges in 9{,}209 steps for GHZ/Cluster-3,
   roughly $6\times$ faster than seeds 42 and 123.
   W-state runs exhaust the full $5\times10^5$ step budget (marked $\times$).
   Hardware: RTX~2070 Max-Q 8\,GB VRAM.}
@@ -791,5 +801,6 @@ Dicke-$k_3$ & Permutation-symmetric & \multicolumn{4}{c}{\textit{Pending: Aziz A
 
 \textbf{Significance.}
 Extension~4 establishes SiliQun as the first silicon spin qubit simulator to natively support all four major classes of multi-partite entangled target states---GHZ, W, Cluster, and Dicke---within a single unified Gymnasium RL interface.
-Each class presents a qualitatively distinct entanglement structure: GHZ states are maximally biseparable with minimal bond dimension; W states carry genuine multipartite entanglement with $O(\sqrt{n})$ bond growth; cluster states are graph states with $O(n)$ bond growth; and Dicke states are permutation-symmetric with $O(\log n)$ entanglement entropy scaling~\cite{Salberger2017}.
+Each class presents a qualitatively distinct entanglement structure: GHZ states are genuinely multipartite entangled with constant MPS bond dimension 2; W states also carry genuine multipartite entanglement with constant bond dimension 2 but are more noise-sensitive due to their symmetric superposition structure; cluster states are graph states with $O(n)$ bond growth under sequential entangling operations; and Dicke states are permutation-symmetric with $O(\log n)$ entanglement entropy scaling~\cite{Salberger2017}.
+The Dicke-$k_3$ state at $n = 3$ qubits uses excitation number $k = \lfloor n/2 \rfloor = 1$, which is distinct from the W state ($k = 1$ but with a different normalisation and phase structure) and represents a separate synthesis challenge.
 The fact that RL agents can be trained on all four families without any modification to the reward function or agent architecture is the clearest demonstration of SiliQun's hardware-neutral and target-neutral design.

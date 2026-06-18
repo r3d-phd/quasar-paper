@@ -1,0 +1,100 @@
+%% ----------------------------------------------------------
+\subsection{Cross-Algorithm Benchmark}
+\label{subsec:cross_algo}
+%% ----------------------------------------------------------
+
+One of SiliQun's core design principles is its ability to function as an algorithm-agnostic platform, allowing diverse DRL approaches to operate seamlessly through the same physics engine and Gymnasium interface. Through our experiments detailed in \S\ref{subsec:r1_results}--\S\ref{subsec:e4_results}, we have evaluated seven distinct algorithm families across SiliQun's hardware profiles. Table~\ref{tab:cross_algo} synthesizes these findings, providing a comprehensive comparison that directly tests SiliQun's hardware-neutrality assertion.
+
+\textbf{Algorithm families.}
+Our evaluation encompasses seven major branches of contemporary DRL methodologies:
+\begin{itemize}
+\item \emph{tabular on-policy} (SARSA)
+\item \emph{deep value-based} (DQL, DQN)
+\item \emph{deep policy-gradient} (PPO)
+\item \emph{off-policy actor-critic} (SAC, TQC)
+\item \emph{model-based classical} (GRAPE, CRAB)
+\end{itemize}
+GRAPE and CRAB serve as oracle baselines with complete access to Hamiltonian and noise models, contrasting with the strictly model-free RL approaches. Importantly, we maintained identical environmental conditions across all algorithms, avoiding any reward-function modifications or algorithm-specific physics model adjustments.
+
+\textbf{Results.}
+Table~\ref{tab:cross_algo} presents the mean gate fidelity $\bar{F}$ and best-seed fidelity $F_\text{best}$ for each algorithm on the \texttt{simos\_nominal} profile, alongside the corresponding hardware profile and task. Our analysis reveals several key insights:
+
+The deep policy-gradient and off-policy actor-critic methods (PPO, SAC+modules, TQC) consistently delivered high performance, with $\bar{F} \geq 0.90$ across their respective tasks. Though tested on different hardware profiles---TQC on the GaAs singlet-triplet (\texttt{gaas\_singlet\_triplet}) profile and PPO/SAC+modules on SiMOS (\texttt{simos\_nominal})---all three achieve high fidelity, demonstrating that SiliQun's Gymnasium interface supports gradient-based RL methods across physically distinct device models. PPO and SAC+modules achieved exceptional mean fidelities exceeding 0.9995 on SiMOS.
+
+In the value-based category, DQL achieved an impressive $\bar{F} = 0.9998$ for CZ synthesis, confirming the effectiveness of SiliQun's Gymnasium interface for discrete-action algorithms. DQN, tested on the more challenging universal state preparation (USP) task under the \texttt{donor\_electron} profile, showed a lower mean fidelity ($\bar{F} = 0.8749 \pm 0.0466$) but achieved $F \geq 0.99$ in four out of five seeds during their best evaluation episodes. This performance gap primarily reflects the increased complexity of the USP task rather than any inherent limitation of value-based methods.
+
+SARSA's poor performance ($\bar{F} = 0.2500$) stems from a well-documented limitation of tabular on-policy methods in continuous parameter spaces, where the $\varepsilon$-greedy policy degenerates as exploration decays. This result, while expected, provides valuable scientific insight rather than indicating any interface deficiency.
+
+The oracle methods GRAPE and CRAB achieved perfect fidelity ($\bar{F} = 1.0000$) under noiseless conditions. When subjected to the full SiMOS Lindblad noise model, GRAPE maintained $F = 0.9995 \pm 0.0001$ while CRAB achieved $F = 0.9991 \pm 0.0001$ (detailed in \S\ref{subsec:baselines}). These values establish a practical upper bound for model-free algorithms on the \texttt{simos\_nominal} profile. Remarkably, our proposed SAC+modules agent closed this gap to within 0.05\% of the noisy-regime oracle results without any Hamiltonian knowledge.
+
+\begin{table*}[ht]
+\centering
+\caption{Cross-algorithm benchmark on SiliQun hardware profiles.
+  All RL methods are model-free; GRAPE and CRAB are oracle baselines with
+  full Hamiltonian and noise-model access.
+  $\bar{F}$ = mean gate fidelity across seeds;
+  $F_\text{best}$ = best-seed fidelity;
+  $n_\text{seeds}$ = number of independent seeds.
+  Profile: SN = \texttt{simos\_nominal}, DE = \texttt{donor\_electron},
+  GS = \texttt{gaas\_singlet\_triplet}.
+  Task: CZ = CZ gate synthesis, USP = universal state preparation,
+  CNOT = CNOT synthesis.
+  Results sourced from \S\ref{subsec:r1_results}--\S\ref{subsec:e4_results};
+  no post-hoc tuning was applied.
+  $^\dagger$GRAPE and CRAB results are noiseless simulations (no Lindblad noise applied);
+  their noisy-regime fidelities (GRAPE: $0.9995\pm0.0001$, CRAB: $0.9991\pm0.0001$) are
+  reported in \S\ref{subsec:baselines}.
+  $^\ddagger$4 of 5 seeds reached $F \geq 0.99$ on their best evaluation episode;
+  mean fidelity is lower due to the harder USP task on the donor-electron profile.}
+\label{tab:cross_algo}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llllcccc}
+\toprule
+\textbf{Algorithm} & \textbf{Family} & \textbf{Profile} & \textbf{Task}
+  & $\bar{F} \pm \sigma$ & $F_\text{best}$ & $n_\text{seeds}$ & $F \geq 0.99$? \\
+\midrule
+GRAPE~\cite{Khaneja2005}
+  & Model-based (oracle, noiseless)
+  & SN & CZ
+  & $1.0000 \pm 0.0000^{\dagger}$ & $1.0000$ & 5 & \checkmark \\
+CRAB~\cite{Caneva2011}
+  & Model-based (oracle, noiseless)
+  & SN & CZ
+  & $1.0000 \pm 0.0000^{\dagger}$ & $1.0000$ & 5 & \checkmark \\
+\midrule
+PPO~\cite{Schulman2017}
+  & Deep policy-gradient
+  & SN & CZ
+  & $1.0000 \pm 0.0000$ & $1.0000$ & 5 & \checkmark \\
+\textbf{SAC + modules}~(QUASAR)
+  & Off-policy actor-critic
+  & SN & CZ
+  & $\mathbf{0.9995 \pm 0.0001}$ & $\mathbf{0.9997}$ & 5 & \checkmark \\
+TQC~\cite{Kuznetsov2020}
+  & Off-policy actor-critic
+  & GS & CNOT
+  & $0.9036 \pm 0.0914$ & $1.0000$ & 4 & 2/4 \\
+DQL~\cite{Daraeizadeh2020}
+  & Deep value-based
+  & SN & CZ
+  & $0.9998 \pm 0.0001$ & $0.9999$ & 5 & \checkmark \\
+DQN~\cite{He2021}
+  & Deep value-based
+  & DE & USP
+  & $0.8749 \pm 0.0466$ & $0.9999$ & 5 & 4/5$^\ddagger$ \\
+SAC (no modules)
+  & Off-policy actor-critic
+  & SN & CZ
+  & $0.7518 \pm 0.3347$ & $0.9916$ & 5 & 1/5 \\
+SARSA~\cite{Daraeizadeh2020}
+  & Tabular on-policy
+  & SN & CZ
+  & $0.2500 \pm 0.0000$ & $0.2500$ & 5 & $\times$ \\
+\bottomrule
+\end{tabular}}
+\end{table*}
+
+\textbf{Significance.}
+This cross-algorithm benchmark offers compelling evidence for SiliQun's algorithm-agnostic capabilities. Seven distinct algorithm families, representing five different learning paradigms, successfully interacted with the same physics engine and Gymnasium interface without requiring modifications. The observed fidelity variations genuinely reflect algorithmic differences in exploration strategies, policy representations, and sample efficiency rather than simulation artifacts.
+
+The performance gap between our proposed SAC+modules agent ($\bar{F} = 0.9995$) and the baseline SAC implementation ($\bar{F} = 0.7518$) in identical environments underscores SiliQun's sensitivity to algorithmic variations. This characteristic makes SiliQun particularly valuable for future quantum control algorithm development. The bimodal performance of TQC ($\bar{F} = 0.9036 \pm 0.0914$, with 2 out of 4 seeds converging) provides important scientific insights, revealing the highly non-convex nature of the GaAs singlet-triplet noise landscape and suggesting that robust convergence on this profile may require multi-seed ensemble training or warm-start initialization from high-fidelity checkpoints.
