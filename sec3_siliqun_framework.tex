@@ -497,6 +497,105 @@ with a well-defined, low-cost extension mechanism that does not require
 modification of the core framework.
 
 %% ----------------------------------------------------------
+\subsection{Beyond Reinforcement Learning: Methodology-Agnostic Usage}
+\label{subsec:non_rl_usage}
+%% ----------------------------------------------------------
+
+Although the validation experiments in this paper use deep RL agents, SiliQun's
+three-tier architecture is deliberately methodology-agnostic at the physics layer.
+Tier~1 (\texttt{siliqun.core}) has zero imports from Gymnasium or any RL library
+and can be installed as a standalone Lindblad simulation package. This section
+demonstrates three non-RL usage patterns that are fully supported without
+modification to the core framework.
+
+\subsubsection{Gradient-Based Optimal Control (GRAPE/CRAB)}
+
+A researcher wishing to apply GRAPE~\cite{Khaneja2005} or CRAB~\cite{Caneva2011}
+to a SiliQun device profile can call the Lindblad solver directly:
+
+\begin{verbatim}
+import numpy as np
+from siliqun.core import LindbladEngine, SiMOSProfile
+
+profile = SiMOSProfile("simos_nominal")
+engine = LindbladEngine(profile)
+
+def fidelity(pulse_params):
+    """Black-box fidelity for GRAPE/CRAB optimisation."""
+    rho_final = engine.evolve(pulse_params)
+    return engine.state_fidelity(rho_final, target="GHZ")
+
+# Pass fidelity() to any gradient-based or gradient-free optimiser:
+# scipy.optimize.minimize(lambda p: -fidelity(p), x0, method="L-BFGS-B")
+# or crab_optimise(fidelity, basis="Fourier", n_coeffs=10)
+\end{verbatim}
+
+The \texttt{LindbladEngine.evolve()} method accepts an arbitrary pulse
+parameterisation and returns the final density matrix $\rho_T$, making it
+compatible with any optimiser that treats gate fidelity as a black-box
+objective. Automatic differentiation through the Lindblad propagator is
+supported via the \texttt{siliqun.core.diff} submodule, enabling
+gradient-based methods such as GRAPE without finite-difference approximations.
+
+\subsubsection{Variational Quantum Algorithms via the Qiskit Backend}
+
+Researchers using variational quantum algorithms (VQE, QAOA, or quantum
+machine learning) can access SiliQun's noise model through the
+\texttt{SiliQunBackend} Qiskit \texttt{BackendV2} adapter:
+
+\begin{verbatim}
+from qiskit_aer import AerSimulator
+from siliqun.plugins.qiskit import SiliQunBackend
+from qiskit.primitives import BackendEstimator
+
+backend = SiliQunBackend(device_profile="simos_nominal")
+estimator = BackendEstimator(backend=backend)
+
+# Use estimator in any VQE/QAOA workflow:
+# vqe = VQE(ansatz, optimizer, estimator=estimator)
+# result = vqe.compute_minimum_eigenvalue(hamiltonian)
+\end{verbatim}
+
+This adapter exposes SiliQun's first-principles Lindblad noise model as a
+standard Qiskit backend, making it a drop-in replacement for
+\texttt{FakeSherbrooke} or \texttt{AerSimulator} with a custom noise model.
+Any Qiskit-compatible workflow — including Qiskit Nature, Qiskit Machine
+Learning, and third-party VQE implementations — can use SiliQun's
+physics-accurate silicon spin qubit noise without any RL-specific code.
+
+\subsubsection{Bayesian Optimisation and Hyperparameter Search}
+
+For researchers applying Bayesian optimisation (BO) to gate calibration or
+pulse parameter tuning, the \texttt{LindbladEngine} provides a clean
+black-box interface:
+
+\begin{verbatim}
+from bayes_opt import BayesianOptimization  # or Optuna, BoTorch, etc.
+from siliqun.core import LindbladEngine, SiMOSProfile
+
+engine = LindbladEngine(SiMOSProfile("simos_nominal"))
+
+def objective(alpha, beta, gamma):
+    pulse = build_pulse(alpha, beta, gamma)  # user-defined
+    rho = engine.evolve(pulse)
+    return engine.state_fidelity(rho, target="Bell")
+
+optimizer = BayesianOptimization(f=objective,
+    pbounds={"alpha": (0, np.pi), "beta": (0, 2*np.pi),
+             "gamma": (0, np.pi)})
+optimizer.maximize(init_points=10, n_iter=50)
+\end{verbatim}
+
+The three usage patterns above share a single installation path
+(\texttt{pip install siliqun}) and require no RL-specific dependencies.
+Researchers who need only Tier~1 can install the minimal package without
+pulling in Gymnasium, Stable-Baselines3, or any RL library:
+\texttt{pip install siliqun[core]}.
+This design ensures that SiliQun serves the full quantum control
+community — not only the RL sub-community — while maintaining a single,
+validated physics engine at its core.
+
+%% ----------------------------------------------------------
 \subsection{MPS-Lindblad Simulation Backend}
 \label{subsec:mps_lindblad}
 %% ----------------------------------------------------------
