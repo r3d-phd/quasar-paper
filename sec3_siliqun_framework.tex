@@ -15,9 +15,9 @@
 \label{sec:framework}
 
 SiliQun is an open-source, physics-grounded simulation platform for silicon spin qubits.
-It provides a physically accurate Lindblad master equation engine calibrated to published device parameters, a Gymnasium-compatible environment interface for reinforcement learning agents, and a modular three-tier package architecture that supports five silicon spin qubit technologies.
-SiliQun is designed as a standalone tool: it imposes no constraints on the choice of RL algorithm, training framework, or control architecture, and is compatible with any Gymnasium-compliant agent out of the box.
-This section describes the framework in four parts: the Lindblad physics engine that constitutes its computational core (\S\ref{subsec:lindblad}), the Gymnasium-compatible environment interface that exposes the physics engine to reinforcement learning agents (\S\ref{subsec:gymnasium}), the three-tier package architecture that organises the codebase into hardware-agnostic primitives, technology-specific physics modules, and integration adapters (\S\ref{subsec:three_tier}), and the Physics-Grounded Iterative RL Stack (PGIRS) methodology that governs how the simulator is designed and validated (\S\ref{subsec:pgirs}). Analytical validation against three closed-form benchmarks is presented in \S\ref{subsec:validation}.
+It provides a physically accurate Lindblad master equation engine calibrated to published device parameters, an algorithm-agnostic control interface compatible with any Gymnasium-compliant library, and a modular three-tier package architecture that supports five silicon spin qubit technologies.
+SiliQun is designed as a standalone tool: it imposes no constraints on the choice of control algorithm, training framework, or optimisation strategy, and is equally accessible to reinforcement learning, gradient-based, variational, and Bayesian methods.
+This section describes the framework in four parts: the Lindblad physics engine that constitutes its computational core (\S\ref{subsec:lindblad}), the algorithm-agnostic control interface that exposes the physics engine to any quantum control algorithm (\S\ref{subsec:gymnasium}), the three-tier package architecture that organises the codebase into hardware-agnostic primitives, technology-specific physics modules, and integration adapters (\S\ref{subsec:three_tier}), and the Physics-Grounded Iterative Refinement Stack (PGIRS) methodology that governs how the simulator is designed and validated (\S\ref{subsec:pgirs}). Analytical validation against three closed-form benchmarks is presented in \S\ref{subsec:validation}.
 
 %% ----------------------------------------------------------
 \subsection{System Architecture}
@@ -27,7 +27,7 @@ This section describes the framework in four parts: the Lindblad physics engine 
 SiliQun formalises the simulation environment as a tuple $\mathcal{S} = (\mathcal{A}, \mathcal{E}, \mathcal{I}, \mathcal{P})$ where:
 
 \begin{itemize}
-  \item $\mathcal{A}$ is the DRL agent, parameterised by a policy $\pi_\theta: \mathcal{S} \rightarrow \Delta(\mathcal{A})$ that maps observations to distributions over gate actions;
+  \item $\mathcal{A}$ is the control algorithm, which may be a deep RL policy $\pi_\theta: \mathcal{S} \rightarrow \Delta(\mathcal{A})$, a gradient-based pulse optimiser, a variational ansatz, or a Bayesian surrogate model;
   \item $\mathcal{E}$ is the physics engine, implementing Lindblad evolution under the device noise model;
   \item $\mathcal{I}$ is the interface layer, implementing the Gymnasium \texttt{Env} API (\texttt{step}, \texttt{reset}, \texttt{observation\_space}, \texttt{action\_space}); and
   \item $\mathcal{P}$ is the device profile, encoding hardware parameters $(T_1, T_2, p_1, p_2, \tau_1, \tau_2)$ for the target technology.
@@ -77,39 +77,50 @@ where $\lambda = \frac{1}{2}(1 - e^{-\tau/T_\phi})$ and $T_\phi = (T_2^{-1} - (2
 
 where $\mathcal{P}_2$ is the two-qubit Pauli group. Single-qubit gates are subject to a depolarising channel with error probability $p_1 \ll p_2$, consistent with the experimentally observed asymmetry between single- and two-qubit gate fidelities in SiMOS devices~\cite{Xue2022,Noiri2022}.
 
-\textbf{SiMOS hardware calibration.} The noise parameters are set to values drawn from recent experimental demonstrations of SiMOS spin qubits: $T_1 = 1.0$~ms, $T_2 = 0.5$~ms, $p_1 = 0.001$ (0.1\%), $p_2 = 0.01$ (1.0\%), single-qubit gate duration $\tau_1 = 10$~ns, two-qubit gate duration $\tau_2 = 100$~ns~\cite{Xue2022,Noiri2022,Philips2022,Steinacker2023}. These values place SiliQun firmly in the physically realistic regime: the implied single-qubit error rate per gate is $\gamma_1 \approx 10^{-5}$ (dominated by depolarising noise at $p_1 = 10^{-3}$), while the two-qubit error rate of $p_2 = 10^{-2}$ is consistent with the best reported two-qubit gate fidelities for SiMOS devices~\cite{Noiri2022,Philips2022}.
+\textbf{SiMOS hardware calibration.} The noise parameters are set to values drawn from recent experimental demonstrations of SiMOS spin qubits: $T_1 = 1.0$~ms, $T_2^* = 0.4$~ms, $p_1 = 0.001$ (0.1\%), $p_2 = 0.01$ (1.0\%), single-qubit gate duration $\tau_1 = 10$~ns, two-qubit gate duration $\tau_2 = 100$~ns~\cite{Xue2022,Noiri2022,Philips2022}. These values place SiliQun firmly in the physically realistic regime: the implied single-qubit error rate per gate is $\gamma_1 \approx 10^{-5}$ (dominated by depolarising noise at $p_1 = 10^{-3}$), while the two-qubit error rate of $p_2 = 10^{-2}$ is consistent with the best reported two-qubit gate fidelities for SiMOS devices~\cite{Noiri2022,Philips2022}.
 
 \textbf{Simulation backend.} Gate operations are applied as exact tensor contractions on a matrix product state (MPS) representation of the $n$-qubit register, followed by singular value decomposition (SVD) truncation at a cutoff of $10^{-14}$. The maximum bond dimension is $\chi_\text{max} = 32$, which is sufficient to represent all states encountered during 4-qubit GHZ synthesis without approximation error. Circuit fidelity is computed as the squared overlap between the current state and the target state: $F = |\langle \psi_\text{target} | \psi \rangle|^2$. GPU acceleration via CuPy tensor operations achieves a $93\times$ speedup over CPU-based NumPy simulation (measured as wall-clock time per environment step: $0.21$\,ms on NVIDIA A100 vs $19.5$\,ms on Intel Xeon Gold 6248R, averaged over $10^4$ steps at 4-qubit density matrix size)\label{subsec:gpu_benchmark}, enabling the millions of environment steps required by hierarchical multi-agent training.
 
 %% ----------------------------------------------------------
-\subsection{Gymnasium-Compatible Environment Interface}
+\subsection{Algorithm-Agnostic Control Interface}
 \label{subsec:gymnasium}
 %% ----------------------------------------------------------
+SiliQun provides researchers with a flexible control interface by exposing its Lindblad physics engine through Gymnasium's standard \texttt{Env} API~\cite{Towers2023}. This design choice immediately grants compatibility with major control algorithm libraries - from Stable-Baselines3~\cite{Raffin2021} and RLlib~\cite{Liang2018} to CleanRL~\cite{Huang2022} and QuTiP-Ctrl~\cite{QuTiPCtrl2023}. Even custom GRAPE or Bayesian optimization wrappers work seamlessly. Initializing the environment couldn't be simpler: \texttt{env = gymnasium.make("SiliQunEnv", device\_profile=simos)}. 
 
-SiliQun exposes the Lindblad physics engine through a standard Gymnasium \texttt{Env} interface~\cite{Towers2023}, making it directly compatible with any RL library that follows the Gymnasium API — including Stable-Baselines3~\cite{Raffin2021}, RLlib~\cite{Liang2018}, and CleanRL~\cite{Huang2022}. The environment is registered as \texttt{SiliQunEnv-v1} and can be instantiated with a single line: \texttt{env = gymnasium.make("SiliQunEnv", device\_profile=simos)}.
+What makes this interface particularly powerful? The \texttt{device\_profile} argument supports five distinct hardware configurations (Fig.~\ref{fig:siliqun_arch}), enabling crucial cross-technology transfer studies. Remarkably, the same constructor call works for any algorithm family - no tedious subclassing required. This algorithm-agnostic approach forms the foundation of our Physics-Grounded Iterative Refinement Stack (PGIRS) methodology (\S\ref{subsec:pgirs}), ensuring both physical accuracy and fair algorithm comparisons.
 
-\textbf{MDP formulation.} Quantum circuit synthesis is cast as a Markov Decision Process $\mathcal{M} = (\mathcal{S}, \mathcal{A}, \mathcal{T}, \mathcal{R}, \gamma)$. At each discrete time step $t$, the agent observes a state $s_t \in \mathcal{S}$, selects a gate action $a_t \in \mathcal{A}$, and receives a scalar reward $r_t$. The episode terminates after a fixed horizon of $T = 100$ steps or earlier upon reaching the target fidelity $F_\text{target} = 0.99$.
+\textbf{Sequential decision formulation.}
+We frame quantum circuit synthesis as a Markov decision process $(\mathcal{S}, \mathcal{A}, \mathcal{R})$, where the Lindblad engine completely determines the transition dynamics. At each step $t$, the controller observes state $s_t \in \mathcal{S}$, selects gate action $a_t \in \mathcal{A}$, and receives reward $r_t$. Episodes terminate after $T = 100$ steps or upon reaching $F_\text{target} = 0.99$ fidelity. 
 
-\textbf{State space.} The observation $s_t \in \mathbb{R}^{16}$ is a flattened real-valued vector comprising the 16 diagonal elements of the four-qubit density matrix — that is, the computational-basis state probabilities $\{|\langle i|\psi\rangle|^2\}_{i=0}^{15}$ extracted from the MPS representation. This encoding captures the population distribution across all basis states and is sufficient for the synthesis task, as confirmed by the $F = 0.9996$ result achieved on the 2-qubit Bell state synthesis task by the validation agent described in \S\ref{sec:drl_agent}. Off-diagonal coherence terms are omitted; a full density-matrix encoding requiring 255 independent real parameters is available as a configuration option for future work.
+The interface remains identical whether $a_t$ comes from an RL policy, gradient-based optimizer, or Bayesian surrogate model. While the discrete actions and fixed horizon reflect hardware constraints, continuous control variants exist through QuTiP-Ctrl wrappers~\cite{QuTiPCtrl2023}.
 
-\textbf{Action space.} The discrete action space $\mathcal{A}$ contains $|\mathcal{A}| = 11$ gate tokens drawn from the native SiMOS gate set: single-qubit rotations ($R_X(\pi/2)$, $R_X(\pi)$, $R_Y(\pi/2)$, $R_Y(\pi)$, $R_Z(\pi/2)$, $R_Z(\pi)$), two-qubit entangling gates (CNOT, CZ) applied to each of the three adjacent qubit pairs in the linear topology, and the identity (no-op). Each token specifies both the gate type and the target qubit(s); continuous rotation angles are discretised into the fixed vocabulary above, consistent with the native gate set of SiMOS exchange-coupled quantum dots~\cite{Veldhorst2015}.
+\textbf{State space.}
+Our observations $s_t \in \mathbb{R}^{16}$ capture the essential physics through the diagonal elements $\{\rho_{ii}\}_{i=0}^{15}$ of the four-qubit density matrix. This compact representation proves surprisingly effective, as evidenced by our benchmark results (\S\ref{subsec:validation}). The 16-dimensional encoding naturally extends the 4-dimensional case for two qubits. For researchers needing full coherence information, we provide an optional 255-parameter density matrix encoding.
 
-\textbf{Reward signal.} The instantaneous reward is:
+\textbf{Action space.}
+The discrete action space $\mathcal{A}$ contains 11 gate tokens from the SiMOS native set:
+\begin{itemize}
+\item Single-qubit rotations: $R_X(\pi/2)$, $R_X(\pi)$, $R_Y(\pi/2)$, $R_Y(\pi)$, each applied to a specified qubit index in the 4-qubit register (4 gate types; the qubit index is encoded in the token) (4 tokens)
+\item Two-qubit gates: CNOT and CZ, each applied to the three adjacent qubit pairs $(0{-}1, 1{-}2, 2{-}3)$ in the linear topology, yielding $2 \times 3 = 6$ distinct tokens
+\item Identity operation (1 token)
+\end{itemize}
+Notably absent are $R_Z$ rotations, which we implement as virtual frame updates following~\cite{Veldhorst2015}.
 
+\textbf{Reward signal.}
+Equation~\ref{eq:reward} defines our composite reward:
 \begin{equation}
-  r_t = w_F \cdot \Delta F_t + w_E \cdot \Delta H_t - w_B \cdot \Delta \chi_t - w_N \cdot \varepsilon_t,
+  r_t = w_F \cdot \Delta F_t + w_E \cdot \Delta S_t - w_B \cdot \Delta \chi_t - w_N \cdot \varepsilon_t,
   \label{eq:reward}
 \end{equation}
+where $\Delta F_t = F(s_t) - F(s_{t-1})$ tracks fidelity improvement; $\Delta S_t = S_t - S_{t-1}$ with $S_t$ the von Neumann entropy of the reduced density matrix across the central bipartition (a simulation-internal proxy for the physical entanglement cost of the target state); $\Delta \chi_t = \chi_t - \chi_{t-1}$ where $\chi_t$ is the maximum MPS bond dimension (a proxy for circuit complexity); and $\varepsilon_t$ is the instantaneous depolarising noise rate. While $\Delta S_t$ and $\Delta \chi_t$ are computed from the MPS representation and are not directly measurable on hardware, they serve as physically motivated surrogates for quantities that are experimentally relevant — entanglement cost and gate overhead, respectively. We optimise the weights $\mathbf{w} = (w_F, w_E, w_B, w_N)$ offline via Bayesian search during PGIRS Phase~3 (\S\ref{subsec:pgirs}) using an algorithm-agnostic proxy, then fix $\mathbf{w}^*$ identically for all control algorithms.
 
-where $\Delta F_t$ is the change in circuit fidelity, $\Delta H_t$ is the change in entanglement entropy (encouraging entanglement growth toward the GHZ target), $\Delta \chi_t$ is the change in MPS bond dimension (penalising unnecessary complexity), and $\varepsilon_t$ is the current depolarising noise rate. The weight vector $\mathbf{w} = (w_F, w_E, w_B, w_N)$ is not hand-tuned; it is treated as a set of tunable hyperparameters optimised via Bayesian search during the PGIRS Phase~3 calibration step (\S\ref{subsec:pgirs}). This design choice reflects the PGIRS principle of reward engineering as a first-class concern: the reward function is part of the framework, not an afterthought.
-
-\textbf{Episode termination and success criterion.} An episode is considered successful if the evaluation fidelity $F_\text{eval} \geq 0.99$ at any point during the episode. This threshold corresponds to the surface-code fault-tolerance threshold: a per-module physical error rate below 1\% is the necessary condition for fault-tolerant logical qubit construction under the surface code~\cite{Fowler2012,Dennis2002}.
-
+\textbf{Episode termination and success criterion.}
+We consider an episode successful when state fidelity $F(s_t) \geq 0.99$. This threshold aligns with surface-code fault-tolerance requirements~\cite{Fowler2012,Dennis2002}, representing the practical boundary for error-corrected quantum computation. The same $F_\text{thresh} = 0.99$ standard applies throughout PGIRS validation.
 
 \begin{figure*}[ht]
   \centering
   \includegraphics[width=\textwidth]{figures/fig1_siliqun_arch_ai.png}
-  \caption{SiliQun system architecture. The Lindblad engine implements three physically-motivated noise channels (amplitude damping, phase dephasing, and depolarising) across \textbf{five} spin qubit technology profiles: SiMOS quantum dot~\cite{Xue2022,Noiri2022,Philips2022}, GaAs singlet-triplet (ST)~\cite{Abedi2025}, phosphorus donor (P:Si)~\cite{Madzik2022,Morello2020}, gate-all-around (GAA) nanowire~\cite{Tanamoto2025}, and SLEDGE topology. The engine is wrapped in a Gymnasium-compatible \texttt{SiliQunEnv} interface exposing the standard \texttt{step}/\texttt{reset} API, making it directly compatible with Stable-Baselines3, RLlib, and CleanRL. Three analytical benchmarks (Rabi oscillations, $T_1$ amplitude decay, and Bell state fidelity) validate the physics engine before any RL training is performed.}
+  \caption{SiliQun system architecture supporting five spin qubit technologies: SiMOS quantum dots~\cite{Xue2022,Noiri2022,Philips2022}, GaAs singlet-triplet~\cite{Abedi2025}, phosphorus donors~\cite{Madzik2022,Morello2020}, gate-all-around nanowires~\cite{Tanamoto2025}, and Si/SiGe quantum dots~\cite{Zwerver2022,Lawrie2023}. The Gymnasium-compatible interface enables seamless integration with diverse control algorithms. Three analytical benchmarks validate the physics engine before controller deployment.}
   \label{fig:siliqun_arch}
 \end{figure*}
 
@@ -117,66 +128,41 @@ where $\Delta F_t$ is the change in circuit fidelity, $\Delta H_t$ is the change
 \subsection{PGIRS Methodology}
 \label{subsec:pgirs}
 %% ----------------------------------------------------------
+The \textbf{Physics-Grounded Iterative Refinement Stack} (PGIRS) represents our systematic approach to building transferable quantum control platforms. Unlike previous frameworks, PGIRS enforces a strict design sequence that prevents the common pitfall of controllers that work in simulation but fail on hardware.
 
-The Physics-Grounded Iterative RL Stack (PGIRS) is a five-phase engineering discipline that governs how SiliQun is applied to a new quantum control problem.
-PGIRS is not a training algorithm; it is a \emph{methodology} that enforces a specific ordering of design decisions to prevent the well-documented failure mode of RL agents that achieve high simulated fidelity but fail to transfer to real hardware.
+\textbf{Phase 1 — Noise-First Design} demands noise model calibration from experimental data before any controller sees the simulator. Abstract depolarizing models simply don't cut it, as Table~\ref{tab:cross_tech} demonstrates.
 
-\textbf{Phase 1 — Noise-First Design} requires the noise model to be calibrated from experimental device data and validated against analytical benchmarks (\S\ref{subsec:validation}) before any RL agent is instantiated.
-Using an abstract depolarising model at this stage produces agents that overfit to the simulator, as demonstrated by the transferability gap in Table~\ref{tab:cross_tech}.
+\textbf{Phase 2 — Interface Abstraction} wraps the physics engine in a clean Gymnasium API. This strict separation means controllers interact solely through \texttt{step}/\texttt{reset} calls, never accessing solver internals.
 
-\textbf{Phase 2 — Interface Abstraction} wraps the validated physics engine in a Gymnasium-compatible interface, enforcing a strict data/control plane separation: the agent interacts exclusively through the standardised \texttt{step}/\texttt{reset} API and has no access to Lindblad solver internals.
-This abstraction enables backend substitution without modifying the agent.
+\textbf{Phase 3 — Reward Engineering} treats reward weights as discoverable hyperparameters. Using a lightweight proxy controller, we optimize $\mathbf{w}^*$ via Bayesian search, then fix these weights for all subsequent algorithm comparisons.
 
-\textbf{Phase 3 — Reward Engineering} treats the four reward weights $(w_F, w_S, w_T, w_E)$ in Eq.~(\ref{eq:reward}) as hyperparameters discovered via Bayesian optimisation rather than hand-tuned constants, making the reward function adaptive to the evolving difficulty of the synthesis task.
+\textbf{Phase 4 — Hierarchical Decomposition} breaks complex problems into manageable sub-tasks. The decomposition remains algorithm-agnostic, whether using RL, gradient methods, or variational approaches.
 
-\textbf{Phase 4 — Hierarchical Decomposition} decomposes multi-qubit synthesis problems beyond the tractable horizon of flat RL agents into a hierarchy of sub-problems, each solved independently and composed through entanglement-swapping fusion.
+\textbf{Phase 5 — Empirical Validation} rigorously tests controllers on held-out targets and across simulation backends. If mean fidelity $\bar{F}$ falls below threshold, we recalibrate the platform - not tweak individual algorithms.
 
-\textbf{Phase 5 — Empirical Validation} evaluates the trained policy on held-out target states across multiple seeds and confirms cross-backend transfer to Qiskit Aer statevector and FakeSherbrooke with fidelity degradation below the measurement noise floor.
-
-PGIRS is the key differentiator between SiliQun and prior frameworks: QuTiP~\cite{Lambert2024} provides Phase~1 but not Phases~2--5; Qiskit Pulse~\cite{Alexander2020} provides Phase~2 but not Phase~1 (SiMOS calibration); no prior framework delivers all five phases in an integrated open-source package.
-
-Algorithm~\ref{alg:pgirs} formalises the PGIRS procedure as an executable workflow.
+PGIRS sets SiliQun apart. While QuTiP~\cite{Lambert2024} handles Phase~1 and Qiskit Pulse~\cite{Alexander2020} provides Phase~2, no existing framework integrates all five phases. Algorithm~\ref{alg:pgirs} formalizes this comprehensive methodology.
 
 \begin{algorithm}[t]
-\caption{Physics-Grounded Iterative RL Stack (PGIRS)}
+\caption{Physics-Grounded Iterative Refinement Stack (PGIRS)}
 \label{alg:pgirs}
 \begin{algorithmic}[1]
-\Require Target hardware profile $\mathcal{H}$ (T$_1$, T$_2$, $J$, $\Omega$),
-         target state set $\mathcal{T}$, RL algorithm $\mathcal{A}$,
-         Bayesian optimiser $\mathcal{B}$
-\Ensure Trained policy $\pi^*$ with mean fidelity $\bar{F} \geq F_{\text{thresh}}$
-\State \textbf{Phase 1 — Noise-First Design:}
-\State \quad Calibrate Lindblad operators $\{L_k\}$ from $\mathcal{H}$ (Eq.~\ref{eq:lindblad})
-\State \quad Validate against Rabi, T$_1$ decay, and Bell benchmarks
-\State \quad \textbf{Assert} max deviation $< \epsilon_{\text{tol}}$; abort if validation fails
-\State \textbf{Phase 2 — Interface Abstraction:}
-\State \quad Wrap physics engine in Gymnasium \texttt{Env} with \texttt{step}/\texttt{reset} API
-\State \quad Enforce data/control plane separation (no direct state access)
-\State \textbf{Phase 3 — Reward Engineering:}
-\State \quad Initialise reward weights $\mathbf{w} = (w_F, w_S, w_T, w_E)$
-\State \quad $\mathbf{w}^* \leftarrow \mathcal{B}(\mathbf{w},\, \text{val\_fidelity}(\pi_{\mathbf{w}}))$ \Comment{Bayesian search}
-\State \textbf{Phase 4 — Hierarchical Decomposition:}
-\State \quad \textbf{if} $|\mathcal{T}|$ requires $> n_{\text{max}}$ qubits \textbf{then}
-\State \quad \quad Decompose $\mathcal{T}$ into sub-problems $\{\mathcal{T}_i\}$ of $\leq n_{\text{max}}$ qubits
-\State \quad \quad Train independent agents $\{\pi_i\}$ on $\{\mathcal{T}_i\}$
-\State \quad \quad Compose $\pi^* \leftarrow \text{Fuse}(\{\pi_i\})$ via entanglement swapping
-\State \quad \textbf{else} Train $\pi^* \leftarrow \mathcal{A}(\text{Env}(\mathcal{H}, \mathbf{w}^*), \mathcal{T})$
-\State \textbf{Phase 5 — Empirical Validation:}
-\State \quad Evaluate $\bar{F} \leftarrow \frac{1}{|\mathcal{T}_{\text{test}}|} \sum_{\tau \in \mathcal{T}_{\text{test}}} F(\pi^*, \tau)$ over $N_{\text{seeds}}$ seeds
-\State \quad Validate cross-backend: run $\pi^*$ on Qiskit Aer statevector
-\State \quad \textbf{if} $\bar{F} < F_{\text{thresh}}$ \textbf{then} return to Phase 3 with updated $\mathcal{B}$
-\State \Return $\pi^*$, $\bar{F}$, per-seed fidelity distribution
+\Require Hardware profile $\mathcal{H}$, target states $\mathcal{T}$, algorithm $\mathcal{A}$, optimiser $\mathcal{B}$, proxy $\pi_0$
+\Ensure Control output with $\bar{F} \geq F_{\text{thresh}}$
+\State \textbf{Phase 1:} Calibrate $\{L_k\}$ from $\mathcal{H}$; validate benchmarks
+\State \textbf{Phase 2:} Implement Gymnasium \texttt{Env} with strict API
+\State \textbf{Phase 3:} $\mathbf{w}^* \leftarrow \mathcal{B}\!\left(\mathbf{w},\, \bar{F}_{\pi_0}(\mathbf{w})\right)$
+\State \textbf{Phase 4:} Decompose if $|\mathcal{T}| > n_{\text{max}}$; compose via~\cite{Briegel1998}
+\State \textbf{Phase 5:} Evaluate $\bar{F}$ on $\mathcal{T}_{\text{test}}$; validate cross-backend
+\State \Return Control output and fidelity metrics
 \end{algorithmic}
 \end{algorithm}
 
 \begin{figure*}[ht]
   \centering
   \includegraphics[width=\textwidth]{figures/fig2_pgirs_ai.png}
-  \caption{The Physics-Grounded Iterative Reward Stack (PGIRS) five-phase methodology. Phase~1 validates the noise model against analytical benchmarks before any agent is instantiated; Phase~2 wraps the engine in a Gymnasium interface enforcing strict data/control plane separation; Phase~3 optimises reward weights via Bayesian hyperparameter search; Phase~4 decomposes the synthesis objective into sub-goals via hierarchical curriculum learning; Phase~5 validates the trained policy on held-out targets and across alternative simulation backends (Qiskit Aer statevector, FakeSherbrooke). Skipping any phase risks the common failure mode of agents that achieve high simulated fidelity but fail on real hardware.}
+  \caption{The five-phase PGIRS methodology ensures physical rigor and algorithmic fairness. Phase~1 validates noise models against analytical benchmarks before controller deployment. Phase~2 enforces strict interface abstraction. Phase~3 optimizes reward weights using an algorithm-agnostic proxy. Phase~4 handles problem decomposition, while Phase~5 validates results across simulation backends. Omitting any phase risks creating non-transferable controllers.}
   \label{fig:pgirs}
 \end{figure*}
-
-%% ----------------------------------------------------------
 \subsection{Analytical Validation}
 \label{subsec:validation}
 %% ----------------------------------------------------------
