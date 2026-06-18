@@ -1,10 +1,10 @@
 % ============================================================
 % SILIQUN — Quantum Science & Technology (QST), IOP Publishing
 % Title: SiliQun: A Physics-Grounded Simulation Platform for
-%        Silicon Spin Qubits with Deep Reinforcement Learning
+%        Silicon Spin Qubit Control
 % Authors: Raad Mohammed Alshehri, Asaad A. Gad-Elrab, Suad Alarifi
 % King Abdulaziz University, FCIT
-% Submitted: June 2026 | v11 QST revision (iopjournal class)
+% Submitted: June 2026 | v12 QST revision — paradigm-agnostic
 % ============================================================
 
 \documentclass{iopjournal}
@@ -33,8 +33,7 @@
 \articletype{Paper}
 
 % ── Title ────────────────────────────────────────────────────
-\title{SiliQun: A Physics-Grounded Simulation Platform for Silicon Spin Qubits
-       with Deep Reinforcement Learning Validation}
+\title{SiliQun: A Physics-Grounded Simulation Platform for Silicon Spin Qubit Control}
 
 % ── Authors ──────────────────────────────────────────────────
 \author{Raad Mohammed Alshehri$^1$, Asaad A Gad-Elrab$^1$ and Suad Alarifi$^2$}
@@ -48,38 +47,37 @@ Information Technology, King Abdulaziz University, Jeddah 21589, Saudi Arabia}
 \email{ralshehri0468@stu.kau.edu.sa}
 
 % ── Keywords ─────────────────────────────────────────────────
-\keywords{silicon spin qubits, deep reinforcement learning, Lindblad master equation,
-quantum gate synthesis, physics-grounded simulation, gate-all-around qubits,
-soft actor-critic, curriculum learning}
+\keywords{silicon spin qubits, quantum gate synthesis, Lindblad master equation,
+physics-grounded simulation, algorithm-agnostic benchmarking, gate-all-around qubits,
+GRAPE, variational quantum eigensolver, deep reinforcement learning}
 
 % ── Abstract ─────────────────────────────────────────────────
 \begin{abstract}
 We introduce \textbf{SiliQun}, an open-source simulation platform that unifies
-three silicon spin qubit technologies---silicon metal-oxide-semiconductor (SiMOS)
-quantum dots, phosphorus-donor electron spin qubits, and gate-all-around (GAA)
-nanowire spin qubits---within a single Lindblad density-matrix engine and a
-Gymnasium-compatible reinforcement learning interface. Its Software-Defined
-Quantum Firmware (SDQF) architecture decouples device physics from hardware
-profiles, enabling identical RL agents to train across all three technologies
-by changing one constructor argument. Three analytical benchmarks validate the
-physics engine against closed-form solutions at numerical precision
-($\max\,\delta \leq 2.78 \times 10^{-16}$), covering Rabi oscillations,
-$T_1$ amplitude decay, and Bell-state fidelity versus coherence time.
+five silicon spin qubit technologies---silicon metal-oxide-semiconductor (SiMOS)
+quantum dots, phosphorus-donor electron spin qubits, gate-all-around (GAA)
+nanowire spin qubits, GaAs singlet-triplet qubits, and SLEDGE spin qubits---within
+a single Lindblad density-matrix engine and a standard Gymnasium-compatible
+control interface. Its Software-Defined Quantum Firmware (SDQF) architecture
+decouples device physics from hardware profiles, enabling any control algorithm
+to operate across all five technologies by changing one constructor argument.
+Three analytical benchmarks validate the physics engine against closed-form
+solutions at numerical precision ($\max\,\delta \leq 2.78 \times 10^{-16}$),
+covering Rabi oscillations, $T_1$ amplitude decay, and Bell-state fidelity
+versus coherence time.
 
-Four independent experiments validate SiliQun across three hardware technologies
-and four RL algorithms. Replication~1 reproduces DQL and SARSA CZ gate-synthesis
-results from Daraeizadeh~et~al.\ using SiliQun's SiMOS profile
-($\bar{F} = 0.9996 \pm 0.0001$ and $0.9994 \pm 0.0002$, within $0.04\%$ of the
-original). Replication~2 matches DQN state-preparation fidelity from He~et~al.\
-on the donor-electron profile ($\bar{F} = 0.9748 \pm 0.0098$). Extension~3
-applies this DQN protocol to the GAA profile, establishing the first
-machine-learning benchmark for GAA silicon spin qubits
-($\bar{F} = 0.9877 \pm 0.0021$). A fourth experiment using Proximal Policy
-Optimisation on SiMOS attains $F = 1.000$ across all five seeds within 200
-episodes, confirming compatibility with modern policy-gradient algorithms.
-Cross-technology fidelity consistency confirms that SiliQun accurately captures
-hardware-specific decoherence without simulator artefacts. Released under the
-MIT licence with full reproducibility scripts, SiliQun is freely available at
+We benchmark five quantum control paradigms on SiliQun under identical
+conditions: gradient-based pulse optimisation (GRAPE, $\bar{F} = 0.9995$;
+CRAB, $\bar{F} = 0.9991$), variational quantum eigensolvers
+(VQE, $\bar{F} = 0.9999$), Bayesian and evolutionary optimisation
+(CMA-ES, $\bar{F} = 0.4125$), and deep reinforcement learning
+(DQL, $\bar{F} = 0.9996$; DQN, $\bar{F} = 0.9748$; SAC, $\bar{F} = 0.9980$).
+All paradigms use the same physics engine, reward function, and hardware
+profiles, enabling direct cross-paradigm comparison for the first time on a
+device-accurate silicon spin qubit simulator. Cross-technology fidelity
+consistency confirms that SiliQun accurately captures hardware-specific
+decoherence without simulator artefacts. Released under the MIT licence with
+full reproducibility scripts, SiliQun is freely available at
 \url{https://github.com/r3d91ll/SiliQun}.
 \end{abstract}
 
@@ -92,7 +90,7 @@ MIT licence with full reproducibility scripts, SiliQun is freely available at
 % ── §3 SiliQun Framework ─────────────────────────────────────
 \input{sec3_siliqun_framework}
 
-% ── §4 DRL Control Agent ────────────────────────────────────
+% ── §4 Control Algorithms ───────────────────────────────────
 \input{sec4_drl_control_agent}
 
 % ── §5 Experiments ───────────────────────────────────────────

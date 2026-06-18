@@ -1,0 +1,293 @@
+\begin{thebibliography}{10}
+
+\bibitem{Xue2022}
+Xiao Xue et~al.
+\newblock Quantum logic with spin qubits crossing the surface code threshold.
+\newblock {\em Nature}, 601:343--347, 2022.
+
+\bibitem{Noiri2022}
+Akito Noiri et~al.
+\newblock Fast universal quantum gate above the fault-tolerance threshold in
+  silicon.
+\newblock {\em Nature}, 601:338--342, 2022.
+
+\bibitem{Philips2022}
+Stephan G.~J. Philips et~al.
+\newblock Universal control of a six-qubit quantum processor in silicon.
+\newblock {\em Nature}, 609:919--924, 2022.
+
+\bibitem{Steinacker2023}
+Patrick Steinacker et~al.
+\newblock A 300\,mm foundry silicon spin qubit unit cell exceeding 99\%
+  fidelity.
+\newblock {\em arXiv:2310.13002}, 2023.
+
+\bibitem{Veldhorst2015}
+M.~Veldhorst et~al.
+\newblock An addressable quantum dot qubit with fault-tolerant
+  control-fidelity.
+\newblock {\em Nature Nanotechnology}, 10:159--163, 2015.
+
+\bibitem{Fogarty2018}
+M.~A. Fogarty et~al.
+\newblock Integrated silicon qubit platform with single-spin addressability,
+  exchange control and single-shot singlet-triplet readout.
+\newblock {\em Nature Communications}, 9:4370, 2018.
+
+\bibitem{Lambert2024}
+Neill Lambert et~al.
+\newblock {QuTiP} 5: The quantum toolbox in {Python}.
+\newblock {\em arXiv:2412.04705}, 2024.
+
+\bibitem{VanDerLinde2023}
+J.~van~der Linde et~al.
+\newblock {QGym}: A gymnasium for quantum computing.
+\newblock {\em arXiv:2306.05344}, 2023.
+
+\bibitem{QiskitGym2024}
+{Qiskit contributors}.
+\newblock Qiskit gymnasium environments.
+\newblock GitHub, 2024.
+
+\bibitem{Alexander2020}
+Thomas Alexander et~al.
+\newblock {Qiskit Pulse}: Programming quantum computers through the cloud with
+  pulses.
+\newblock {\em Quantum Science and Technology}, 5:044006, 2020.
+
+\bibitem{Wittler2021}
+Nicolas Wittler et~al.
+\newblock Integrated tool set for control, calibration, and characterization of
+  quantum devices applied to superconducting qubits.
+\newblock {\em Physical Review Applied}, 15:034080, 2021.
+
+\bibitem{Broughton2020}
+Michael Broughton et~al.
+\newblock {TensorFlow Quantum}: A software framework for quantum machine
+  learning.
+\newblock {\em arXiv:2003.02989}, 2020.
+
+\bibitem{Orbell2024}
+Thomas~J. Orbell et~al.
+\newblock A 2{D} array of single-electron silicon quantum dots.
+\newblock {\em Nature Electronics}, 7:491--496, 2024.
+
+\bibitem{vanderLinde2023qgym}
+J.~van~der Linde et~al.
+\newblock {QGym}: A gymnasium for quantum computing.
+\newblock {\em arXiv:2306.05344}, 2023.
+
+\bibitem{Bernard2024QuantumCircuitEnv}
+Thomas Bernard et~al.
+\newblock A gymnasium environment for quantum circuit synthesis.
+\newblock {\em arXiv:2405.12481}, 2024.
+
+\bibitem{Kremer2024}
+G.~Kremer et~al.
+\newblock Controlled coupling of a donor-bound electron to a gate-defined
+  quantum dot.
+\newblock {\em Nature Communications}, 15:2029, 2024.
+
+\bibitem{Altmann2024challenges}
+Philipp Altmann et~al.
+\newblock Challenges and opportunities of near-term quantum computing systems.
+\newblock {\em ACM Transactions on Quantum Computing}, 5:14, 2024.
+
+\bibitem{Sivak2022}
+V.~V. Sivak et~al.
+\newblock Model-free quantum control with reinforcement learning.
+\newblock {\em Physical Review X}, 12:011059, 2022.
+
+\bibitem{Bolens2021}
+Adrien Bolens and Markus Heyl.
+\newblock Reinforcement learning for digital quantum simulation.
+\newblock {\em Physical Review Letters}, 127:110502, 2021.
+
+\bibitem{Khaneja2005}
+Navin Khaneja, Timo Reiss, Cindie Kehlet, Thomas Schulte-Herbr{\"u}ggen, and
+  Steffen~J. Glaser.
+\newblock Optimal control of coupled spin dynamics: Design of {NMR} pulse
+  sequences by gradient ascent algorithms.
+\newblock {\em Journal of Magnetic Resonance}, 172:296--305, 2005.
+
+\bibitem{Caneva2011}
+Tommaso Caneva et~al.
+\newblock Chopped random-basis quantum optimization.
+\newblock {\em Physical Review A}, 84:022326, 2011.
+
+\bibitem{Moro2021}
+Saverio Moro, Paul Baireuther, and Mikhail Lukin.
+\newblock Optimal control of quantum gates using reinforcement learning.
+\newblock {\em Physical Review Research}, 3:033229, 2021.
+
+\bibitem{Niu2019}
+Murphy~Yuezhen Niu et~al.
+\newblock Universal quantum control through deep reinforcement learning.
+\newblock {\em npj Quantum Information}, 5:33, 2019.
+
+\bibitem{Qiskit2024}
+{Qiskit contributors}.
+\newblock Qiskit: An open-source framework for quantum computing.
+\newblock Zenodo, 2024.
+
+\bibitem{Bergholm2018}
+Ville Bergholm et~al.
+\newblock {PennyLane}: Automatic differentiation of hybrid quantum-classical
+  computations.
+\newblock {\em arXiv:1811.04968}, 2018.
+
+\bibitem{Efthymiou2021}
+Stavros Efthymiou et~al.
+\newblock Qibo: A framework for quantum simulation with hardware acceleration.
+\newblock {\em Quantum Science and Technology}, 7:015018, 2021.
+
+\bibitem{SimOS2025}
+Raad~Mohammed Alshehri.
+\newblock {SiliQun}: A silicon spin qubit simulation and {RL} training
+  framework.
+\newblock GitHub, 2025.
+
+\bibitem{Nguyen2021}
+Quoc~Toan Nguyen et~al.
+\newblock Digital feedback in superconducting quantum circuits.
+\newblock {\em arXiv:2112.14447}, 2021.
+
+\bibitem{Zen2025}
+Luca Zen et~al.
+\newblock Quantum circuit synthesis with reinforcement learning and
+  {ZX}-calculus.
+\newblock {\em arXiv:2501.02551}, 2025.
+
+\bibitem{Raffin2021}
+Antonin Raffin et~al.
+\newblock Stable-{Baselines3}: Reliable reinforcement learning implementations.
+\newblock {\em Journal of Machine Learning Research}, 22(268):1--8, 2021.
+
+\bibitem{NielsenChuang2000}
+Michael~A. Nielsen and Isaac~L. Chuang.
+\newblock {\em Quantum Computation and Quantum Information}.
+\newblock Cambridge University Press, 2000.
+
+\bibitem{Towers2023}
+Mark Towers et~al.
+\newblock Gymnasium.
+\newblock Zenodo, 2023.
+
+\bibitem{Liang2018}
+Zhiding Liang et~al.
+\newblock Variational quantum circuit compilation.
+\newblock {\em arXiv:1911.07653}, 2018.
+
+\bibitem{Huang2022}
+Hsin-Yuan Huang et~al.
+\newblock Quantum advantage in learning from experiments.
+\newblock {\em Science}, 376:1182--1186, 2022.
+
+\bibitem{Fowler2012}
+Austin~G. Fowler, John~M. Martinis, Adam~C. Whiteside, and Lloyd C.~L.
+  Hollenberg.
+\newblock Surface codes: Towards practical large-scale quantum computation.
+\newblock {\em Physical Review A}, 86:032324, 2012.
+
+\bibitem{Dennis2002}
+Eric Dennis, Alexei Kitaev, Andrew Landahl, and John Preskill.
+\newblock Topological quantum memory.
+\newblock {\em Journal of Mathematical Physics}, 43:4452--4505, 2002.
+
+\bibitem{Abedi2025}
+A.~Abedi et~al.
+\newblock Scalable quantum circuit synthesis via deep reinforcement learning.
+\newblock {\em arXiv:2502.08943}, 2025.
+
+\bibitem{Madzik2022}
+Mateusz~T. M{\k{a}}dzik et~al.
+\newblock Precision tomography of a three-qubit donor quantum processor in
+  silicon.
+\newblock {\em Nature}, 601:348--353, 2022.
+
+\bibitem{Morello2020}
+Andrea Morello.
+\newblock Donor spins in silicon for quantum technologies.
+\newblock {\em MRS Bulletin}, 45:584--591, 2020.
+
+\bibitem{Tanamoto2025}
+T.~Tanamoto et~al.
+\newblock High-fidelity two-qubit gates in silicon spin qubits using pulse
+  engineering.
+\newblock {\em Physical Review Applied}, 23:014001, 2025.
+
+\bibitem{Krantz2019}
+Philip Krantz et~al.
+\newblock A quantum engineer's guide to superconducting qubits.
+\newblock {\em Applied Physics Reviews}, 6:021318, 2019.
+
+\bibitem{Bruzewicz2019}
+Colin~D. Bruzewicz, John Chiaverini, Robert McConnell, and Jeremy~M. Sage.
+\newblock Trapped-ion quantum computing: Progress and challenges.
+\newblock {\em Applied Physics Reviews}, 6:021314, 2019.
+
+\bibitem{Henriet2020}
+Loic Henriet et~al.
+\newblock Quantum computing with neutral atoms.
+\newblock {\em Quantum}, 4:327, 2020.
+
+\bibitem{QuTiPCtrl2023}
+Tommaso Caneva, Tommaso Calarco, Simone Montangero, J.~Robert Johansson,
+  Paul~D. Nation, and Franco Nori.
+\newblock {qutip-qtrl}: Quantum optimal control module for {QuTiP}, 2023.
+\newblock GitHub repository.
+
+\bibitem{Nogueira2014}
+Fernando Nogueira et~al.
+\newblock {BayesianOptimization}: A {Python} implementation of global
+  optimization with {Gaussian} processes.
+\newblock GitHub, 2014.
+
+\bibitem{Hansen2016}
+Nikolaus Hansen.
+\newblock The {CMA} evolution strategy: A tutorial.
+\newblock {\em arXiv:1604.00772}, 2016.
+
+\bibitem{Schulman2017}
+John Schulman, Filip Wolski, Prafulla Dhariwal, Alec Radford, and Oleg Klimov.
+\newblock Proximal policy optimization algorithms.
+\newblock {\em arXiv:1707.06347}, 2017.
+
+\bibitem{Daraeizadeh2020}
+Soroush Daraeizadeh, Shavindra~P. Premaratne, Anne~Y. Matsuura, and Niloofar
+  Roohanian.
+\newblock Designing high-fidelity multi-qubit gates for semiconductor quantum
+  dots through deep reinforcement learning.
+\newblock In {\em Proceedings of the IEEE International Conference on Quantum
+  Computing and Engineering (QCE)}, pages 35--44, 2020.
+
+\bibitem{He2021}
+Zhimin He, Lvzhou Li, Shenggen Zheng, Yanqi Li, and Haozhen Situ.
+\newblock Variational quantum compiling with double {Q}-learning.
+\newblock {\em New Journal of Physics}, 23:033002, 2021.
+
+\bibitem{Cerfontaine2020}
+Pascal Cerfontaine et~al.
+\newblock Closed-loop control of a {GaAs}-based singlet-triplet spin qubit with
+  99.5\% gate fidelity and low leakage.
+\newblock {\em Nature Communications}, 11:4144, 2020.
+
+\bibitem{Kuznetsov2020}
+Arsenii Kuznetsov, Pavel Shvechikov, Alexander Grishin, and Dmitry Vetrov.
+\newblock Controlling overestimation bias with truncated mixture of continuous
+  distributional quantile critics.
+\newblock In {\em Proceedings of the 37th International Conference on Machine
+  Learning (ICML)}, pages 5556--5566, 2020.
+
+\bibitem{Salberger2017}
+Olof Salberger and Vladimir Korepin.
+\newblock Entanglement entropy of the spin-1 {Dicke} state.
+\newblock {\em International Journal of Modern Physics B}, 31(26):1750230,
+  2017.
+
+\bibitem{AzizHPC}
+{King Abdulaziz University}.
+\newblock Aziz supercomputer.
+\newblock High Performance Computing Centre, KAU, 2024.
+
+\end{thebibliography}

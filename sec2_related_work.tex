@@ -123,7 +123,7 @@ as a Gymnasium environment requires substantial custom engineering: the
 user must implement the \texttt{step()}, \texttt{reset()}, and
 \texttt{observation\_space} interfaces, define a reward function, and
 manage the episode lifecycle. Several research groups have produced
-one-off QuTiP wrappers for specific tasks~\cite{Moro2021,Niu2018}, but
+one-off QuTiP wrappers for specific tasks~\cite{Moro2021,Niu2019}, but
 these target superconducting or abstract qubit models and do not incorporate
 semiconductor spin-qubit Hamiltonians or noise spectra; none are publicly
 released as reusable environments.
@@ -362,7 +362,7 @@ qgym~\cite{vanderLinde2023qgym}                  & \checkmark & \texttimes & \te
 Qiskit Gym~\cite{QiskitGym2024}                  & \checkmark & \texttimes & $\circ$    & \checkmark & \checkmark \\
 QuantumCircuitEnv~\cite{Bernard2024QuantumCircuitEnv} & \checkmark & \texttimes & \texttimes & \checkmark & \checkmark \\
 Bolens \& Dalmonte~\cite{Bolens2021}             & $\circ$    & \texttimes & \texttimes & \checkmark & \texttimes \\
-QuTiP wrappers~\cite{Moro2021,Niu2018}           & \texttimes & $\circ$    & \texttimes & $\circ$    & \texttimes \\
+QuTiP wrappers~\cite{Moro2021,Niu2019}           & \texttimes & $\circ$    & \texttimes & $\circ$    & \texttimes \\
 Qiskit Aer~\cite{Qiskit2024}                     & \texttimes & \texttimes & $\circ$    & \texttimes & \checkmark \\
 SimOS~\cite{SimOS2025}                           & \texttimes & $\circ$    & $\circ$    & \texttimes & \checkmark \\
 Orbell (2024)~\cite{Orbell2024}                  & \texttimes & \texttimes & \checkmark & \texttimes & \texttimes \\

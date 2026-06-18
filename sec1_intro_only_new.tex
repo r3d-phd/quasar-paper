@@ -1,0 +1,107 @@
+
+\section{Introduction}
+\label{sec:introduction}
+
+\subsection{The Simulation Gap in Silicon Spin Qubit Control}
+\label{subsec:simulation_gap}
+
+Silicon spin qubits—particularly SiMOS devices—are poised to scale quantum
+computing. With coherence times approaching $T_1 \sim 1$\,ms and
+$T_2^* \sim 0.4$\,ms~\cite{Xue2022,Noiri2022,Philips2022}, CMOS
+fabrication compatibility, and natural nearest-neighbour connectivity, they
+offer a manufacturable path toward fault-tolerant architectures. Yet their
+noise sensitivity remains a critical roadblock: charge fluctuations, hyperfine
+coupling variations, and residual spin-orbit interactions degrade gate fidelity
+in ways that first-principles prediction cannot reliably
+capture~\cite{Veldhorst2015,Fogarty2018}.
+
+Closing this gap demands simulation environments that are simultaneously
+physically rigorous and accessible to the full spectrum of quantum control
+algorithms. This matters for three concrete reasons. First, comparing control
+paradigms on identical physical models is the only way to isolate algorithmic
+performance from modelling artefacts—a prerequisite for principled algorithm
+selection in hardware co-design. Second, a unified interface enables hybrid
+strategies (e.g., gradient-initialised RL or BO-tuned GRAPE) that are otherwise
+infeasible. Third, reproducibility requires that benchmark results be obtainable
+by any researcher regardless of their preferred algorithm library.
+
+No existing open-source platform satisfies all three requirements for silicon
+spin qubits. Lindblad solvers such as QuTiP~\cite{Johansson2012,Johansson2013} deliver precise
+open-system dynamics but expose no standard algorithm interface. Gradient-based
+frameworks such as C3~\cite{Wittler2021} support GRAPE, CRAB, and CMA-ES but
+exclude reinforcement learning and silicon-specific noise models. Quantum RL
+environments~\cite{VanDerLinde2023,QiskitGym2024} offer Gymnasium compatibility
+but rely on abstract depolarising noise rather than device-specific physics.
+Qiskit Pulse~\cite{Alexander2020} enables pulse-level control for
+superconducting qubits but omits SiMOS models entirely. TensorFlow
+Quantum~\cite{Broughton2020} targets gate-model circuits via Cirq, not spin
+qubit physics. Orbell's Oxford work~\cite{Orbell2024} advances Bayesian device
+tuning for SiMOS but operates at device characterisation rather than gate
+synthesis. No single integrated platform supports all five paradigms—gradient
+(GRAPE, CRAB), variational (VQE), Bayesian (BO, CMA-ES), and deep RL—on the
+same device-accurate silicon spin qubit model. SiliQun fills this gap as the
+first open-source platform to unify device-accurate Lindblad simulation with a
+standard algorithm-agnostic interface for silicon spin qubits.
+
+\subsection{The Physics-Grounded Iterative Refinement Stack}
+\label{subsec:intro_pgirs}
+
+We introduce the \textbf{Physics-Grounded Iterative Refinement Stack} (PGIRS)
+methodology for building simulation platforms that are both physically rigorous
+and algorithm-agnostic. PGIRS rests on five design principles:
+
+\begin{itemize}
+  \item \textbf{Noise-First Design:} Noise models are calibrated from
+    experimental device data and validated against analytical benchmarks before
+    any control algorithm is integrated.
+  \item \textbf{Standard Interface Compliance:} A Gymnasium-compatible
+    \texttt{Env} interface provides plug-and-play access for any algorithm
+    library—RL, gradient-based, or variational—without modification.
+  \item \textbf{Reward Engineering:} A single reward function whose weights are
+    optimised offline via Bayesian methods is fixed identically across all
+    algorithms, ensuring comparability without conflating reward design with
+    policy learning.
+  \item \textbf{Hierarchical Decomposition:} Multi-qubit objectives decompose
+    into sub-goals with dense intermediate rewards, enabling tractable
+    optimisation for any algorithm.
+  \item \textbf{Empirical Validation:} Each component undergoes analytical
+    benchmarking, cross-algorithm testing, and hardware transfer checks before
+    publication.
+\end{itemize}
+
+SiliQun implements PGIRS across the silicon spin qubit family. The key
+distinction from prior work is that PGIRS treats the control algorithm as an
+interchangeable component: the same physics engine, reward function, and
+hardware profile serve gradient-based optimisers, variational circuits,
+Bayesian search, and deep RL agents without modification.
+
+\subsection{Contributions}
+\label{subsec:contributions}
+
+This work makes four primary contributions centred on the SiliQun simulation
+platform, and one secondary contribution demonstrating its use:
+
+\begin{enumerate}
+  \item \textbf{SiliQun physics engine:} A unified Lindblad solver supporting
+    SiMOS, donor-electron, GAA, Si/SiGe quantum dot, and SLEDGE qubits via
+    configurable hardware profiles, validated at numerical precision
+    ($\max\,\delta \leq 2.78 \times 10^{-16}$) and GPU-accelerated for
+    $93\times$ faster simulation cycles.
+  \item \textbf{Multi-technology hardware profiles:} A \texttt{TechnologyProfile}
+    abstraction encoding device physics for five silicon-compatible spin qubit
+    technologies, grounded in published experimental data and selectable via a
+    single constructor argument.
+  \item \textbf{Algorithm-agnostic control interface:} A Gymnasium-compatible
+    environment with a discrete 11-token gate action space, 16-element
+    density-matrix state representation, and a pre-validated reward function
+    applied identically to any control algorithm without modification.
+  \item \textbf{Qiskit BackendV2 provider:} The pip-installable
+    \texttt{siliqun-provider} exposes SiliQun as a Qiskit
+    \texttt{BackendV2}-compatible backend, integrating directly with the Qiskit
+    ecosystem.
+  \item \textbf{Cross-paradigm benchmark:} We benchmark representative
+    algorithms from five quantum control paradigms—gradient-based (GRAPE, CRAB),
+    variational (VQE), Bayesian (BO, CMA-ES), and deep RL (DQN, SAC)—on
+    identical hardware profiles, providing the first direct cross-paradigm
+    comparison on a device-accurate silicon spin qubit simulator.
+\end{enumerate}
