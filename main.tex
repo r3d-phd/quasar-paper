@@ -1,7 +1,7 @@
 % ============================================================
 % SILIQUN — Quantum Science & Technology (QST), IOP Publishing
 % Title: SiliQun: A Physics-Grounded Simulation Platform for
-%        Silicon Spin Qubits with Deep Reinforcement Learning
+%        Silicon Spin Qubit Control
 % Authors: Raad Mohammed Alshehri, Asaad A. Gad-Elrab, Suad Alarifi
 % King Abdulaziz University, FCIT
 % Submitted: June 2026 | v11 QST revision (iopjournal class)
@@ -33,8 +33,7 @@
 \articletype{Paper}
 
 % ── Title ────────────────────────────────────────────────────
-\title{SiliQun: A Physics-Grounded Simulation Platform for Silicon Spin Qubits
-       with Deep Reinforcement Learning Validation}
+\title{SiliQun: A Physics-Grounded Simulation Platform for Silicon Spin Qubit Control}
 
 % ── Authors ──────────────────────────────────────────────────
 \author{Raad Mohammed Alshehri$^1$, Asaad A Gad-Elrab$^1$ and Suad Alarifi$^2$}
@@ -48,9 +47,9 @@ Information Technology, King Abdulaziz University, Jeddah 21589, Saudi Arabia}
 \email{ralshehri0468@stu.kau.edu.sa}
 
 % ── Keywords ─────────────────────────────────────────────────
-\keywords{silicon spin qubits, deep reinforcement learning, Lindblad master equation,
+\keywords{silicon spin qubits, quantum control, Lindblad master equation,
 quantum gate synthesis, physics-grounded simulation, gate-all-around qubits,
-soft actor-critic, curriculum learning}
+deep reinforcement learning, optimal control, variational quantum algorithms}
 
 % ── Abstract ─────────────────────────────────────────────────
 \begin{abstract}
@@ -77,10 +76,7 @@ machine-learning benchmark for GAA silicon spin qubits
 ($\bar{F} = 0.9877 \pm 0.0021$). A fourth experiment using Proximal Policy
 Optimisation on SiMOS attains $F = 1.000$ across all five seeds within 200
 episodes, confirming compatibility with modern policy-gradient algorithms.
-Cross-technology fidelity consistency confirms that SiliQun accurately captures
-hardware-specific decoherence without simulator artefacts. Released under the
-MIT licence with full reproducibility scripts, SiliQun is freely available at
-\url{https://github.com/r3d91ll/SiliQun}.
+Cross-technology fidelity consistency confirms that SiliQun accurately captures hardware-specific decoherence without simulator artefacts. Although the validation experiments in this paper use deep RL agents, the Lindblad physics engine (Tier~1) and the Qiskit \texttt{BackendV2} adapter are methodology-agnostic: they support GRAPE, CRAB, variational quantum algorithms, and Bayesian optimisation without modification, making SiliQun a general-purpose silicon spin qubit control platform. Released under the MIT licence with full reproducibility scripts, SiliQun is freely available at \url{https://github.com/r3d91ll/SiliQun}.
 \end{abstract}
 
 % ── §1 Introduction ─────────────────────────────────────────
