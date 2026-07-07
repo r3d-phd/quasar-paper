@@ -1,0 +1,117 @@
+direction: down
+
+title: "QUASAR v9 — CAMEL-Q Hybrid Actor + T-SAC Curriculum" {
+  near: top-center
+  style.font-size: 20
+  style.bold: true
+}
+
+# ── Input Layer ──────────────────────────────────────────────────────────────
+input: "Quantum Environment\n(SiliQun Simulator)" {
+  shape: rectangle
+  style.fill: "#1a1a2e"
+  style.font-color: "#e0e0e0"
+  style.stroke: "#4fc3f7"
+  style.stroke-width: 2
+}
+
+# ── Core RL Engine ───────────────────────────────────────────────────────────
+sac: "SAC Core\n(Soft Actor-Critic)" {
+  shape: rectangle
+  style.fill: "#16213e"
+  style.font-color: "#e0e0e0"
+  style.stroke: "#7c4dff"
+  style.stroke-width: 2
+
+  actor: "Actor Network\n(CAMEL-Q Hybrid)\n3-layer MLP + Attention" {
+    shape: rectangle
+    style.fill: "#0f3460"
+    style.font-color: "#b3e5fc"
+    style.stroke: "#7c4dff"
+  }
+  critic1: "Critic Q1\n(Twin Q-Network)" {
+    shape: rectangle
+    style.fill: "#0f3460"
+    style.font-color: "#b3e5fc"
+    style.stroke: "#7c4dff"
+  }
+  critic2: "Critic Q2\n(Twin Q-Network)" {
+    shape: rectangle
+    style.fill: "#0f3460"
+    style.font-color: "#b3e5fc"
+    style.stroke: "#7c4dff"
+  }
+  entropy: "Entropy Tuning\nalpha (auto)" {
+    shape: rectangle
+    style.fill: "#0f3460"
+    style.font-color: "#b3e5fc"
+    style.stroke: "#7c4dff"
+  }
+}
+
+# ── Curriculum ───────────────────────────────────────────────────────────────
+curriculum: "T-SAC Curriculum\n(Target-Adaptive Scheduling)" {
+  shape: rectangle
+  style.fill: "#16213e"
+  style.font-color: "#e0e0e0"
+  style.stroke: "#00e676"
+  style.stroke-width: 2
+
+  qubit_prog: "Qubit Progression\n2Q → 3Q → 4Q → ... → 12Q" {
+    shape: rectangle
+    style.fill: "#0f3460"
+    style.font-color: "#b3e5fc"
+    style.stroke: "#00e676"
+  }
+  target_sched: "Target Scheduler\nGHZ / W / Cluster / Dicke-k3" {
+    shape: rectangle
+    style.fill: "#0f3460"
+    style.font-color: "#b3e5fc"
+    style.stroke: "#00e676"
+  }
+  threshold: "Advancement Threshold\nmean_F > 0.999" {
+    shape: rectangle
+    style.fill: "#0f3460"
+    style.font-color: "#b3e5fc"
+    style.stroke: "#00e676"
+  }
+}
+
+# ── Replay Buffer ─────────────────────────────────────────────────────────────
+replay: "Replay Buffer\n(Experience Replay)" {
+  shape: cylinder
+  style.fill: "#1a1a2e"
+  style.font-color: "#e0e0e0"
+  style.stroke: "#ff9800"
+}
+
+# ── Output ────────────────────────────────────────────────────────────────────
+output: "Gate Sequence\n(Quantum Circuit)" {
+  shape: rectangle
+  style.fill: "#1a1a2e"
+  style.font-color: "#e0e0e0"
+  style.stroke: "#4fc3f7"
+}
+
+fidelity: "Fidelity Reward\nF = |<psi|target>|^2" {
+  shape: oval
+  style.fill: "#1a1a2e"
+  style.font-color: "#ffcc02"
+  style.stroke: "#ffcc02"
+}
+
+# ── Connections ───────────────────────────────────────────────────────────────
+input -> sac.actor: "State obs"
+sac.actor -> output: "Gate params"
+output -> input: "Next state"
+input -> fidelity: "Measure"
+fidelity -> replay: "Transition (s,a,r,s')"
+replay -> sac.actor: "Batch sample"
+replay -> sac.critic1: "Batch sample"
+replay -> sac.critic2: "Batch sample"
+sac.critic1 -> sac.actor: "Q-gradient"
+sac.critic2 -> sac.actor: "Q-gradient"
+sac.entropy -> sac.actor: "Entropy reg"
+curriculum.threshold -> curriculum.qubit_prog: "Advance"
+curriculum.qubit_prog -> input: "n_qubits"
+curriculum.target_sched -> input: "target"

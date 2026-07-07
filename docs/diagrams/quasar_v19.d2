@@ -1,0 +1,185 @@
+direction: down
+
+title: "QUASAR v19 — ASR + ERL-Augmented SLM (6-Layer Architecture)" {
+  near: top-center
+  style.font-size: 20
+  style.bold: true
+}
+
+# ── L1: SAC Core ─────────────────────────────────────────────────────────────
+l1: "L1 — SAC Core\n(Soft Actor-Critic)" {
+  shape: rectangle
+  style.fill: "#0d1b2a"
+  style.font-color: "#e0e0e0"
+  style.stroke: "#4fc3f7"
+  style.stroke-width: 3
+
+  actor: "Actor\n3-layer MLP" {
+    shape: rectangle
+    style.fill: "#1b2a3b"
+    style.font-color: "#b3e5fc"
+    style.stroke: "#4fc3f7"
+  }
+  twin_q: "Twin Q-Critics\n(Q1, Q2)" {
+    shape: rectangle
+    style.fill: "#1b2a3b"
+    style.font-color: "#b3e5fc"
+    style.stroke: "#4fc3f7"
+  }
+  replay: "Replay Buffer\n(1M transitions)" {
+    shape: cylinder
+    style.fill: "#1b2a3b"
+    style.font-color: "#b3e5fc"
+    style.stroke: "#4fc3f7"
+  }
+}
+
+# ── L2: SWDFT ────────────────────────────────────────────────────────────────
+l2: "L2 — SWDFT\n(Sliding-Window DFT Stagnation Detector)" {
+  shape: rectangle
+  style.fill: "#0d1b2a"
+  style.font-color: "#e0e0e0"
+  style.stroke: "#ff9800"
+  style.stroke-width: 2
+
+  window: "Sliding Window\n(w=1000 steps)" {
+    shape: rectangle
+    style.fill: "#1b2a3b"
+    style.font-color: "#ffd180"
+    style.stroke: "#ff9800"
+  }
+  dft: "DFT Variance\nDetector" {
+    shape: rectangle
+    style.fill: "#1b2a3b"
+    style.font-color: "#ffd180"
+    style.stroke: "#ff9800"
+  }
+}
+
+# ── L3: BRFD ─────────────────────────────────────────────────────────────────
+l3: "L3 — BRFD\n(Bayesian Reward Function Discovery)" {
+  shape: rectangle
+  style.fill: "#0d1b2a"
+  style.font-color: "#e0e0e0"
+  style.stroke: "#ab47bc"
+  style.stroke-width: 2
+
+  gp: "Gaussian Process\nSurrogate" {
+    shape: rectangle
+    style.fill: "#1b2a3b"
+    style.font-color: "#e1bee7"
+    style.stroke: "#ab47bc"
+  }
+  probe: "Probe Budget\n(BRFD-shaped)" {
+    shape: rectangle
+    style.fill: "#1b2a3b"
+    style.font-color: "#e1bee7"
+    style.stroke: "#ab47bc"
+  }
+}
+
+# ── L4: ASR / ERL Pipeline ───────────────────────────────────────────────────
+l4: "L4 — ASR / ERL Escalation Pipeline" {
+  shape: rectangle
+  style.fill: "#0d1b2a"
+  style.font-color: "#e0e0e0"
+  style.stroke: "#ef5350"
+  style.stroke-width: 3
+
+  erl_slm: "Stage 1: ERL-SLM\nQwen3-4B Reflector\n+ EpisodeMemory\n+ Perturbation" {
+    shape: rectangle
+    style.fill: "#1b2a3b"
+    style.font-color: "#ffcdd2"
+    style.stroke: "#ef5350"
+  }
+  sdft: "Stage 2: SDFT\n(Spectral DFT Reset)" {
+    shape: rectangle
+    style.fill: "#1b2a3b"
+    style.font-color: "#ffcdd2"
+    style.stroke: "#ef5350"
+  }
+  ttt: "Stage 3: TTT\n(Test-Time Training)" {
+    shape: rectangle
+    style.fill: "#1b2a3b"
+    style.font-color: "#ffcdd2"
+    style.stroke: "#ef5350"
+  }
+}
+
+# ── L5: ACC ──────────────────────────────────────────────────────────────────
+l5: "L5 — ACC\n(Adaptive Convergence Control)" {
+  shape: rectangle
+  style.fill: "#0d1b2a"
+  style.font-color: "#e0e0e0"
+  style.stroke: "#26a69a"
+  style.stroke-width: 2
+
+  acc: "ACC Guard\n(F_inf predictor)" {
+    shape: rectangle
+    style.fill: "#1b2a3b"
+    style.font-color: "#b2dfdb"
+    style.stroke: "#26a69a"
+  }
+  slm_fallback: "SLM Periodic\nFallback" {
+    shape: rectangle
+    style.fill: "#1b2a3b"
+    style.font-color: "#b2dfdb"
+    style.stroke: "#26a69a"
+  }
+}
+
+# ── L6: DEHB ─────────────────────────────────────────────────────────────────
+l6: "L6 — DEHB Curriculum\n(Differential Evolution + HyperBand)" {
+  shape: rectangle
+  style.fill: "#0d1b2a"
+  style.font-color: "#e0e0e0"
+  style.stroke: "#42a5f5"
+  style.stroke-width: 2
+
+  dehb_outer: "DEHB Outer\n(per qubit level)" {
+    shape: rectangle
+    style.fill: "#1b2a3b"
+    style.font-color: "#bbdefb"
+    style.stroke: "#42a5f5"
+  }
+  dehb_inner: "DEHB Inner\n(reactive HPO)" {
+    shape: rectangle
+    style.fill: "#1b2a3b"
+    style.font-color: "#bbdefb"
+    style.stroke: "#42a5f5"
+  }
+}
+
+# ── Signal Bus ───────────────────────────────────────────────────────────────
+bus: "Signal Bus" {
+  shape: rectangle
+  style.fill: "#1a1a2e"
+  style.font-color: "#ffcc02"
+  style.stroke: "#ffcc02"
+  style.stroke-dash: 3
+}
+
+# ── Environment ──────────────────────────────────────────────────────────────
+env: "SiliQun Environment\n(Silicon Spin Qubit Simulator)" {
+  shape: rectangle
+  style.fill: "#0d1b2a"
+  style.font-color: "#e0e0e0"
+  style.stroke: "#80cbc4"
+  style.stroke-width: 2
+}
+
+# ── Connections ───────────────────────────────────────────────────────────────
+env -> l1.actor: "State (density matrix)"
+l1.actor -> env: "Gate action"
+env -> l1.replay: "Transition"
+l1.replay -> l1.twin_q: "Batch"
+l2.dft -> bus: "STAGNATION signal"
+bus -> l4.erl_slm: "Trigger ASR"
+l4.erl_slm -> bus: "SLM_CORRECTED / SLM_FAILED"
+l4.erl_slm -> l4.sdft: "Escalate (SLM_FAILED)"
+l4.sdft -> l4.ttt: "Escalate (SDFT_FAILED)"
+l4.ttt -> l6.dehb_inner: "Escalate (TTT_FAILED)"
+l6.dehb_inner -> l1: "HP_UPDATED"
+l6.dehb_outer -> l1: "HP_UPDATED"
+l5.acc -> l1: "Early stop"
+l3.gp -> l1: "Reward weights"

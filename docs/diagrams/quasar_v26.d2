@@ -1,0 +1,180 @@
+direction: down
+
+title: "QUASAR v26 — OPID On-Policy Skill Distillation + FASTMIX-Omega" {
+  near: top-center
+  style.font-size: 20
+  style.bold: true
+}
+
+# ── Core SAC ─────────────────────────────────────────────────────────────────
+sac: "SAC Core" {
+  shape: rectangle
+  style.fill: "#0d1b2a"
+  style.font-color: "#e0e0e0"
+  style.stroke: "#4fc3f7"
+  style.stroke-width: 3
+
+  actor: "Actor\n(3-layer MLP)" {
+    shape: rectangle
+    style.fill: "#1b2a3b"
+    style.font-color: "#b3e5fc"
+    style.stroke: "#4fc3f7"
+  }
+  twin_q: "Twin Q-Critics" {
+    shape: rectangle
+    style.fill: "#1b2a3b"
+    style.font-color: "#b3e5fc"
+    style.stroke: "#4fc3f7"
+  }
+}
+
+# ── FASTMIX-Omega ─────────────────────────────────────────────────────────────
+fastmix: "FASTMIX-Omega\n(Bilevel Mixture Optimizer)" {
+  shape: rectangle
+  style.fill: "#0d1b2a"
+  style.font-color: "#e0e0e0"
+  style.stroke: "#7c4dff"
+  style.stroke-width: 3
+
+  omega: "7 Mixture Coefficients\nalpha_SLM, alpha_BRFD, alpha_DEHB\nalpha_replay, alpha_ASR\nalpha_SWDFT, alpha_ACC" {
+    shape: rectangle
+    style.fill: "#1b2a3b"
+    style.font-color: "#e1bee7"
+    style.stroke: "#7c4dff"
+  }
+  cg: "CG Update\n(Conjugate Gradient\nbilevel outer loop)" {
+    shape: rectangle
+    style.fill: "#1b2a3b"
+    style.font-color: "#e1bee7"
+    style.stroke: "#7c4dff"
+  }
+  val_oracle: "Validation Oracle\n(3Q/W held-out cell)" {
+    shape: rectangle
+    style.fill: "#1b2a3b"
+    style.font-color: "#e1bee7"
+    style.stroke: "#7c4dff"
+  }
+}
+
+# ── OPID ─────────────────────────────────────────────────────────────────────
+opid: "OPID\n(On-Policy Skill Distillation)\n[arXiv 2606.26790]" {
+  shape: rectangle
+  style.fill: "#0d1b2a"
+  style.font-color: "#e0e0e0"
+  style.stroke: "#ff6f00"
+  style.stroke-width: 3
+
+  trace_collector: "OPIDTraceCollector\n(log-prob re-scoring)" {
+    shape: rectangle
+    style.fill: "#1b2a3b"
+    style.font-color: "#ffe0b2"
+    style.stroke: "#ff6f00"
+  }
+  advantage: "OPID Advantage\nA(s,a) = r + gamma*V(s') - V(s)" {
+    shape: rectangle
+    style.fill: "#1b2a3b"
+    style.font-color: "#ffe0b2"
+    style.stroke: "#ff6f00"
+  }
+  lora: "LoRA Adapter\n(Qwen3-4B, rank=8)\nPeriodic fine-tune" {
+    shape: rectangle
+    style.fill: "#1b2a3b"
+    style.font-color: "#ffe0b2"
+    style.stroke: "#ff6f00"
+  }
+}
+
+# ── ERL-SLM (inherited) ───────────────────────────────────────────────────────
+erl: "ERL-SLM\n(3-Stage Escalation)" {
+  shape: rectangle
+  style.fill: "#0d1b2a"
+  style.font-color: "#e0e0e0"
+  style.stroke: "#ef5350"
+  style.stroke-width: 2
+
+  s1: "Stage 1: SLM Reflect\n(Qwen3-4B)" {
+    shape: rectangle
+    style.fill: "#1b2a3b"
+    style.font-color: "#ffcdd2"
+    style.stroke: "#ef5350"
+  }
+  s2: "Stage 2: SDFT Reset" {
+    shape: rectangle
+    style.fill: "#1b2a3b"
+    style.font-color: "#ffcdd2"
+    style.stroke: "#ef5350"
+  }
+  s3: "Stage 3: TTT" {
+    shape: rectangle
+    style.fill: "#1b2a3b"
+    style.font-color: "#ffcdd2"
+    style.stroke: "#ef5350"
+  }
+}
+
+# ── Noise Curriculum ─────────────────────────────────────────────────────────
+noise: "Noise Curriculum Controller\n(v25 P1-P4)" {
+  shape: rectangle
+  style.fill: "#0d1b2a"
+  style.font-color: "#e0e0e0"
+  style.stroke: "#26a69a"
+  style.stroke-width: 2
+
+  stages: "Noise Stages 1-5\n(depolarising + dephasing)" {
+    shape: rectangle
+    style.fill: "#1b2a3b"
+    style.font-color: "#b2dfdb"
+    style.stroke: "#26a69a"
+  }
+  delta: "ERL-SLM noise_delta\n(adaptive noise step)" {
+    shape: rectangle
+    style.fill: "#1b2a3b"
+    style.font-color: "#b2dfdb"
+    style.stroke: "#26a69a"
+  }
+}
+
+# ── Extended Targets ─────────────────────────────────────────────────────────
+targets: "Extended Target Library\n(v23-v24 additions)" {
+  shape: rectangle
+  style.fill: "#0d1b2a"
+  style.font-color: "#e0e0e0"
+  style.stroke: "#80cbc4"
+  style.stroke-width: 2
+
+  t1: "Bell / GHZ / W\n(base targets)" {
+    shape: rectangle
+    style.fill: "#1b2a3b"
+    style.font-color: "#b2dfdb"
+    style.stroke: "#80cbc4"
+  }
+  t2: "Cluster / Dicke-k2\nCompleteGraph\nGHZ_W_Hybrid" {
+    shape: rectangle
+    style.fill: "#1b2a3b"
+    style.font-color: "#b2dfdb"
+    style.stroke: "#80cbc4"
+  }
+}
+
+# ── Environment ──────────────────────────────────────────────────────────────
+env: "SiliQun Environment\n(Silicon Spin Qubit)" {
+  shape: rectangle
+  style.fill: "#1a1a2e"
+  style.font-color: "#e0e0e0"
+  style.stroke: "#4fc3f7"
+}
+
+# ── Connections ───────────────────────────────────────────────────────────────
+env -> sac.actor: "State"
+sac.actor -> env: "Gate action"
+opid.trace_collector -> opid.lora: "Traces"
+opid.advantage -> opid.lora: "Advantages"
+opid.lora -> erl.s1: "Updated SLM"
+fastmix.omega -> sac: "Mixture weights"
+fastmix.cg -> fastmix.omega: "Gradient update"
+fastmix.val_oracle -> fastmix.cg: "Validation loss"
+noise.stages -> env: "Noise params"
+erl.s1 -> erl.s2: "SLM_FAILED"
+erl.s2 -> erl.s3: "SDFT_FAILED"
+targets.t1 -> env: "Target state"
+targets.t2 -> env: "Target state"

@@ -1,0 +1,135 @@
+direction: down
+
+title: "QUASAR v27 — Fixed-HP SAC Noise-Stage Ablation + MIST" {
+  near: top-center
+  style.font-size: 20
+  style.bold: true
+}
+
+# ── CLI Entry Points ──────────────────────────────────────────────────────────
+cli: "CLI Entry Points" {
+  shape: rectangle
+  style.fill: "#0d1b2a"
+  style.font-color: "#e0e0e0"
+  style.stroke: "#ffcc02"
+  style.stroke-width: 2
+
+  ablation: "--experiment ablation\n--noise-stage {1..5}\n--target {Bell,GHZ,W,Cluster,Dicke-k2}" {
+    shape: rectangle
+    style.fill: "#1b2a3b"
+    style.font-color: "#fff9c4"
+    style.stroke: "#ffcc02"
+  }
+  mist: "--experiment mist\n(n=2 supplementary)" {
+    shape: rectangle
+    style.fill: "#1b2a3b"
+    style.font-color: "#fff9c4"
+    style.stroke: "#ffcc02"
+  }
+}
+
+# ── Ablation Experiment ───────────────────────────────────────────────────────
+ablation_exp: "Ablation Experiment\n(PRIMARY)" {
+  shape: rectangle
+  style.fill: "#0d1b2a"
+  style.font-color: "#e0e0e0"
+  style.stroke: "#4fc3f7"
+  style.stroke-width: 3
+
+  fixed_hp: "Fixed HP Config\n(v25 incumbent)\nbatch=256, lr=3e-4\ngamma=0.99, tau=0.005" {
+    shape: rectangle
+    style.fill: "#1b2a3b"
+    style.font-color: "#b3e5fc"
+    style.stroke: "#4fc3f7"
+  }
+  sac_agent: "SAC Agent\n(Actor + Twin Q)\nNo DEHB / No SLM" {
+    shape: rectangle
+    style.fill: "#1b2a3b"
+    style.font-color: "#b3e5fc"
+    style.stroke: "#4fc3f7"
+  }
+  loop: "Training Loop\nmax_steps=500,000\nlog every 25k" {
+    shape: rectangle
+    style.fill: "#1b2a3b"
+    style.font-color: "#b3e5fc"
+    style.stroke: "#4fc3f7"
+  }
+}
+
+# ── MIST Experiment ───────────────────────────────────────────────────────────
+mist_exp: "MIST Experiment\n(SECONDARY)" {
+  shape: rectangle
+  style.fill: "#0d1b2a"
+  style.font-color: "#e0e0e0"
+  style.stroke: "#ab47bc"
+  style.stroke-width: 2
+
+  phase1: "Phase 1\nPrepare |D2_2> (Dicke-k2)\nSAC at ns=5" {
+    shape: rectangle
+    style.fill: "#1b2a3b"
+    style.font-color: "#e1bee7"
+    style.stroke: "#ab47bc"
+  }
+  phase2: "Phase 2\nMIST Projection\n|D2_2> → |Bell> or |GHZ>" {
+    shape: rectangle
+    style.fill: "#1b2a3b"
+    style.font-color: "#e1bee7"
+    style.stroke: "#ab47bc"
+  }
+  adaptive_meas: "Adaptive Measurements\n(MISTEnvV27)" {
+    shape: rectangle
+    style.fill: "#1b2a3b"
+    style.font-color: "#e1bee7"
+    style.stroke: "#ab47bc"
+  }
+}
+
+# ── SiliQun Environment ───────────────────────────────────────────────────────
+env: "SiliQunEnvV27\n(Silicon Spin Qubit Simulator)" {
+  shape: rectangle
+  style.fill: "#0d1b2a"
+  style.font-color: "#e0e0e0"
+  style.stroke: "#26a69a"
+  style.stroke-width: 3
+
+  noise_model: "Noise Model\n5 Stages\n(depolarising + dephasing\n+ T1/T2 relaxation)" {
+    shape: rectangle
+    style.fill: "#1b2a3b"
+    style.font-color: "#b2dfdb"
+    style.stroke: "#26a69a"
+  }
+  fidelity: "Fidelity Computation\nF = |<psi|target>|^2" {
+    shape: oval
+    style.fill: "#1b2a3b"
+    style.font-color: "#b2dfdb"
+    style.stroke: "#26a69a"
+  }
+  targets: "Target States\nBell / GHZ / W\nCluster / Dicke-k2" {
+    shape: rectangle
+    style.fill: "#1b2a3b"
+    style.font-color: "#b2dfdb"
+    style.stroke: "#26a69a"
+  }
+}
+
+# ── Results ───────────────────────────────────────────────────────────────────
+results: "Results\n(results_ablation/)" {
+  shape: cylinder
+  style.fill: "#1a1a2e"
+  style.font-color: "#e0e0e0"
+  style.stroke: "#80cbc4"
+}
+
+# ── Connections ───────────────────────────────────────────────────────────────
+cli.ablation -> ablation_exp: "Launch"
+cli.mist -> mist_exp: "Launch"
+ablation_exp.fixed_hp -> ablation_exp.sac_agent: "HP config"
+ablation_exp.sac_agent -> ablation_exp.loop: "Train"
+ablation_exp.loop -> env: "Actions"
+env.fidelity -> ablation_exp.loop: "Reward"
+ablation_exp.loop -> results: "ablation_ns{k}_{target}_s{seed}.json"
+mist_exp.phase1 -> mist_exp.phase2: "Trained policy"
+mist_exp.phase2 -> mist_exp.adaptive_meas: "Measure"
+mist_exp.adaptive_meas -> results: "mist_ns{k}_s{seed}.json"
+env.noise_model -> env.fidelity: "Noisy state"
+env.targets -> env.fidelity: "Target"

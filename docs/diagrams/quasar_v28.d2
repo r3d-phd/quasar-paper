@@ -1,0 +1,147 @@
+direction: down
+
+title: "QUASAR v28 — Layer-Contribution RL (LC-RL)" {
+  near: top-center
+  style.font-size: 20
+  style.bold: true
+}
+
+# ── Layer Mode CLI ────────────────────────────────────────────────────────────
+cli: "Layer Mode Selection\n(--layer-mode)" {
+  shape: rectangle
+  style.fill: "#0d1b2a"
+  style.font-color: "#e0e0e0"
+  style.stroke: "#ffcc02"
+  style.stroke-width: 2
+
+  full: "full\n(v27 baseline)" {
+    shape: rectangle
+    style.fill: "#1b2a3b"
+    style.font-color: "#fff9c4"
+    style.stroke: "#ffcc02"
+  }
+  profile: "profile\nMeasure C(k)\nfor each MLP layer" {
+    shape: rectangle
+    style.fill: "#1b2a3b"
+    style.font-color: "#fff9c4"
+    style.stroke: "#ffcc02"
+  }
+  sel_best: "selective-best\nTrain top-1 layer\nby C(k)" {
+    shape: rectangle
+    style.fill: "#1b2a3b"
+    style.font-color: "#fff9c4"
+    style.stroke: "#ffcc02"
+  }
+  sel_top2: "selective-top2\nTrain top-2 layers\nby C(k)" {
+    shape: rectangle
+    style.fill: "#1b2a3b"
+    style.font-color: "#fff9c4"
+    style.stroke: "#ffcc02"
+  }
+  adaptive_lr: "adaptive-lr\nFull training\n2x LR on best layer" {
+    shape: rectangle
+    style.fill: "#1b2a3b"
+    style.font-color: "#fff9c4"
+    style.stroke: "#ffcc02"
+  }
+}
+
+# ── LC-RL Core ────────────────────────────────────────────────────────────────
+lc_rl: "LC-RL Engine\n(Layer-Contribution RL)" {
+  shape: rectangle
+  style.fill: "#0d1b2a"
+  style.font-color: "#e0e0e0"
+  style.stroke: "#7c4dff"
+  style.stroke-width: 3
+
+  score: "Layer Contribution Score\nC(k) = (F_k - F_base) / (F_full - F_base)\n[Zhang et al. 2026, arXiv:2607.01232]" {
+    shape: rectangle
+    style.fill: "#1b2a3b"
+    style.font-color: "#e1bee7"
+    style.stroke: "#7c4dff"
+  }
+  freeze: "Layer Freezing\nfreeze_all_actor_layers()\nunfreeze_actor_layer(k)" {
+    shape: rectangle
+    style.fill: "#1b2a3b"
+    style.font-color: "#e1bee7"
+    style.stroke: "#7c4dff"
+  }
+  profiling: "Profiling Phase\n(profile_steps=100k)\nF_k per layer" {
+    shape: rectangle
+    style.fill: "#1b2a3b"
+    style.font-color: "#e1bee7"
+    style.stroke: "#7c4dff"
+  }
+}
+
+# ── SAC Agent ─────────────────────────────────────────────────────────────────
+sac: "SAC Agent v28\n(Layer-Selective)" {
+  shape: rectangle
+  style.fill: "#0d1b2a"
+  style.font-color: "#e0e0e0"
+  style.stroke: "#4fc3f7"
+  style.stroke-width: 2
+
+  actor: "Actor MLP\n3 layers\n(selective freeze)" {
+    shape: rectangle
+    style.fill: "#1b2a3b"
+    style.font-color: "#b3e5fc"
+    style.stroke: "#4fc3f7"
+  }
+  twin_q: "Twin Q-Critics\n(always fully trained)" {
+    shape: rectangle
+    style.fill: "#1b2a3b"
+    style.font-color: "#b3e5fc"
+    style.stroke: "#4fc3f7"
+  }
+}
+
+# ── Inherited from v27 ────────────────────────────────────────────────────────
+v27_base: "v27 Base\n(Inherited)" {
+  shape: rectangle
+  style.fill: "#0d1b2a"
+  style.font-color: "#e0e0e0"
+  style.stroke: "#26a69a"
+  style.stroke-width: 2
+
+  env: "SiliQunEnvV27\n(5 noise stages)" {
+    shape: rectangle
+    style.fill: "#1b2a3b"
+    style.font-color: "#b2dfdb"
+    style.stroke: "#26a69a"
+  }
+  ablation: "Ablation Experiment\n(ns=1..5 x 5 targets)" {
+    shape: rectangle
+    style.fill: "#1b2a3b"
+    style.font-color: "#b2dfdb"
+    style.stroke: "#26a69a"
+  }
+  mist: "MIST Experiment\n(n=2 supplementary)" {
+    shape: rectangle
+    style.fill: "#1b2a3b"
+    style.font-color: "#b2dfdb"
+    style.stroke: "#26a69a"
+  }
+}
+
+# ── Results ───────────────────────────────────────────────────────────────────
+results: "Results\n(profiles/ + ablation/)" {
+  shape: cylinder
+  style.fill: "#1a1a2e"
+  style.font-color: "#e0e0e0"
+  style.stroke: "#80cbc4"
+}
+
+# ── Connections ───────────────────────────────────────────────────────────────
+cli.profile -> lc_rl.profiling: "Trigger profiling"
+lc_rl.profiling -> lc_rl.score: "F_k values"
+lc_rl.score -> lc_rl.freeze: "Top-k layers"
+lc_rl.freeze -> sac.actor: "Selective freeze"
+cli.sel_best -> lc_rl.freeze: "k=1"
+cli.sel_top2 -> lc_rl.freeze: "k=2"
+cli.adaptive_lr -> sac.actor: "2x LR on best layer"
+cli.full -> sac: "Full training"
+sac.actor -> v27_base.env: "Gate actions"
+v27_base.env -> sac: "Reward (fidelity)"
+lc_rl.profiling -> results: "layer_profile_ns{k}_{target}_s{seed}.json"
+v27_base.ablation -> results: "ablation_ns{k}_{target}_s{seed}.json"
